@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "nodemon server",
+    "test": "mocha test",
+    "dev-react": "webpack -d --watch"
   },
   "dependencies": {
     "body-parser": "~1.15.2",
@@ -12,6 +14,25 @@
     "ejs": "~2.5.2",
     "express": "~4.14.0",
     "morgan": "~1.7.0",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
+  },
+  "devDependencies": {
+  "babel-core": "^6.17.0",
+  "babel-loader": "^6.2.5",
+  "babel-preset-es2015": "^6.16.0",
+  "babel-preset-react": "^6.16.0",
+  "chai": "^3.5.0",
+  "chai-things": "^0.2.0",
+  "eslint": "^3.14.1",
+  "eslint-config-airbnb": "^14.0.0",
+  "eslint-plugin-import": "^2.2.0",
+  "eslint-plugin-jsx-a11y": "^3.0.2",
+  "eslint-plugin-react": "^6.9.0",
+  "mocha": "^3.0.2",
+  "nodemon": "^1.11.0",
+  "supertest": "^2.0.0",
+  "webpack": "^1.13.2"
   }
 }
