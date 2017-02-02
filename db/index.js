@@ -46,5 +46,20 @@ module.exports = {
         return resolve();
       });
     });
-  }
+  },
+  getGroupList: (userid) => {
+    const getGroupListQuery =`SELECT g.groupname
+    FROM   groups g
+    WHERE  (SELECT gm.group_idx
+            FROM   groupmember gm
+            WHERE  (SELECT idx
+                    FROM   user
+                    WHERE  userid = "${userid}") = gm.user_idx) = g.idx; `;
+    return new Promise((resolve, reject) => {
+      connection.query(getTotalSumQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
 };
