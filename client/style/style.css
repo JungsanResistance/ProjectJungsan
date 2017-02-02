@@ -1,0 +1,7 @@
+table {
+  bordercollape: collapse;
+}
+
+td,th {
+  border:1px solid green;
+}
