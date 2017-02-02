@@ -18,7 +18,13 @@ module.exports = {
         return result;
       });
     },
-
-
+  },
+  transaction: {
+    get: (req) => {
+      return new Promise((resolve, reject) => {
+        resolve(req);
+      })
+      .then((req) => (db.getGroupMember('cs1', 'Codestates')));
+    }
   }
 }

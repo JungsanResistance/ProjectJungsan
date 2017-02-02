@@ -62,4 +62,24 @@ module.exports = {
       });
     });
   },
+  getGroupMember: (userid, groupname) => {
+    console.log('hi')
+    const getGroupMemberQuery = `
+    SELECT u.username
+    FROM   user u
+          LEFT JOIN (SELECT gm.user_idx
+                  FROM   groupmember gm
+                  WHERE  gm.group_idx = (SELECT idx
+                                         FROM   groups
+                                         WHERE  groupname = "${groupname}"))AS
+                 MemberId
+          ON u.idx = MemberId.user_idx
+    WHERE  u.userid <> '${userid}'; `;
+    return new Promise((resolve, reject) => {
+      connection.query(getGroupMemberQuery, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  },
 };
