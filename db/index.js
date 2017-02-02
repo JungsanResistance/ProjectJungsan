@@ -41,10 +41,25 @@ module.exports = {
     GROUP BY Z.user_idx;`;
 
     return new Promise((resolve, reject) => {
-      connection.query(getTotalSumQuery, (err) => {
+      connection.query(getTotalSumQuery, (err, res) => {
         if (err) return reject(err);
-        return resolve();
+        return resolve(res);
       });
     });
-  }
+  },
+  getGroupList: (userid) => {
+    const getGroupListQuery =`SELECT g.groupname
+    FROM   groups g
+    WHERE  (SELECT gm.group_idx
+            FROM   groupmember gm
+            WHERE  (SELECT idx
+                    FROM   user
+                    WHERE  userid = "${userid}") = gm.user_idx) = g.idx; `;
+    return new Promise((resolve, reject) => {
+      connection.query(getGroupListQuery, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  },
 };
