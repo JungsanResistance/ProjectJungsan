@@ -66,7 +66,6 @@ CREATE TABLE IF NOT EXISTS `Jungsan_DB`.`event` (
   `eventname` VARCHAR(16) NOT NULL,
   `totalcost` INT(11) NOT NULL,
   PRIMARY KEY (`idx`, `group_idx`, `recipient_idx`),
-  UNIQUE INDEX `userid_UNIQUE` (`date` ASC),
   INDEX `fk_event_group1_idx` (`group_idx` ASC),
   INDEX `fk_event_user1_idx` (`recipient_idx` ASC),
   CONSTRAINT `fk_event_group1`
@@ -124,14 +123,14 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 
-INSERT INTO USER (userid, username, password) VALUES ('cs1', '이성준', 'cs');
-INSERT INTO USER (userid, username, password) VALUES ('cs2', '이현진', 'cs');
-INSERT INTO USER (userid, username, password) VALUES ('cs3', '구일모', 'cs');
-INSERT INTO USER (userid, username, password) VALUES ('cs4', '이웅희', 'cs');
-INSERT INTO USER (userid, username, password) VALUES ('cs5', '송현규', 'cs');
-INSERT INTO USER (userid, username, password) VALUES ('cs6', '공윤구', 'cs');
-INSERT INTO USER (userid, username, password) VALUES ('cs7', '고민호', 'cs');
-INSERT INTO USER (userid, username, password) VALUES ('cs8', '이상훈', 'cs');
+INSERT INTO user (userid, username, password) VALUES ('cs1', '이성준', 'cs');
+INSERT INTO user (userid, username, password) VALUES ('cs2', '이현진', 'cs');
+INSERT INTO user (userid, username, password) VALUES ('cs3', '구일모', 'cs');
+INSERT INTO user (userid, username, password) VALUES ('cs4', '이웅희', 'cs');
+INSERT INTO user (userid, username, password) VALUES ('cs5', '송현규', 'cs');
+INSERT INTO user (userid, username, password) VALUES ('cs6', '공윤구', 'cs');
+INSERT INTO user (userid, username, password) VALUES ('cs7', '고민호', 'cs');
+INSERT INTO user (userid, username, password) VALUES ('cs8', '이상훈', 'cs');
 
 INSERT INTO groups (groupname) VALUES ('Codestates');
 
@@ -145,8 +144,13 @@ INSERT INTO groupmember (user_idx, group_idx) VALUES (7, 1);
 INSERT INTO groupmember (user_idx, group_idx) VALUES (8, 1);
 
 INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, now(), 1, 'BurgurKing', 50000);
+INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, now(), 1, 'Mcdonald', 30000);
+--
+-- INSERT INTO eventmember (user_idx, event_idx, event_group_idx, event_recipient_idx, cost, ispaid) VALUES (2, 1, 1, 1, 10000, TRUE);
+-- INSERT INTO eventmember (user_idx, event_idx, event_group_idx, event_recipient_idx, cost, ispaid) VALUES (3, 1, 1, 1, 10000, FALSE);
+-- INSERT INTO eventmember (user_idx, event_idx, event_group_idx, event_recipient_idx, cost, ispaid) VALUES (4, 1, 1, 1, 10000, FALSE);
+-- INSERT INTO eventmember (user_idx, event_idx, event_group_idx, event_recipient_idx, cost, ispaid) VALUES (5, 1, 1, 1, 10000, FALSE);
 
-INSERT INTO eventmember (user_idx, event_idx, event_group_idx, event_recipient_idx, cost, ispaid) VALUES (2, 1, 1, 1, 10000, TRUE);
-INSERT INTO eventmember (user_idx, event_idx, event_group_idx, event_recipient_idx, cost, ispaid) VALUES (3, 1, 1, 1, 10000, FALSE);
-INSERT INTO eventmember (user_idx, event_idx, event_group_idx, event_recipient_idx, cost, ispaid) VALUES (4, 1, 1, 1, 10000, FALSE);
-INSERT INTO eventmember (user_idx, event_idx, event_group_idx, event_recipient_idx, cost, ispaid) VALUES (5, 1, 1, 1, 10000, FALSE);
+INSERT INTO eventmember (user_idx, event_idx, event_group_idx, event_recipient_idx, cost, ispaid) VALUES (2, 2, 1, 1, 10000, TRUE);
+INSERT INTO eventmember (user_idx, event_idx, event_group_idx, event_recipient_idx, cost, ispaid) VALUES (3, 2, 1, 1, 10000, FALSE);
+INSERT INTO eventmember (user_idx, event_idx, event_group_idx, event_recipient_idx, cost, ispaid) VALUES (4, 2, 1, 1, 10000, FALSE);
