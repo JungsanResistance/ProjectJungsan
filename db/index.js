@@ -10,7 +10,7 @@ const connection = mysql.createConnection({
 module.exports = {
   getTotalSum: (userId) => {
     //userId는 cs5로 테스팅
-    const getTotalSumQuery = `select em.event_recipient_idx, SUM(em.cost) from eventmember em where (em.user_idx=(select u.idx from user u where u.userid='${userid}') AND em.ispaid=FALSE) GROUP BY em.event_recipient_idx;`;
+    const getTotalSumQuery = `select u.username, SUM(em.cost) FROM eventmember em INNER JOIN user u ON u.idx=em.event_recipient_idx where (em.user_idx=(select u.idx from user u where u.userid='${userid}') AND em.ispaid=FALSE) GROUP BY em.event_recipient_idx;`;
 
     return new Promise((resolve, reject) => {
       connection.query(getTotalSumQuery, (err) => {
