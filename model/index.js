@@ -24,7 +24,12 @@ module.exports = {
       return new Promise((resolve, reject) => {
         resolve(req);
       })
-      .then((req) => (db.getGroupMember('cs1', 'Codestates')));
+      .then((req) => (db.getGroupList('cs1')))
+      .then((groupList) => {
+        const body = JSON.stringify(groupList);
+        const jsonBody = JSON.parse(body)
+        return db.getGroupMember(jsonBody);
+      });
     },
   },
   history: {

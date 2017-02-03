@@ -132,6 +132,13 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- INSERT INTO groupmember (user_idx, group_idx) VALUES (7, 1);
 -- INSERT INTO groupmember (user_idx, group_idx) VALUES (8, 1);
 --
+
+-- INSERT INTO groups (groupname) VALUES ('피치트리');
+--
+-- INSERT INTO groupmember (user_idx, group_idx) VALUES (1, 2);
+-- INSERT INTO groupmember (user_idx, group_idx) VALUES (2, 2);
+-- INSERT INTO groupmember (user_idx, group_idx) VALUES (3, 2);
+
 -- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, now(), 1, 'BurgurKing', 50000);
 -- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, now(), 1, 'Mcdonald', 30000);
 -- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, now(), 3, 'nugugip', 30000);
@@ -148,4 +155,3 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 --
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (1, 3, 10000, FALSE);
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (5, 3, 10000, FALSE);
-

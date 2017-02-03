@@ -48,13 +48,15 @@ module.exports = {
     });
   },
   getGroupList: (userid) => {
-    const getGroupListQuery =`SELECT g.groupname
-    FROM   groups g
-    WHERE  (SELECT gm.group_idx
-            FROM   groupmember gm
-            WHERE  (SELECT idx
-                    FROM   user
-                    WHERE  userid = "${userid}") = gm.user_idx) = g.idx; `;
+    const getGroupListQuery = `
+    SELECT g.groupname
+          FROM   groups g
+          INNER JOIN  (SELECT gm.group_idx
+                  FROM   groupmember gm
+                  WHERE  (SELECT idx
+                          FROM   user
+                          WHERE  userid = "${userid}") = gm.user_idx)AS JOINEDGROUP
+                          ON JOINEDGROUP.group_idx = g.idx; `;
     return new Promise((resolve, reject) => {
       connection.query(getGroupListQuery, (err, res) => {
         if (err) return reject(err);
@@ -62,18 +64,24 @@ module.exports = {
       });
     });
   },
-  getGroupMember: (userid, groupname) => {
+  getGroupMember: (grouplist) => {
+    let groupClause = `groupname = "${grouplist[0].groupname}"`;
+    for (let i = 1; i < grouplist.length; i += 1) {
+      groupClause += ` OR groupname = "${grouplist[i].groupname}"`;
+    }
     const getGroupMemberQuery = `
-    SELECT u.username
+    SELECT MemberId.groupname, u.username
     FROM   user u
-          LEFT JOIN (SELECT gm.user_idx
+          LEFT JOIN (SELECT gm.user_idx, GROUPLIST.groupname
                   FROM   groupmember gm
-                  WHERE  gm.group_idx = (SELECT idx
-                                         FROM   groups
-                                         WHERE  groupname = "${groupname}"))AS
+                  INNER JOIN
+                  (SELECT g.idx, g.groupname
+                                         FROM   groups g
+                                         WHERE  ${groupClause})AS GROUPLIST
+                                         ON GROUPLIST.idx = gm.group_idx
+                                        )AS
                  MemberId
-          ON u.idx = MemberId.user_idx
-    WHERE  u.userid <> '${userid}'; `;
+          ON u.idx = MemberId.user_idx; `;
     return new Promise((resolve, reject) => {
       connection.query(getGroupMemberQuery, (err, res) => {
         if (err) return reject(err);
