@@ -1,15 +1,15 @@
 const mysql = require('mysql');
+
 const connection = mysql.createConnection({
-  host     : 'projectjungsan.ctkksl4fom4l.ap-northeast-2.rds.amazonaws.com',
-  port     : 3306,
-  user     : 'admin',
-  password : 'MKkm3hx9',
-  database : 'Jungsan_DB'
+  host: 'projectjungsan.ctkksl4fom4l.ap-northeast-2.rds.amazonaws.com',
+  port: 3306,
+  user: 'admin',
+  password: 'MKkm3hx9',
+  database: 'Jungsan_DB',
 });
 
 module.exports = {
   getTotalSum: (userid) => {
-    //userId는 cs5로 테스팅
     const getTotalSumQuery = `
     SELECT username,
            cost
