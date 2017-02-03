@@ -2,10 +2,10 @@ import React from 'react';
 
 export default class History extends React.Component {
 
-  constructor(){
-    super()
-
-  }
+  // constructor(){
+  //   super()
+  //
+  // }
 
   render() {
 
@@ -50,22 +50,7 @@ export default class History extends React.Component {
         <td>{data.cost}</td>
       </tr>)
   })
-
     return (
-      // <div>
-
-        // <table>
-        //   <tr>
-        //     <th>group</th>
-        //     <th>event name</th>
-        //     <th>date</th>
-        //     <th>subject</th>
-        //     <th>cost</th>
-        //   <tr/>
-        // {result}
-        // </table>
-      // </div>
-
       <div className="historyTable">
         <table className="table">
           <tr>
@@ -78,7 +63,6 @@ export default class History extends React.Component {
           {result}
         </table>
       </div>
-
     )
   }
 };

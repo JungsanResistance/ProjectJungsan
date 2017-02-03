@@ -9,7 +9,6 @@ export default class EventForm extends React.Component {
     this.state = {
       members:['no group selected']
     }
-
     this.selectGroup=this.selectGroup.bind(this);
   }
 
@@ -35,25 +34,18 @@ export default class EventForm extends React.Component {
     if(selected[0] !== undefined){
       const memebersWithFlag = selected[0].members.map( data => {
         return {name: data, selected:false}
-    })
-    console.log(memebersWithFlag)
-
-    this.setState({
-      members: memebersWithFlag
-    })
+      })
+      console.log(memebersWithFlag)
+      this.setState({
+        members: memebersWithFlag
+      });
     } else {
-    this.setState({
-      members: [{name:'no group selected'}] // this string doesn't show...ㅠ//
-    })
-
+      this.setState({
+        members: [{name:'no group selected'}] // this string doesn't show...ㅠ//
+      })
     }
-
-
   };
-
   render () {
-
-
     const info = [{
       group : 'codestates',
       members : ['ilmo', 'woonghee', 'sanghun']
@@ -66,12 +58,12 @@ export default class EventForm extends React.Component {
     const groups=[];
     info.forEach( data => {
       groups.push(<option value={data.group}>{data.group}</option>);
-    })
+    });
 
     const members=[];
     this.state.members.forEach( data=> {
       members.push(<li>{data.name}</li>)
-    })
+    });
 
     return(
       <div>
@@ -105,8 +97,5 @@ export default class EventForm extends React.Component {
 
       </div>
     )
-
   }
-
-
 }
