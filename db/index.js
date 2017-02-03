@@ -65,9 +65,9 @@ module.exports = {
     });
   },
   getGroupMember: (grouplist) => {
-    let groupClause = `groupname = "${grouplist[0]}"`;
+    let groupClause = `groupname = "${grouplist[0].groupname}"`;
     for (let i = 1; i < grouplist.length; i += 1) {
-      groupClause += ` OR groupname = "${grouplist[i]}"`;
+      groupClause += ` OR groupname = "${grouplist[i].groupname}"`;
     }
     const getGroupMemberQuery = `
     SELECT MemberId.groupname, u.username
