@@ -24,7 +24,7 @@ module.exports = {
       return new Promise((resolve, reject) => {
         resolve(req);
       })
-      .then((req) => (db.getGroupMember('cs1', 'Codestates')));
+      .then((req) => (db.getGroupMember(['Codestates', '피치트리'])));
     },
   },
   history: {
