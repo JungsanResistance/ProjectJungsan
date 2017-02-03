@@ -139,9 +139,9 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- INSERT INTO groupmember (user_idx, group_idx) VALUES (2, 2);
 -- INSERT INTO groupmember (user_idx, group_idx) VALUES (3, 2);
 
--- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, now(), 1, 'BurgurKing', 50000);
--- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, now(), 1, 'Mcdonald', 30000);
--- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, now(), 3, 'nugugip', 30000);
+-- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, curdate(), 1, 'BurgurKing', 50000);
+-- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, curdate(), 1, 'Mcdonald', 30000);
+-- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, curdate(), 3, 'nugugip', 30000);
 --
 --
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (2, 1, 10000, TRUE);
