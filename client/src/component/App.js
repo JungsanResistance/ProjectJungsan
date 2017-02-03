@@ -18,7 +18,7 @@ export default class App extends React.Component {
     axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/')
     .then(res => {
       const getData = JSON.parse(res.data);
-      console.log('getData', getData)
+      // console.log('getData', getData)
 
       const groupStorage = [];
       getData.groupList.forEach((group) => {
@@ -35,9 +35,9 @@ export default class App extends React.Component {
          myTransaction: getData.sumList
        })
     })
-    .catch(err => {
-      console.log('err', err)
-    })
+    // .catch(err => {
+    //   console.log('err', err)
+    // })
   }
 
 render() {
