@@ -25,6 +25,14 @@ module.exports = {
         resolve(req);
       })
       .then((req) => (db.getGroupMember('cs1', 'Codestates')));
-    }
-  }
+    },
+  },
+  history: {
+    get: (req) => {
+      return new Promise((resolve, reject) => {
+        resolve(req);
+      })
+      .then((req) => (db.getHistory('cs5')));
+    },
+  },
 }
