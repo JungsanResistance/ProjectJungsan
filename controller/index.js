@@ -23,4 +23,14 @@ module.exports = {
       });
     },
   },
+  history: {
+    get: (req, res) => {
+      return model.history.get(req)
+      .then(result => {
+        const body = JSON.stringify(result);
+        console.log(body);
+        res.json(body);
+      });
+    },
+  },
 };

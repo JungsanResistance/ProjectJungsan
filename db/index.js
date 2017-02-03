@@ -63,7 +63,6 @@ module.exports = {
     });
   },
   getGroupMember: (userid, groupname) => {
-    console.log('hi')
     const getGroupMemberQuery = `
     SELECT u.username
     FROM   user u
@@ -77,6 +76,52 @@ module.exports = {
     WHERE  u.userid <> '${userid}'; `;
     return new Promise((resolve, reject) => {
       connection.query(getGroupMemberQuery, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  },
+  getHistory: (userid) => {
+    const getHistoryQuery = `
+    SELECT EVENTGROUPHISTORY.date,
+       EVENTGROUPHISTORY.groupname,
+       EVENTGROUPHISTORY.eventname,
+       u.username,
+       EVENTGROUPHISTORY.cost,
+       EVENTGROUPHISTORY.ispaid
+    FROM   user u
+           INNER JOIN (SELECT EVENTHISTORY.date,
+                              g.groupname,
+                              EVENTHISTORY.recipient_idx,
+                              EVENTHISTORY.eventname,
+                              EVENTHISTORY.cost,
+                              EVENTHISTORY.ispaid
+                       FROM   groups g
+                              INNER JOIN (SELECT e.eventname,
+                                                 e.date,
+                                                 e.group_idx,
+                                                 e.recipient_idx,
+                                                 EVENTLIST.cost,
+                                                 EVENTLIST.ispaid
+                                          FROM   event e
+                                                 INNER JOIN (SELECT em.event_idx,
+                                                                    em.cost,
+                                                                    em.ispaid
+                                                             FROM   eventmember em
+                                                             WHERE  em.user_idx =
+                                                                    (SELECT u.idx
+                                                                     FROM   user u
+                                                                     WHERE
+    u.userid = "${userid}"))
+    AS EVENTLIST
+    ON EVENTLIST.event_idx = e.idx) AS
+    EVENTHISTORY
+    ON EVENTHISTORY.group_idx = g.idx) AS
+    EVENTGROUPHISTORY
+    ON u.idx = EVENTGROUPHISTORY.recipient_idx;
+    `;
+    return new Promise((resolve, reject) => {
+      connection.query(getHistoryQuery, (err, res) => {
         if (err) return reject(err);
         return resolve(res);
       });

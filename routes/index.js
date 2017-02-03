@@ -6,6 +6,7 @@ const controller = require('../controller/index');
 /* GET home page. */
 router.get('/', controller.mainPage.get);
 router.get('/transaction/', controller.transaction.get);
+router.get('/history/', controller.history.get);
 
 
 module.exports = router;
