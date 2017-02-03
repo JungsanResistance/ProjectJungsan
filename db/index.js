@@ -91,7 +91,7 @@ module.exports = {
   },
   getHistory: (userid) => {
     const getHistoryQuery = `
-    SELECT EVENTGROUPHISTORY.date,
+    SELECT DATE_FORMAT(EVENTGROUPHISTORY.date,'%Y-%m-%d'),
        EVENTGROUPHISTORY.groupname,
        EVENTGROUPHISTORY.eventname,
        u.username,
