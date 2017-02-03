@@ -4,9 +4,13 @@ const router = express.Router();
 const controller = require('../controller/index');
 
 /* GET home page. */
-router.get('/', controller.mainPage.get);
-router.get('/transaction/', controller.transaction.get);
-router.get('/history/', controller.history.get);
+router.route('/')
+.get(controller.mainPage.get);
 
+router.route('/transaction/')
+.get(controller.transaction.get);
+
+router.route('/history/')
+.get(controller.history.get);
 
 module.exports = router;
