@@ -19,6 +19,7 @@ export default class EventForm extends React.Component {
     this.handleSubmit=this.handleSubmit.bind(this);
     this.selectHandleChange=this.selectHandleChange.bind(this);
     this.inputHandleChange=this.inputHandleChange.bind(this);
+    this.selectHandleMember=this.selectHandleMember.bind(this);
   }
 
   handleSubmit () {
@@ -37,17 +38,41 @@ export default class EventForm extends React.Component {
     .catch((err) => {
       console.log(err)
     })
-    console.log('heyheyhey')
+    // console.log('heyheyhey')
+  }
+  selectHandleMember (event) {
+
+    if(event.target.className === "selected"){
+      event.target.className = "unselected";
+    }
+    else {
+      event.target.className = "selected";
+    }
   }
 
   selectHandleChange (event) {
-    const nextUserList = this.state.groupList[event.target.value];
+    // console.log('groupList', this.state.groupList);
+    console.log('event', event.target.value)
+
+    if(event.target.value) {
+    const nextUserList = this.state.groupList[event.target.value].map(item => {
+      return item;
+    });
+
     this.setState({
       userList: nextUserList,
-    })
+    });
+
+    }
+    else if(event.target.value === 'select the group') {
+      this.setState({
+        userList: [],
+      });
+    }
+
   }
+
   inputHandleChange (event) {
-    console.log('why')
     if(event.target.type === 'date') {
       this.setState({
         date: event.target.value
@@ -62,9 +87,6 @@ export default class EventForm extends React.Component {
       this.setState({
         cost: event.target.value,
       })
-  }
-  dateHandleChange (event) {
-
   }
 
   componentWillMount() {
@@ -88,30 +110,35 @@ export default class EventForm extends React.Component {
     })
   }
   render () {
-    console.log(this.state)
-    const groupKey = Object.keys(this.state.groupList);
-    const groupSelection = groupKey.map(item => {
+    console.log('this.state', this.state)
+    const getGroupKeyArray = Object.keys(this.state.groupList);
+    const groupSelection = getGroupKeyArray.map(item => {
       return <option>{item}</option>
     })
 
-    const userTable = this.state.userList.map(item => {
-      return <td>{item}</td>
-    })
+    // if(this.state.userList.length){
+      const userTable = this.state.userList.map((item, index) => {
+        return <td onClick={this.selectHandleMember} id={item} className="unselected"  >{item}</td>
+      })
+    // }
+    // else {
+    //   const userTable = <td>['haha']</td>;
+    // }
+
     return(
       <div>
-
         <form >
-
         select your group :
         <label>
           <select name="eventGroup" className="groupSelect"
             onChange={this.selectHandleChange}  >
-          <option>선택하시오.</option>
+          <option>select the group</option>
           {groupSelection}
           </select>
         </label>
           <br />
           <br />
+
           select members :
           <table>
             {userTable}

@@ -13,3 +13,12 @@ tr,td,th {
 img{
   width:30px;
 }
+
+.selected {
+  background-color: blue;
+}
+
+.unselected {
+  /*background-color: red;*/
+
+}
