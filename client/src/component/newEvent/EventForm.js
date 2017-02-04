@@ -2,7 +2,9 @@ import React from 'react';
 import moment from 'moment';
 import axios from 'axios';
 
-// const url = 'http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/';
+/* AWS url
+http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/
+*/
 
 export default class EventForm extends React.Component {
   constructor(){
@@ -41,7 +43,7 @@ export default class EventForm extends React.Component {
     // console.log('heyheyhey')
   }
   selectHandleMember (event) {
-
+    console.log(event.target.id)
     if(event.target.className === "selected"){
       event.target.className = "unselected";
     }
@@ -58,7 +60,7 @@ export default class EventForm extends React.Component {
     const nextUserList = this.state.groupList[event.target.value].map(item => {
       return item;
     });
-
+    console.log('nextUserList', nextUserList)
     this.setState({
       userList: nextUserList,
     });
@@ -163,3 +165,13 @@ export default class EventForm extends React.Component {
     )
   }
 }
+
+// EventFrom.defaultProps = {
+//   groupname: '',
+//   selectedUserList: [],
+//   eventName: '',
+//   date: '',
+//   cost: 0,
+//   groupList: {},
+//   userList: []
+// }
