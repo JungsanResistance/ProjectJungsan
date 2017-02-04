@@ -43,9 +43,9 @@ export default class App extends React.Component {
 render() {
     return(
       <div>
-        {/* <Landing groupList={this.state.groupList} sumList={this.state.myTransaction}/>
+        <Landing groupList={this.state.groupList} sumList={this.state.myTransaction}/>
         <br /> <br />
-        <History /> */}
+        <History />
         <br /> <br />
         <NewEvent />
       </div>
