@@ -34,7 +34,7 @@ module.exports = {
     get: (req) => {
       const request = req;
       return new Promise((resolve, reject) => (resolve()))
-      .then(() => (db.getHistory('cs5')));
+      .then(() => (db.getHistory('cs1')));
     },
   },
 };

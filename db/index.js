@@ -127,7 +127,7 @@ module.exports = {
     EVENTHISTORY
     ON EVENTHISTORY.group_idx = g.idx) AS
     EVENTGROUPHISTORY
-    ON u.idx = EVENTGROUPHISTORY.recipient_idx;
+    ON u.idx = EVENTGROUPHISTORY.recipient_idx ORDER BY date DESC;
     `;
     return new Promise((resolve, reject) => {
       connection.query(getHistoryQuery, (err, res) => {
