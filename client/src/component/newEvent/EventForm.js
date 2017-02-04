@@ -28,13 +28,13 @@ export default class EventForm extends React.Component {
   handleSubmit () {
     //ajax post
     console.log('submit pressed');
-    axios.post('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction', JSON.stringify({
+    axios.post('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction', {
       groupname: this.state.groupname,
       selectedUserList: this.state.selectedUserList,
       eventName: this.state.eventName,
       date: this.state.date,
       cost: this.state.cost,
-    }))
+    })
     .then(res => {
       console.log('post response:', res)
     })
