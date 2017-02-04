@@ -28,6 +28,7 @@ module.exports = {
         return db.getGroupMember(jsonBody);
       });
     },
+    post: body => (db.postTransaction(body)),
   },
   history: {
     get: (req) => {

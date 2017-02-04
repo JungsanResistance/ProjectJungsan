@@ -16,9 +16,20 @@ module.exports = {
       console.log(body);
       res.json(body);
     }),
-    post: (req) => {
-      console.log(req.body);
-    }
+    post: (req, res) => {
+      const body = JSON.parse(req.body);
+      console.log(body);
+      return model.transaction.post(body)
+      .then(() => {
+        res.writeHead(201);
+        res.end();
+      })
+      .catch((err) => {
+        res.writeHead(406);
+        res.end();
+        throw err;
+      });
+    },
   },
   history: {
     get: (req, res) => (model.history.get(req))
