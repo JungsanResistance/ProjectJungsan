@@ -16,6 +16,9 @@ module.exports = {
       console.log(body);
       res.json(body);
     }),
+    post: (req) => {
+      console.log(req.body);
+    }
   },
   history: {
     get: (req, res) => (model.history.get(req))
