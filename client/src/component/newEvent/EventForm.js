@@ -27,6 +27,9 @@ export default class EventForm extends React.Component {
 
   handleSubmit () {
     //ajax post
+    console.log(typeof this.state.cost)
+
+
     console.log('submit pressed');
     axios.post('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction', {
       groupname: this.state.groupname,
@@ -109,7 +112,7 @@ export default class EventForm extends React.Component {
     }
     else if(event.target.type === 'number') {
       this.setState({
-        cost: event.target.value
+        cost: parseInt(event.target.value)
       })
     }
     else if(event.target.type === 'text') {
@@ -146,6 +149,7 @@ export default class EventForm extends React.Component {
   render () {
 
     console.log('this.state', this.state)
+    console.log(typeof this.state.cost)
     const getGroupKeyArray = Object.keys(this.state.groupList);
     const groupSelection = getGroupKeyArray.map(item => {
       return <option>{item}</option>
