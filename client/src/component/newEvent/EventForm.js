@@ -14,6 +14,7 @@ export default class EventForm extends React.Component {
       selectedUserList: [],
       eventName: '',
       date: '',
+      creditor:'이성준',
       cost: 0,
       groupList: {},
       userList: []
@@ -27,13 +28,14 @@ export default class EventForm extends React.Component {
   handleSubmit () {
     //ajax post
     console.log('submit pressed');
-    axios.post('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction', JSON.stringify({
+    axios.post('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction', {
       groupname: this.state.groupname,
       selectedUserList: this.state.selectedUserList,
       eventName: this.state.eventName,
       date: this.state.date,
+      recipient: this.state.creditor,
       cost: this.state.cost,
-    }))
+    })
     .then(res => {
       console.log('post response:', res)
     })
@@ -50,27 +52,52 @@ export default class EventForm extends React.Component {
     else {
       event.target.className = "selected";
     }
+
+    const nextSelectedUserList = [...this.state.selectedUserList];
+    const userIndex = this.state.selectedUserList.indexOf(event.target.id);
+    if ( userIndex === -1) {
+      nextSelectedUserList.push(event.target.id);
+      this.setState({
+        selectedUserList: nextSelectedUserList
+      });
+    } else {
+      nextSelectedUserList.splice(userIndex, 1);
+      this.setState({
+        selectedUserList: nextSelectedUserList
+      });
+    }
   }
 
   selectHandleChange (event) {
-    // console.log('groupList', this.state.groupList);
+
     console.log('event', event.target.value)
+    console.log(event.target.name)
+    if(event.target.name === 'eventGroup') {
 
-    if(event.target.value) {
-    const nextUserList = this.state.groupList[event.target.value].map(item => {
-      return item;
-    });
-    console.log('nextUserList', nextUserList)
-    this.setState({
-      userList: nextUserList,
-    });
+      if(event.target.value) {
+        const nextUserList = this.state.groupList[event.target.value].map(item => {
+        return item;
+        });
+        console.log('nextUserList', nextUserList)
+        this.setState({
+          userList: nextUserList,
+          groupname: event.target.value
+        });
+      }
 
+      else if (event.target.value === 'select the group') {
+        this.setState({
+          userList: [],
+        });
+      }
     }
-    else if(event.target.value === 'select the group') {
+
+    else if (event.target.name === 'creditorList') {
       this.setState({
-        userList: [],
-      });
+        creditor: event.target.value
+      })
     }
+
 
   }
 
@@ -80,15 +107,20 @@ export default class EventForm extends React.Component {
         date: event.target.value
       })
     }
-    else {
+    else if(event.target.type === 'number') {
       this.setState({
         cost: event.target.value
       })
     }
-
+    else if(event.target.type === 'text') {
       this.setState({
-        cost: event.target.value,
+        eventName: event.target.value
       })
+    }
+
+      // this.setState({
+      //   cost: event.target.value,
+      // })
   }
 
   componentWillMount() {
@@ -112,32 +144,43 @@ export default class EventForm extends React.Component {
     })
   }
   render () {
+
     console.log('this.state', this.state)
     const getGroupKeyArray = Object.keys(this.state.groupList);
     const groupSelection = getGroupKeyArray.map(item => {
       return <option>{item}</option>
     })
 
-    // if(this.state.userList.length){
       const userTable = this.state.userList.map((item, index) => {
         return <td onClick={this.selectHandleMember} id={item} className="unselected"  >{item}</td>
       })
-    // }
-    // else {
-    //   const userTable = <td>['haha']</td>;
-    // }
+
+      const creditorTable = this.state.userList.map((item, index) => {
+        return <option>{item}</option>
+      })
 
     return(
       <div>
         <form >
+
+        select the event date :
+        <p>
+          <input name="eventDate" className="inputDate" type="date" placeholder={moment().format('YYYY-MM-DD')}
+            onChange={this.inputHandleChange}/>
+        </p>
+
+        <p>
+          event name :
+          <input type="text" placeholder="where did you eat?" onChange={this.inputHandleChange}></input>
+        </p>
+
         select your group :
-        <label>
+
           <select name="eventGroup" className="groupSelect"
             onChange={this.selectHandleChange}  >
           <option>select the group</option>
           {groupSelection}
           </select>
-        </label>
           <br />
           <br />
 
@@ -146,15 +189,22 @@ export default class EventForm extends React.Component {
             {userTable}
           </table>
 
-          select the event date :
-          <p>
-          <input name="eventDate" className="inputDate" type="date" placeholder={moment().format('YYYY-MM-DD')}
-            onChange={this.inputHandleChange}/>
-          </p>
+          <br/>
+          <br/>
 
-          total event cost :
-          <input name="eventCost" className="inputEventCost"  type="number"
-            onChange={this.inputHandleChange}/>
+
+          select creditor :
+          <select name="creditorList" className="creditorSelect"
+            onChange={this.selectHandleChange}  >
+            <option>select the creditor</option>
+            {creditorTable}
+          </select>
+
+          <p>
+            total event cost :
+            <input name="eventCost" className="inputEventCost"  type="number"
+              onChange={this.inputHandleChange}/>
+          </p>
 
           <br />
           <br />
