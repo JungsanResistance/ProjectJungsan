@@ -111,7 +111,7 @@ SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
-
+--
 -- INSERT INTO user (userid, username, password) VALUES ('cs1', '이성준', 'cs');
 -- INSERT INTO user (userid, username, password) VALUES ('cs2', '이현진', 'cs');
 -- INSERT INTO user (userid, username, password) VALUES ('cs3', '구일모', 'cs');
@@ -132,26 +132,29 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- INSERT INTO groupmember (user_idx, group_idx) VALUES (7, 1);
 -- INSERT INTO groupmember (user_idx, group_idx) VALUES (8, 1);
 --
-
+--
 -- INSERT INTO groups (groupname) VALUES ('피치트리');
 --
 -- INSERT INTO groupmember (user_idx, group_idx) VALUES (1, 2);
 -- INSERT INTO groupmember (user_idx, group_idx) VALUES (2, 2);
 -- INSERT INTO groupmember (user_idx, group_idx) VALUES (3, 2);
-
--- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, curdate(), 1, 'BurgurKing', 50000);
--- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, curdate(), 1, 'Mcdonald', 30000);
--- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, curdate(), 3, 'nugugip', 30000);
+--
+-- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, STR_TO_DATE('2017-01-31', '%Y-%m-%d'), 1, 'BurgurKing', 50000);
+-- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, STR_TO_DATE('2017-02-01', '%Y-%m-%d'), 1, 'Mcdonald', 30000);
+-- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, STR_TO_DATE('2017-02-03', '%Y-%m-%d'), 3, 'nugugip', 30000);
 --
 --
+-- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (1, 1, 10000, TRUE);
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (2, 1, 10000, TRUE);
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (3, 1, 10000, FALSE);
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (4, 1, 10000, FALSE);
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (5, 1, 10000, FALSE);
 --
+-- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (1, 2, 10000, TRUE);
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (2, 2, 10000, TRUE);
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (3, 2, 10000, FALSE);
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (4, 2, 10000, FALSE);
 --
--- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (1, 3, 10000, FALSE);
+-- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (1, 3, 10000, TRUE);
+-- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (3, 3, 10000, FALSE);
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (5, 3, 10000, FALSE);
