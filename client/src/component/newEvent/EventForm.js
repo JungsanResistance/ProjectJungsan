@@ -33,6 +33,7 @@ export default class EventForm extends React.Component {
       selectedUserList: this.state.selectedUserList,
       eventName: this.state.eventName,
       date: this.state.date,
+      recipient: this.state.creditor,
       cost: this.state.cost,
     })
     .then(res => {
