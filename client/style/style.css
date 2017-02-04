@@ -2,10 +2,23 @@ table {
   bordercollape: collapse;
 }
 
-td,th {
+tr,td,th {
   border:1px solid green;
 }
 
 .sumListTable {
   border-collapse: collapse;
+}
+
+img{
+  width:30px;
+}
+
+.selected {
+  background-color: blue;
+}
+
+.unselected {
+  /*background-color: red;*/
+
 }

@@ -16,7 +16,7 @@ export default class Landing extends React.Component {
     return (
       <div>
         <h1>my Page</h1>
-        <table className="groupList">
+        <table className="sumListTable">
           <tr>
             <th>name</th>
             <th>cost</th>
