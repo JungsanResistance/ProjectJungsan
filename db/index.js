@@ -6,6 +6,7 @@ const connection = mysql.createConnection({
   user: 'admin',
   password: 'MKkm3hx9',
   database: 'Jungsan_DB',
+  multipleStatements: true,
 });
 
 module.exports = {
@@ -136,16 +137,6 @@ module.exports = {
     });
   },
   postTransaction: (body) => {
-/*
-
-
-INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (
-(SELECT idx FROM user where username='이성준'),
-(SELECT idx FROM event where eventname='버거킹'),
-30000/3,
-FALSE
-)
-*/
     const createEventQuery = `
     INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (
     (SELECT idx FROM groups where groupname='${body.groupname}'),
@@ -165,13 +156,14 @@ FALSE
       addEventMemberQuery += `
       INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (
       (SELECT idx FROM user where username='${name}'),
-      (SELECT idx FROM event where eventname='${body.eventname}'),
+      (SELECT idx FROM event where eventname='${body.eventName}'),
       ${costPerPerson},
       ${isPaid}
     );`;
     });
     return new Promise((resolve, reject) => {
-      connection.query(createEventQuery + addEventMemberQuery, (err) => {
+      const totalQuery = createEventQuery + addEventMemberQuery;
+      connection.query(totalQuery, (err) => {
         if (err) return reject(err);
         return resolve();
       });

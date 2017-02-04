@@ -17,7 +17,7 @@ module.exports = {
       res.json(body);
     }),
     post: (req, res) => {
-      const body = JSON.parse(req.body);
+      const body = req.body;
       console.log(body);
       return model.transaction.post(body)
       .then(() => {
