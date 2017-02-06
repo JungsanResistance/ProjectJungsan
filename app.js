@@ -22,6 +22,11 @@ app.use(express.static(path.join(__dirname, 'client/dist')));
 
 app.use('/api/', index);
 
+app.get('*', (req, res, next) => {
+  if (req.url === '/api/*' || req.url === '/login') return next();
+  else res.sendfile(path.join(__dirname, 'client/dist/index.html'));
+});
+
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   const err = new Error('Not Found');
