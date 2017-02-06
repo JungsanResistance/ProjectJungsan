@@ -7,11 +7,11 @@ const controller = require('../controller/index');
 router.route('/')
 .get(controller.mainPage.get);
 
-router.route('/transaction/')
+router.route('/transaction')
 .get(controller.transaction.get)
 .post(controller.transaction.post);
 
-router.route('/history/')
+router.route('/history')
 .get(controller.history.get);
 
 module.exports = router;

@@ -26,9 +26,9 @@ DROP TABLE IF EXISTS `Jungsan_DB`.`user` ;
 
 CREATE TABLE IF NOT EXISTS `Jungsan_DB`.`user` (
   `idx` int(11) NOT NULL AUTO_INCREMENT,
-  `userid` varchar(16) NOT NULL,
-  `username` varchar(16) NOT NULL,
-  `password` varchar(16) NOT NULL,
+  `userid` varchar(32) NOT NULL,
+  `username` varchar(32) NOT NULL,
+  `email` varchar(64) NOT NULL,
   PRIMARY KEY (`idx`),
   UNIQUE KEY `userid_UNIQUE` (`userid`));
 
@@ -111,15 +111,15 @@ SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
---
--- INSERT INTO user (userid, username, password) VALUES ('cs1', '이성준', 'cs');
--- INSERT INTO user (userid, username, password) VALUES ('cs2', '이현진', 'cs');
--- INSERT INTO user (userid, username, password) VALUES ('cs3', '구일모', 'cs');
--- INSERT INTO user (userid, username, password) VALUES ('cs4', '이웅희', 'cs');
--- INSERT INTO user (userid, username, password) VALUES ('cs5', '송현규', 'cs');
--- INSERT INTO user (userid, username, password) VALUES ('cs6', '공윤구', 'cs');
--- INSERT INTO user (userid, username, password) VALUES ('cs7', '고민호', 'cs');
--- INSERT INTO user (userid, username, password) VALUES ('cs8', '이상훈', 'cs');
+
+-- INSERT INTO user (userid, username, email) VALUES ('cs1', '이성준', 'cs@gmail.com');
+-- INSERT INTO user (userid, username, email) VALUES ('cs2', '이현진', 'cs@gmail.com');
+-- INSERT INTO user (userid, username, email) VALUES ('cs3', '구일모', 'cs@gmail.com');
+-- INSERT INTO user (userid, username, email) VALUES ('cs4', '이웅희', 'cs@gmail.com');
+-- INSERT INTO user (userid, username, email) VALUES ('cs5', '송현규', 'cs@gmail.com');
+-- INSERT INTO user (userid, username, email) VALUES ('cs6', '공윤구', 'cs@gmail.com');
+-- INSERT INTO user (userid, username, email) VALUES ('cs7', '고민호', 'cs@gmail.com');
+-- INSERT INTO user (userid, username, email) VALUES ('cs8', '이상훈', 'cs@gmail.com');
 --
 -- INSERT INTO groups (groupname) VALUES ('Codestates');
 --
@@ -131,6 +131,9 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- INSERT INTO groupmember (user_idx, group_idx) VALUES (6, 1);
 -- INSERT INTO groupmember (user_idx, group_idx) VALUES (7, 1);
 -- INSERT INTO groupmember (user_idx, group_idx) VALUES (8, 1);
+-- INSERT INTO groupmember (user_idx, group_idx) VALUES (9, 1);
+-- INSERT INTO groupmember (user_idx, group_idx) VALUES (11, 1);
+--
 --
 --
 -- INSERT INTO groups (groupname) VALUES ('피치트리');
@@ -138,6 +141,7 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- INSERT INTO groupmember (user_idx, group_idx) VALUES (1, 2);
 -- INSERT INTO groupmember (user_idx, group_idx) VALUES (2, 2);
 -- INSERT INTO groupmember (user_idx, group_idx) VALUES (3, 2);
+-- INSERT INTO groupmember (user_idx, group_idx) VALUES (9, 2);
 --
 -- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, STR_TO_DATE('2017-01-31', '%Y-%m-%d'), 1, 'BurgurKing', 50000);
 -- INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (1, STR_TO_DATE('2017-02-01', '%Y-%m-%d'), 1, 'Mcdonald', 30000);
@@ -147,8 +151,8 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (1, 1, 10000, TRUE);
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (2, 1, 10000, TRUE);
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (3, 1, 10000, FALSE);
--- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (4, 1, 10000, FALSE);
--- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (5, 1, 10000, FALSE);
+-- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (9, 1, 10000, FALSE);
+-- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (11, 1, 10000, FALSE);
 --
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (1, 2, 10000, TRUE);
 -- INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (2, 2, 10000, TRUE);

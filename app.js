@@ -1,13 +1,17 @@
 const express = require('express');
+const session = require('express-session');
 const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const passport = require('passport');
 
 const index = require('./routes/index');
 
 const app = express();
+
+require('./config/passport')(passport);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -19,13 +23,33 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'client/dist')));
-
-app.use('/api/', index);
+app.use(session({
+  secret: 'projectjungsan',
+  resave: true,
+  saveUninitialized: true,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use('/api', index);
 
 app.get('*', (req, res, next) => {
-  if (req.url === '/' || req.url === '/history' || req.url === '/transaction') res.sendfile(path.join(__dirname, 'client/dist/index.html'));
+  console.log('here',req.url)
+  if (req.url === '/' || req.url === '/history' || req.url.includes('transaction')) {
+    console.log('in')
+    res.sendfile(path.join(__dirname, 'client/dist/index.html'));
+  }
   else return next();
 });
+
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile', 'email'] }));
+app.get('/auth/google/callback',
+  passport.authenticate('google', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+  }));
+
+
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
