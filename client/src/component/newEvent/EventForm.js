@@ -14,7 +14,7 @@ export default class EventForm extends React.Component {
       selectedUserList: [],
       eventName: '',
       date: '',
-      creditor:'이성준',
+      recipient:'이성준',
       cost: 0,
       groupList: {},
       userList: []
@@ -35,7 +35,7 @@ export default class EventForm extends React.Component {
       selectedUserList: this.state.selectedUserList,
       eventName: this.state.eventName,
       date: this.state.date,
-      recipient: this.state.creditor,
+      recipient: this.state.recipient,
       cost: this.state.cost,
     })
     .then(res => {
@@ -98,9 +98,9 @@ export default class EventForm extends React.Component {
       }
     }
 
-    else if (event.target.name === 'creditorList') {
+    else if (event.target.name === 'recipientList') {
       this.setState({
-        creditor: event.target.value
+        recipient: event.target.value
       })
     }
 
@@ -162,7 +162,7 @@ export default class EventForm extends React.Component {
         return <td onClick={this.selectHandleMember} id={item} className="unselected"  >{item}</td>
       })
 
-      const creditorTable = this.state.userList.map((item, index) => {
+      const recipientTable = this.state.userList.map((item, index) => {
         return <option>{item}</option>
       })
 
@@ -200,11 +200,11 @@ export default class EventForm extends React.Component {
           <br/>
 
 
-          select creditor :
-          <select name="creditorList" className="creditorSelect"
+          select recipient :
+          <select name="recipientList" className="recipientSelect"
             onChange={this.selectHandleChange}  >
-            <option>select the creditor</option>
-            {creditorTable}
+            <option>select the recipient</option>
+            {recipientTable}
           </select>
 
           <p>

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router';
 import axios from 'axios';
+import SignIn from './signIn';
+import SignOut from './signOut';
 
 export default class Landing extends React.Component {
   constructor() {
@@ -60,6 +62,10 @@ export default class Landing extends React.Component {
 
         <h1>Group List</h1>
         {this.state.groupList}
+        <br />
+        <br />
+        <SignIn />
+        <SignOut />
       </div>
     )
   }

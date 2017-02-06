@@ -7,7 +7,7 @@ export default class SignOut extends React.Component {
     auth2.signOut().then(function () {
       console.log('User signed out.');
     });
-    
+
     gapi.client.load('plus','v1', function(){
       var request = gapi.client.plus.people.get({
        'userId': 'me'
