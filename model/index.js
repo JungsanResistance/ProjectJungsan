@@ -4,12 +4,12 @@ module.exports = {
   mainPage: {
     get: (req) => {
       const result = {};
-      const request = req;
+      const currentUser = req.session.passport.user;
       return new Promise((resolve, reject) => (resolve()))
-      .then(() => (db.getTotalSum('cs1')))
+      .then(() => (db.getTotalSum(currentUser)))
       .then((sumlist) => {
         result.sumList = sumlist;
-        return db.getGroupList('cs1');
+        return db.getGroupList(currentUser);
       })
       .then((groupList) => {
         result.groupList = groupList;
@@ -19,9 +19,9 @@ module.exports = {
   },
   transaction: {
     get: (req) => {
-      const request = req;
+      const currentUser = req.session.passport.user;
       return new Promise((resolve, reject) => (resolve()))
-      .then(() => (db.getGroupList('cs1')))
+      .then(() => (db.getGroupList(currentUser)))
       .then((groupList) => {
         const body = JSON.stringify(groupList);
         const jsonBody = JSON.parse(body);
@@ -32,9 +32,9 @@ module.exports = {
   },
   history: {
     get: (req) => {
-      const request = req;
+      const currentUser = req.session.passport.user;
       return new Promise((resolve, reject) => (resolve()))
-      .then(() => (db.getHistory('cs1')));
+      .then(() => (db.getHistory(currentUser)));
     },
   },
 };
