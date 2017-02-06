@@ -23,8 +23,8 @@ app.use(express.static(path.join(__dirname, 'client/dist')));
 app.use('/api/', index);
 
 app.get('*', (req, res, next) => {
-  if (req.url === '/api/*' || req.url === '/login') return next();
-  else res.sendfile(path.join(__dirname, 'client/dist/index.html'));
+  if (req.url === '/' || req.url === '/history' || req.url === '/transaction') res.sendfile(path.join(__dirname, 'client/dist/index.html'));
+  else return next();
 });
 
 // catch 404 and forward to error handler
