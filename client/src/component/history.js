@@ -12,9 +12,9 @@ export default class History extends React.Component {
   componentWillMount() {
     axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/history')
     .then( res => {
-      console.log(res);
+      // console.log(res);
       const getData = JSON.parse(res.data);
-      console.log(getData);
+      // console.log(getData);
       this.setState({
         history: getData
       })
@@ -25,8 +25,7 @@ export default class History extends React.Component {
     const result = [];
     this.state.history.forEach( (data,index) => {
       let imgUrl ='';
-      console.log('hi 버거킹먹고싶다.')
-      if(!data.ispaid) {
+      if(data.ispaid) {
         imgUrl = 'http://findicons.com/files/icons/808/on_stage/128/symbol_check.png';
       }
       result.push(
