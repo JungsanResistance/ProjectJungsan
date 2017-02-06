@@ -39,10 +39,14 @@ export default class EventForm extends React.Component {
       cost: this.state.cost,
     })
     .then(res => {
-      console.log('post response:', res)
+      //fix here so it redirects to '/' after event form submit pressed
+      console.log('post response:', res);
+      // if(res === 200)
+      this.context.router.push('/');
     })
     .catch((err) => {
-      console.log(err)
+      console.log('error!!: ',err);
+
     })
     // console.log('heyheyhey')
   }

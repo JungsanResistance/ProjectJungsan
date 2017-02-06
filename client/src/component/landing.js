@@ -12,7 +12,7 @@ export default class Landing extends React.Component {
   componentWillMount() {
     axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/')
     .then(res => {
-      console.log("axios get request here")
+      // console.log("axios get request here")
       const getData = JSON.parse(res.data);
       const groupStorage = [];
       getData.groupList.forEach((group) => {
@@ -26,14 +26,14 @@ export default class Landing extends React.Component {
     })
   }
   render () {
-    console.log('this.state?', this.state)
+    // console.log('this.state?', this.state)
     const List = [];
 
     const {
       groupList,
       sumList,
     } = this.state;
-    console.log('sumlist?', sumList)
+    // console.log('sumlist?', sumList)
     if (sumList) {
       sumList.forEach((data) =>
         List.push(
