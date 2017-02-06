@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export default class History extends React.Component {
 
-  constructor(){
+  constructor(props){
     super();
     this.state = {
       history: [],
@@ -22,24 +22,23 @@ export default class History extends React.Component {
   }
 
   render() {
-  const result = [];
-  this.state.history.forEach( (data,index) => {
-    let imgUrl ='';
-    console.log('hi')
-    if(!data.ispaid) {
-      imgUrl = 'http://findicons.com/files/icons/808/on_stage/128/symbol_check.png';
-    }
-    console.log(imgUrl)
-    result.push(
-      <tr>
-        <td>{data.groupname}</td>
-        <td>{data.eventname}</td>
-        <td>{data.date}</td>
-        <td>{data.username}</td>
-        <td>{data.cost}</td>
-        <td><img src={imgUrl}/></td>
-      </tr>)
-  })
+    const result = [];
+    this.state.history.forEach( (data,index) => {
+      let imgUrl ='';
+      console.log('hi 버거킹먹고싶다.')
+      if(!data.ispaid) {
+        imgUrl = 'http://findicons.com/files/icons/808/on_stage/128/symbol_check.png';
+      }
+      result.push(
+        <tr>
+          <td>{data.groupname}</td>
+          <td>{data.eventname}</td>
+          <td>{data.date}</td>
+          <td>{data.username}</td>
+          <td>{data.cost}</td>
+          <td><img src={imgUrl}/></td>
+        </tr>)
+    })
     return (
       <div className="historyTable">
         <table className="table">
