@@ -10,7 +10,7 @@ export default class History extends React.Component {
     };
   }
   componentWillMount() {
-    axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/history')
+    axios.get('http://localhost:3000/api/history')
     .then((res) => {
       // console.log(res);
       const getData = JSON.parse(res.data);
