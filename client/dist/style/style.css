@@ -11,7 +11,7 @@ tr,td,th {
 }
 
 img{
-  width:30px;
+  width:200px;
 }
 
 .selected {
@@ -21,4 +21,11 @@ img{
 .unselected {
   /*background-color: red;*/
 
+}
+
+.landing {
+  font-size: 35px;
+  color: rgb(19, 71, 207);
+  text-align: center;
+  font-family: 'Source Sans Pro', sans-serif;
 }

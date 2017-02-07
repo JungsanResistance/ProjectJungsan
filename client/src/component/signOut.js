@@ -1,7 +1,10 @@
 import React from 'react';
+import GoogleLogin from 'react-google-login'
 
 export default class SignOut extends React.Component {
+
   handleSignOut() {
+    console.log('Hi!')
     const auth2 = gapi.auth2.getAuthInstance();
     console.log(auth2);
     auth2.signOut().then(() => {
@@ -17,6 +20,7 @@ export default class SignOut extends React.Component {
       });
     });
   }
+
   render() {
     return (
       <div>
