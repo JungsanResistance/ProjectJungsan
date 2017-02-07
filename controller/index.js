@@ -9,6 +9,10 @@ module.exports = {
   },
   mainPage: {
     get: (req, res) => (model.mainPage.get(req))
+    .catch((err) => {
+      res.writeHead(400);
+      res.end();
+    })
     .then((result) => {
       const body = JSON.stringify(result);
       console.log(body);
@@ -28,6 +32,7 @@ module.exports = {
       return model.transaction.post(body)
       .then(() => {
         res.writeHead(201);
+        res.redirect('/')
         res.end();
       })
       .catch((err) => {
@@ -36,6 +41,24 @@ module.exports = {
         throw err;
       });
     },
+  },
+  group: {
+    get: (req, res) => (model.group.get(req))
+    .then((result) => {
+      const body = JSON.stringify(result);
+      console.log(body);
+      res.json(body);
+    }),
+    post: (req, res) => (model.group.get(req))
+    .then(() => {
+      res.writeHead(201);
+      res.end();
+    })
+    .catch((err) => {
+      res.writeHead(406);
+      res.end();
+      throw err;
+    }),
   },
   history: {
     get: (req, res) => (model.history.get(req))
