@@ -1,6 +1,12 @@
 const model = require('../model/index');
 
 module.exports = {
+  landing: {
+    get: (req, res) => {
+      res.writeHead(200);
+      res.end();
+    },
+  },
   mainPage: {
     get: (req, res) => (model.mainPage.get(req))
     .then((result) => {

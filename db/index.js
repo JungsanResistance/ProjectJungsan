@@ -65,6 +65,42 @@ module.exports = {
       });
     });
   },
+  getAllUsers: () => {
+    const getAllUsersQuery = `
+    SELECT username, email
+    FROM   user
+    `;
+    return new Promise((resolve, reject) => {
+      connection.query(getAllUsersQuery, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  },
+  addNewGroup: (body) => {
+    const addNewGroupQuery = `
+      INSERT INTO groups (groupname) VALUES ('${body.groupname}');
+    `;
+    let addNewMembersQuery = '';
+    body.groupmembers.forEach((memberName) => {
+      addNewMembersQuery += `
+        INSERT INTO groupmember
+                    (user_idx,
+                     group_idx)
+        VALUES      ((SELECT idx
+                      FROM   user
+                      WHERE  username = '${memberName}'),
+                     (SELECT idx
+                      FROM   groups
+                      WHERE  groupname = '${body.groupname}')); `;
+    });
+    return new Promise((resolve, reject) => {
+      connection.query(addNewGroupQuery + addNewMembersQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
   getGroupMember: (grouplist) => {
     let groupClause = `groupname = "${grouplist[0].groupname}"`;
     for (let i = 1; i < grouplist.length; i += 1) {

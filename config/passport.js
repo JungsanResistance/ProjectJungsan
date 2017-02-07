@@ -23,39 +23,10 @@ module.exports = (passport) => {
     .then((user) => {
       if (user.length) {
         return done(null, user[0].userid);
-      }
-      else {
+      } else {
         db.createNewUser(profile.id, profile.displayName, profile.emails[0].value)
-        .then(() => {
-          return done(null, profile.id)
-        });
+        .then(() => done(null, profile.id));
       }
     });
   }));
 };
-
-
-
-/*
-app.get('/auth/google/callback', function (req, res, next) {
-    passport.authenticate('google', function (err, user, info) {
-        request.get("https://www.google.com/m8/feeds/contacts/default/full?v=3.0&access_token=" + user.accessToken, function (error, result) {
-            var xml = result.body;
-            var parseString = require('xml2js').parseString;
-            parseString(xml, function (err, result) {
-                var entries = result.feed.entry, contacts = [];
-                _.each(entries, function (entry) {
-                    if (!(entry['gd:name']===undefined)) {
-                        var gdName = entry['gd:name'][0]['gd:fullName'][0];
-                        var gdEmail = entry['gd:email'][0]['$']['address'];
-                        contacts.push({name: gdName, email: gdEmail});
-                    }
-
-                });
-                res.send(contacts);
-            });
-
-        });
-    })(req, res, next)
-});
-*/

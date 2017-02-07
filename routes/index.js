@@ -5,6 +5,13 @@ const controller = require('../controller/index');
 
 /* GET home page. */
 router.route('/')
+.get(controller.landing.get);
+
+router.route('/group/post')
+.get()
+.post();
+
+router.route('/mypage')
 .get(controller.mainPage.get);
 
 router.route('/transaction')

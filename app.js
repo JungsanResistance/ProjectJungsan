@@ -41,14 +41,22 @@ app.get('*', (req, res, next) => {
   else return next();
 });
 
+// google authorization
 app.get('/auth/google',
   passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile', 'email'] }));
 app.get('/auth/google/callback',
   passport.authenticate('google', {
-    successRedirect: '/',
-    failureRedirect: '/login',
+    successRedirect: '/mypage',
+    failureRedirect: '/',
   }));
 
+// logout
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) throw err;
+    res.redirect('/');
+  });
+});
 
 
 // catch 404 and forward to error handler
