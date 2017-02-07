@@ -79,10 +79,8 @@ export default class EventForm extends React.Component {
         this.setState({
           userList: [],
         });
-      };
-      
+      }
       else if (event.target.value) {
-              console.log('event.target :', event.target.value)
         const nextUserList = this.state.groupList[event.target.value].map((item) => {
           return item;
         });
