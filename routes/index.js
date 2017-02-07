@@ -7,9 +7,9 @@ const controller = require('../controller/index');
 router.route('/')
 .get(controller.landing.get);
 
-router.route('/group/post')
-.get(controller.groupPost.get);
-.post();
+// router.route('/group/post')
+// .get(controller.groupPost.get)
+// .post();
 
 router.route('/mypage')
 .get(controller.mainPage.get);

@@ -32,9 +32,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use('/api', index);
 
+//index.html sender for solving mismatch between react-router and express router (make sure to add when adding new urls)
 app.get('*', (req, res, next) => {
-  console.log('here',req.url)
-  if (req.url === '/' || req.url === '/history' || req.url.includes('transaction')) {
+  if (req.url === '/mypage' || req.url === '/history' || req.url.includes('transaction')) {
     console.log('in')
     res.sendfile(path.join(__dirname, 'client/dist/index.html'));
   }
