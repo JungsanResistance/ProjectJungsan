@@ -8,7 +8,7 @@ router.route('/')
 .get(controller.landing.get);
 
 router.route('/group/post')
-.get()
+.get(controller.groupPost.get);
 .post();
 
 router.route('/mypage')
