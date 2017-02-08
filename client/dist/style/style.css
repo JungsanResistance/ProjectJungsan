@@ -37,6 +37,6 @@ img{
      font-family: 'Source Sans Pro', sans-serif;
 }
 
-.errorMessage {
+.errorMemberDuplicate, .errorGroupnameDuplicate {
   color:rgb(186, 18, 18);
 }
