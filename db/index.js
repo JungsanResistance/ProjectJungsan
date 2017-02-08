@@ -49,6 +49,7 @@ module.exports = {
     });
   },
   getGroupList: (userid) => {
+    console.log(userid);
     const getGroupListQuery = `
     SELECT g.groupname
           FROM   groups g
@@ -65,10 +66,11 @@ module.exports = {
       });
     });
   },
-  getAllUsers: () => {
+  getUser: (email) => {
     const getAllUsersQuery = `
     SELECT username, email
     FROM   user
+    WHERE  email = '${username}';
     `;
     return new Promise((resolve, reject) => {
       connection.query(getAllUsersQuery, (err, res) => {
@@ -102,6 +104,7 @@ module.exports = {
     });
   },
   getGroupMember: (grouplist) => {
+    console.log(grouplist);
     let groupClause = `groupname = "${grouplist[0].groupname}"`;
     for (let i = 1; i < grouplist.length; i += 1) {
       groupClause += ` OR groupname = "${grouplist[i].groupname}"`;
@@ -109,7 +112,7 @@ module.exports = {
     const getGroupMemberQuery = `
     SELECT MemberId.groupname, u.username
     FROM   user u
-          LEFT JOIN (SELECT gm.user_idx, GROUPLIST.groupname
+          INNER JOIN (SELECT gm.user_idx, GROUPLIST.groupname
                   FROM   groupmember gm
                   INNER JOIN
                   (SELECT g.idx, g.groupname
@@ -119,8 +122,10 @@ module.exports = {
                                         )AS
                  MemberId
           ON u.idx = MemberId.user_idx; `;
+    console.log(getGroupMemberQuery);
     return new Promise((resolve, reject) => {
       connection.query(getGroupMemberQuery, (err, res) => {
+        console.log(res);
         if (err) return reject(err);
         return resolve(res);
       });

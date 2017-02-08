@@ -23,12 +23,23 @@ module.exports = {
       return new Promise((resolve, reject) => (resolve()))
       .then(() => (db.getGroupList(currentUser)))
       .then((groupList) => {
+        console.log(groupList);
         const body = JSON.stringify(groupList);
         const jsonBody = JSON.parse(body);
         return db.getGroupMember(jsonBody);
       });
     },
     post: body => (db.postTransaction(body)),
+  },
+  group: {
+    get: (req) => {
+      return new Promise((resolve, reject) => (resolve()))
+      .then(() => (db.getuser(req.body.memberEmail)));
+    },
+    post: (req) => {
+      return new Promise((resolve, reject) => (resolve()))
+      .then(() => (db.addNewGroup(req.body)));
+    },
   },
   history: {
     get: (req) => {
