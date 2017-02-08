@@ -72,7 +72,15 @@ export default class EventForm extends React.Component {
 
   selectHandleChange(event) {
     if (event.target.name === 'eventGroup') {
-      if (event.target.value) {
+      console.log('event.target :', event.target.value)
+
+      if(event.target.value === 'select the group') {
+      console.log('hey! here')
+        this.setState({
+          userList: [],
+        });
+      }
+      else if (event.target.value) {
         const nextUserList = this.state.groupList[event.target.value].map((item) => {
           return item;
         });
@@ -80,11 +88,10 @@ export default class EventForm extends React.Component {
           userList: nextUserList,
           groupname: event.target.value,
         });
+        console.log('userList:', this.state.userList)
       }
-      else (event.target.value === 'select the group');
-        this.setState({
-          userList: [],
-        });
+
+
     }
     else if (event.target.name === 'recipientList') {
       this.setState({
@@ -133,16 +140,23 @@ export default class EventForm extends React.Component {
   }
   render() {
 
-    console.log('this.state', this.state);
+    // console.log('this.state', this.state);
+    console.log('userList:', this.state.userList)
     console.log(typeof this.state.cost);
     const getGroupKeyArray = Object.keys(this.state.groupList);
+    console.log(getGroupKeyArray);
     const groupSelection = getGroupKeyArray.map((item) => {
       return <option>{item}</option>
-    })
+
+    });
+
+    console.log(groupSelection)
+    console.log('userList :', this.state.userList)
 
     const userTable = this.state.userList.map((item) => {
       return <td onClick={this.selectHandleMember} id={item} className="unselected">{item}</td>
     });
+
 
     const recipientTable = this.state.userList.map((item, index) => {
       return <option>{item}</option>;
