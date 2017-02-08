@@ -18,8 +18,20 @@ export default class AddNewGroup extends React.Component {
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.handleGroupName = this.handleGroupName.bind(this);
     this.handleMemberDelete = this.handleMemberDelete.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
-
+  handleSubmit() {
+    axios.post('http://localhost:3000/api/group', {
+      groupname: this.state.groupname,
+      groupmembers: this.state.groupmembers,
+    })
+    .then((res) => {
+      console.log('post response:', res);
+    })
+    .catch((err) => {
+      console.log('error!!: ', err);
+    });
+  }
   handleInput(event) {
     if (event.target.className === 'inputGroupName') {
       this.setState({
@@ -132,9 +144,11 @@ export default class AddNewGroup extends React.Component {
         Following Members will be added to your group: {this.state.groupname}
         <br />
         {groupMembers}
+        <br />
+        <br />
+        <input type="submit" onClick={this.handleSubmit} className="submitNewGroup" />
       </div>
     )
   }
-
 
 }
