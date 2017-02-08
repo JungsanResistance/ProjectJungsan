@@ -7,9 +7,10 @@ const controller = require('../controller/index');
 router.route('/')
 .get(controller.landing.get);
 
-router.route('/group*')
-.get(controller.group.get)
-.post(controller.group.post);
+router.route('/groupedit*')
+.get(controller.groupedit.get)
+.post(controller.groupedit.post)
+.put(controller.groupedit.put);
 
 router.route('/mypage')
 .get(controller.mainPage.get);
