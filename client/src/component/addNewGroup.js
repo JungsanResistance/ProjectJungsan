@@ -47,9 +47,9 @@ export default class AddNewGroup extends React.Component {
   }
 
   handleAddMember() {
-    const reset = document.body.getElementsByClassName('addGroupMembers')[0].value;
-    // console.log(document.body);
-    // console.log(document.body.getElementsByClassName('addGroupMembers'))
+
+
+
     document.body.getElementsByClassName('addGroupMembers')[0].value =  '';
 
     axios.get(`http://localhost:3000/api/group?target=email&email=${this.state.emailToBeChecked}`)
@@ -59,11 +59,11 @@ export default class AddNewGroup extends React.Component {
         if (data.length) {
             const nextGroupmembers = this.state.groupmembers;
 
-            const emailCheck = this.state.groupmembers.some((item) => {
+            const duplicateEmailCheck = this.state.groupmembers.some((item) => {
               return item.email === data[0].email
             });
-            console.log(emailCheck)
-            if (!emailCheck) {
+            console.log(duplicateEmailCheck)
+            if (!duplicateEmailCheck) {
                 nextGroupmembers.push({
                   username: data[0].username,
                   email: data[0].email,

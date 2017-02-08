@@ -17,7 +17,7 @@ ReactDOM.render(
       <Route path="history" component={History} />
       <Route path="transaction" component={Newevent} />
       <Route path="group" component={AddNewGroup} />
-      <Route path="groupeditform" component={GroupEditForm} />
+      <Route path="groupeditform/:groupname" component={GroupEditForm} />
       <Route path="grouppage/:groupname" component={GroupPage} />
     </Route>
   </Router>,
