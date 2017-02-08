@@ -4,6 +4,7 @@ import axios from 'axios';
 import SignIn from './signIn';
 import SignOut from './signOut';
 
+
 export default class Mypage extends React.Component {
   constructor() {
     super();
@@ -51,6 +52,8 @@ export default class Mypage extends React.Component {
         <Link to="history">history</Link>
         <br />
         <Link to="transaction">transaction</Link>
+        <br />
+        <Link to="group">newgroup</Link>
         <h1>my Page</h1>
         <table className="sumListTable">
           <tr>
