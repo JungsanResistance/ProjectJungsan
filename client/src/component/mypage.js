@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
 import axios from 'axios';
-import SignIn from './signIn';
 import SignOut from './signOut';
 
 
@@ -9,12 +8,13 @@ export default class Mypage extends React.Component {
   constructor() {
     super();
     this.state = {
-
+      groupList:[]
     };
   }
   componentWillMount() {
     axios.get('http://localhost:3000/api/mypage')
     .then((res) => {
+      console.log(res.data);
       // console.log("axios get request here")
       const getData = JSON.parse(res.data);
       const groupStorage = [];
@@ -47,6 +47,12 @@ export default class Mypage extends React.Component {
         ));
     }
 
+    const groups = this.state.groupList.map((data) => {
+      console.log(data);
+      console.log(typeof data)
+      return <p><Link to={"grouppage/"+data}>{data}</Link></p>;
+    });
+
     return (
       <div>
         <Link to="history">history</Link>
@@ -62,12 +68,9 @@ export default class Mypage extends React.Component {
           </tr>
           {List}
         </table>
-
         <h1>Group List</h1>
-        {this.state.groupList}
+        {groups}
         <br />
-        <br />
-        <SignIn />
         <SignOut />
       </div>
     );
