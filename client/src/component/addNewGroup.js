@@ -8,7 +8,8 @@ export default class AddNewGroup extends React.Component {
     this.state = {
       groupname: '',
       groupmembers: [],
-      emailToBeChecked: ''
+      emailToBeChecked: '',
+      userEmailExist: false,
     };
 
     this.handleInput = this.handleInput.bind(this)
@@ -16,27 +17,28 @@ export default class AddNewGroup extends React.Component {
   }
 
   handleInput(event) {
-    if(event.target.className === 'inputGroupName') {
+    if (event.target.className === 'inputGroupName') {
       this.setState({
         groupname: event.target.value,
-      })
+      });
     }
-    else if(event.target.className === 'addGroupMembers') {
+    else if (event.target.className === 'addGroupMembers') {
       this.setState({
         emailToBeChecked: event.target.value
-      })
+      });
     }
   }
 
-  handleAddMember(event) {
-    axios.post('http://localhost:3000/api/group')
+  handleAddMember() {
+    axios.get(`http://localhost:3000/api/group?email=${this.state.emailToBeChecked}`)
     .then((res) => {
-      console.log(res)
-      // const getData = JSON.parse(res.data);
-      // this.setState({
-      //   history: getData,
-      // });
+      // if(res === ) {
+      //
+      // }
+      console.log(res);
+
     });
+
   }
 
 
@@ -52,6 +54,7 @@ export default class AddNewGroup extends React.Component {
         <input type="text" className='addGroupMembers' placeholder='ex) wnghee91@gmail.com'
           onChange={this.handleInput} />
         <input type="submit" onClick={this.handleAddMember} value="add"/>
+        {errormessage}
       </div>
     )
   }
