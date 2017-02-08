@@ -33,21 +33,18 @@ app.use(passport.session());
 app.use('/api', index);
 
 
-//index.html sender for solving mismatch between react-router and express router (make sure to add when adding new urls)
+// index.html sender for solving mismatch between react-router and express router (make sure to add when adding new urls)
 app.get('*', (req, res, next) => {
-  if(!req.url.includes('auth')) {
+  if (!req.url.includes('auth')) {
     if (req.session.passport) {
-      if (req.url === '/mypage' || req.url === '/history' || req.url.includes('transaction')) {
-        console.log('in')
+      if (req.url === '/mypage' || req.url === '/history' || req.url.includes('transaction') || req.url.includes('group')) {
         res.sendfile(path.join(__dirname, 'client/dist/index.html'));
-      }
-      else return next();
+      } else return next();
     } else {
       res.redirect('/');
     }
   } else return next();
 });
-
 
 
 // google authorization
