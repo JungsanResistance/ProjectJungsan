@@ -35,11 +35,15 @@ module.exports = {
     get: (req) => {
       return new Promise((resolve, reject) => (resolve()))
       .then(() => {
+        let results;
         if (req.query.target === 'email') {
-          return db.getUser(req.query.email);
+          results = db.getUser(req.query.email);
         } else if (req.query.target === 'groupmembers') {
-          return db.getGroupMember([{groupname: req.query.groupname}]);
+          results = db.getGroupMember([{ groupname: req.query.groupname }]);
+        } else if (req.query.target === 'groupname') {
+          results = db.checkGroupname(req.query.groupname);
         }
+        return results;
       });
     },
     post: (req) => {

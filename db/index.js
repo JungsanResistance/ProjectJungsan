@@ -48,6 +48,18 @@ module.exports = {
       });
     });
   },
+  checkGroupname: (groupname) => {
+    const checkGroupnameQuery = `
+    SELECT g.groupname
+          FROM   groups g
+          WHERE groupname = '${groupname}'; `;
+    return new Promise((resolve, reject) => {
+      connection.query(checkGroupnameQuery, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  },
   getGroupList: (userid) => {
     console.log(userid);
     const getGroupListQuery = `
@@ -57,7 +69,7 @@ module.exports = {
                   FROM   groupmember gm
                   WHERE  (SELECT idx
                           FROM   user
-                          WHERE  userid = "${userid}") = gm.user_idx)AS JOINEDGROUP
+                          WHERE  userid = "${userid}") = gm.user_idx and gm.active = true)AS JOINEDGROUP
                           ON JOINEDGROUP.group_idx = g.idx; `;
     return new Promise((resolve, reject) => {
       connection.query(getGroupListQuery, (err, res) => {
@@ -143,6 +155,59 @@ module.exports = {
       });
     });
   },
+  modifyGroupMembers: (body) => {
+    let modifyGroupMembersQuery = `
+    INSERT INTO groupmember
+                (user_idx,
+                 group_idx,
+                 active)
+    SELECT (SELECT idx
+            FROM   user
+            WHERE  username = '${body.groupmembers[0]}'),
+           (SELECT idx
+            FROM   groups
+            WHERE  groupname = '${body.groupname}'),
+           true
+    FROM   DUAL
+    WHERE  NOT EXISTS (SELECT user_idx
+                       FROM   groupmember
+                       WHERE  user_idx = (SELECT idx
+                                          FROM   user
+                                          WHERE  username = '${body.groupmembers[0]}')
+                              AND group_idx = (SELECT idx
+                                               FROM   groups
+                                               WHERE  groupname = '${body.groupname}'));     `;
+
+    for (let i = 1; i < body.groupmembers.length; i += 1) {
+      modifyGroupMembersQuery += `
+      INSERT INTO groupmember
+                  (user_idx,
+                   group_idx,
+                   active)
+      SELECT (SELECT idx
+              FROM   user
+              WHERE  username = '${body.groupmembers[i]}'),
+             (SELECT idx
+              FROM   groups
+              WHERE  groupname = '${body.groupname}'),
+             true
+      FROM   DUAL
+      WHERE  NOT EXISTS (SELECT user_idx
+                         FROM   groupmember
+                         WHERE  user_idx = (SELECT idx
+                                            FROM   user
+                                            WHERE  username = '${body.groupmembers[i]}')
+                                AND group_idx = (SELECT idx
+                                                 FROM   groups
+                                                 WHERE  groupname = '${body.groupname}'));     `;
+    }
+    return new Promise((resolve, reject) => {
+      connection.query(modifyGroupMembersQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
   getGroupMember: (grouplist) => {
     console.log(grouplist);
     let groupClause = `groupname = "${grouplist[0].groupname}"`;
@@ -162,12 +227,24 @@ module.exports = {
                                         )AS
                  MemberId
           ON u.idx = MemberId.user_idx; `;
-    console.log(getGroupMemberQuery);
     return new Promise((resolve, reject) => {
       connection.query(getGroupMemberQuery, (err, res) => {
-        console.log(res);
         if (err) return reject(err);
         return resolve(res);
+      });
+    });
+  },
+  deleteGroup: (groupname) => {
+    const deleteGroupQuery = `
+    UPDATE groupmember
+    SET    active = false
+    WHERE  group_idx = (SELECT idx
+                        FROM   groups
+                        WHERE  groupname = '${groupname}');`;
+    return new Promise((resolve, reject) => {
+      connection.query(deleteGroupQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
       });
     });
   },
