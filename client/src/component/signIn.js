@@ -8,15 +8,15 @@ export default class SignIn extends React.Component {
   }
 
   handleSignIn() {
-    console.log('login Click');
-    gapi.client.load('plus', 'v1', () => {
-      const request = gapi.client.plus.people.get({
-        'userId': 'me'
-      });
-      request.execute((resp) => {
-       console.log('Retrieved profile for:' + resp.displayName, resp);
-      });
-    });
+    // console.log('login Click');
+    // gapi.client.load('plus', 'v1', () => {
+    //   const request = gapi.client.plus.people.get({
+    //     'userId': 'me'
+    //   });
+    //   request.execute((resp) => {
+    //    console.log('Retrieved profile for:' + resp.displayName, resp);
+    //   });
+    // });
     // axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/auth/google/')
     // .then((res) => {
     //   console.log("log in succeeded! response looks like:", res);
@@ -31,7 +31,7 @@ export default class SignIn extends React.Component {
     return (
       <div>
         <a href="http://localhost:3000/auth/google/">
-          <img src={imgUrl} className="signIn" onClick={this.handleSignIn} />
+          <img src={imgUrl} className="signIn" />
         </a>
       </div>
     );
