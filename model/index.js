@@ -34,7 +34,13 @@ module.exports = {
   group: {
     get: (req) => {
       return new Promise((resolve, reject) => (resolve()))
-      .then(() => (db.getuser(req.body.memberEmail)));
+      .then(() => {
+        if (req.query.target === 'email') {
+          return db.getUser(req.query.email);
+        } else if (req.query.target === 'groupmembers') {
+          return db.getGroupMember([{groupname: req.query.groupname}]);
+        }
+      });
     },
     post: (req) => {
       return new Promise((resolve, reject) => (resolve()))
