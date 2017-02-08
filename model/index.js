@@ -31,7 +31,7 @@ module.exports = {
     },
     post: body => (db.postTransaction(body)),
   },
-  group: {
+  groupedit: {
     get: (req) => {
       return new Promise((resolve, reject) => (resolve()))
       .then(() => {
@@ -49,6 +49,47 @@ module.exports = {
     post: (req) => {
       return new Promise((resolve, reject) => (resolve()))
       .then(() => (db.addNewGroup(req.body)));
+    },
+    put: (req) => {
+      return new Promise((resolve, reject) => (resolve()))
+      .then(() => {
+        if (req.body.action === 'modifyGroupName') {
+          return db.modifyGroupName(req.body.data);
+        } else if (req.body.action === 'modifyGroupMembers') {
+          return db.getGroupMember([{ groupname: req.body.data.groupname }])
+          .then((memberList) => {
+            const checker = {};
+            const dropped = { groupname: req.body.data.groupname, groupmembers: [] };
+            req.body.data.groupmembers.forEach((member) => {
+              checker[member.username] = true;
+            });
+            memberList.forEach((member) => {
+              if (checker[member.username] !== true) {
+                dropped.groupmembers.push(member.username);
+              }
+            });
+            return dropped;
+          })
+          .then(dropList => (db.editDropGroupMembers(dropList)));
+        } else if (req.body.action === 'modifyGroupAll') {
+          return db.modifyGroupName(req.body.data)
+          .then(() => (db.getGroupMember([{ groupname: req.body.data.groupname }])))
+          .then((memberList) => {
+            const checker = {};
+            const dropped = { groupname: req.body.data.groupname, groupmembers: [] };
+            req.body.data.groupmembers.forEach((member) => {
+              checker[member.username] = true;
+            });
+            memberList.forEach((member) => {
+              if (checker[member.username] !== true) {
+                dropped.groupmembers.push(member.username);
+              }
+            });
+            return dropped;
+          })
+          .then(dropList => (db.editDropGroupMembers(dropList)));
+        }
+      });
     },
   },
   history: {

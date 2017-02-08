@@ -42,14 +42,24 @@ module.exports = {
       });
     },
   },
-  group: {
-    get: (req, res) => (model.group.get(req))
+  groupedit: {
+    get: (req, res) => (model.groupedit.get(req))
     .then((result) => {
       const body = JSON.stringify(result);
       console.log(body);
       res.json(body);
     }),
-    post: (req, res) => (model.group.get(req))
+    post: (req, res) => (model.groupedit.post(req))
+    .then(() => {
+      res.writeHead(201);
+      res.end();
+    })
+    .catch((err) => {
+      res.writeHead(406);
+      res.end();
+      throw err;
+    }),
+    put: (req, res) => (model.groupedit.put(req))
     .then(() => {
       res.writeHead(201);
       res.end();

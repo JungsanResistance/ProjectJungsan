@@ -155,8 +155,41 @@ module.exports = {
       });
     });
   },
-  modifyGroupMembers: (body) => {
-    let modifyGroupMembersQuery = `
+  editDropGroupMembers: (body) => {
+    console.log(body);
+    // check and insert all unlisted (newly added) members
+    let editDropGroupMembersQuery = `
+    UPDATE groupmember
+    SET    active = 0
+    WHERE  user_idx = (SELECT idx
+                       FROM   user
+                       WHERE  username = '${body.groupmembers[0]}')
+           AND group_idx = (SELECT idx
+                            FROM   groups
+                            WHERE  groupname = '${body.groupname}');
+    `;
+
+    for (let i = 1; i < body.groupmembers.length; i += 1) {
+      editDropGroupMembersQuery += `
+      UPDATE groupmember
+      SET    active = 0
+      WHERE  user_idx = (SELECT idx
+                         FROM   user
+                         WHERE  username = '${body.groupmembers[i]}')
+             AND group_idx = (SELECT idx
+                              FROM   groups
+                              WHERE  groupname = '${body.groupname}'); `;
+    }
+    return new Promise((resolve, reject) => {
+      connection.query(editDropGroupMembersQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
+  editNewGroupMembers: (body) => {
+    // check and insert all unlisted (newly added) members
+    let editNewGroupMembersQuery = `
     INSERT INTO groupmember
                 (user_idx,
                  group_idx,
@@ -179,7 +212,7 @@ module.exports = {
                                                WHERE  groupname = '${body.groupname}'));     `;
 
     for (let i = 1; i < body.groupmembers.length; i += 1) {
-      modifyGroupMembersQuery += `
+      editNewGroupMembersQuery += `
       INSERT INTO groupmember
                   (user_idx,
                    group_idx,
@@ -202,7 +235,7 @@ module.exports = {
                                                  WHERE  groupname = '${body.groupname}'));     `;
     }
     return new Promise((resolve, reject) => {
-      connection.query(modifyGroupMembersQuery, (err) => {
+      connection.query(editNewGroupMembersQuery, (err) => {
         if (err) return reject(err);
         return resolve();
       });
