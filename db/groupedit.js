@@ -1,0 +1,197 @@
+const mysql = require('mysql');
+
+const connection = mysql.createConnection({
+  host: 'projectjungsan.ctkksl4fom4l.ap-northeast-2.rds.amazonaws.com',
+  port: 3306,
+  user: 'admin',
+  password: 'MKkm3hx9',
+  database: 'Jungsan_DB',
+  multipleStatements: true,
+});
+
+module.exports = {
+  checkGroupname: (groupname) => {
+    const checkGroupnameQuery = `
+    SELECT g.groupname
+          FROM   groups g
+          WHERE groupname = '${groupname}'; `;
+    return new Promise((resolve, reject) => {
+      connection.query(checkGroupnameQuery, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  },
+  getUser: (email) => {
+    const getAllUsersQuery = `
+    SELECT username, email
+    FROM   user
+    WHERE  email = '${email}';
+    `;
+    return new Promise((resolve, reject) => {
+      connection.query(getAllUsersQuery, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  },
+  addNewGroup: (body) => {
+    const addNewGroupQuery = `
+      INSERT INTO groups (groupname) VALUES ('${body.groupname}');
+    `;
+    let addNewMembersQuery = '';
+    body.groupmembers.forEach((memberName) => {
+      addNewMembersQuery += `
+        INSERT INTO groupmember
+                    (user_idx,
+                     group_idx,
+                     active)
+        VALUES      ((SELECT idx
+                      FROM   user
+                      WHERE  username = '${memberName.username}'),
+                     (SELECT idx
+                      FROM   groups
+                      WHERE  groupname = '${body.groupname}'),
+                      true); `;
+    });
+    console.log(addNewMembersQuery);
+    return new Promise((resolve, reject) => {
+      connection.query(addNewGroupQuery + addNewMembersQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
+  addGroupMember: (body) => {
+    let addNewMembersQuery = '';
+    body.groupmember.forEach((memberName) => {
+      addNewMembersQuery += `
+        INSERT INTO groupmember
+                    (user_idx,
+                     group_idx,
+                     active)
+        VALUES      ((SELECT idx
+                      FROM   user
+                      WHERE  username = '${memberName}'),
+                     (SELECT idx
+                      FROM   groups
+                      WHERE  groupname = '${body.groupname}'),
+                      true); `;
+    });
+    return new Promise((resolve, reject) => {
+      connection.query(addNewMembersQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
+  modifyGroupName: (body) => {
+    const modifyGroupNameQuery = `
+    UPDATE groups
+    SET    groupname = '${body.newGroupname}'
+    WHERE  idx = (SELECT *
+                  FROM   (SELECT idx
+                          FROM   groups
+                          WHERE  groupname = '${body.oldGroupname}') AS a); `;
+    return new Promise((resolve, reject) => {
+      connection.query(modifyGroupNameQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
+  editActiveMemberStatus: (body) => {
+    let editDropGroupMembersQuery = '';
+    // check and insert all unlisted (newly added) members
+    body.groupmembers.forEach((groupmember) => {
+      editDropGroupMembersQuery += `
+      UPDATE groupmember
+      SET    active = ${groupmember.active}
+      WHERE  user_idx = (SELECT idx
+                         FROM   user
+                         WHERE  username = '${groupmember.username}')
+             AND group_idx = (SELECT idx
+                              FROM   groups
+                              WHERE  groupname = '${body.newGroupname}'); `;
+    });
+    return new Promise((resolve, reject) => {
+      connection.query(editDropGroupMembersQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
+  editNewGroupMembers: (body) => {
+    // check and insert all unlisted (newly added) members
+    let editNewGroupMembersQuery = '';
+    body.groupmembers.forEach((groupmember) => {
+      editNewGroupMembersQuery += `
+      INSERT INTO groupmember
+                  (user_idx,
+                   group_idx,
+                   active)
+      SELECT (SELECT idx
+              FROM   user
+              WHERE  username = '${groupmember.username}'),
+             (SELECT idx
+              FROM   groups
+              WHERE  groupname = '${body.newGroupname}'),
+             true
+      FROM   DUAL
+      WHERE  NOT EXISTS (SELECT user_idx
+                         FROM   groupmember
+                         WHERE  user_idx = (SELECT idx
+                                            FROM   user
+                                            WHERE  username = '${groupmember.username}')
+                                AND group_idx = (SELECT idx
+                                                 FROM   groups
+                                                 WHERE  groupname = '${body.newGroupname}'));     `;
+    });
+    return new Promise((resolve, reject) => {
+      connection.query(editNewGroupMembersQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
+  getGroupMember: (grouplist) => {
+    console.log(grouplist);
+    let groupClause = `groupname = "${grouplist[0].groupname}"`;
+    for (let i = 1; i < grouplist.length; i += 1) {
+      groupClause += ` OR groupname = "${grouplist[i].groupname}"`;
+    }
+    const getGroupMemberQuery = `
+    SELECT MemberId.groupname, u.username, u.email, MemberId.active
+    FROM   user u
+          INNER JOIN (SELECT gm.user_idx, GROUPLIST.groupname, gm.active
+                  FROM   groupmember gm
+                  INNER JOIN
+                  (SELECT g.idx, g.groupname
+                                         FROM   groups g
+                                         WHERE  ${groupClause})AS GROUPLIST
+                                         ON GROUPLIST.idx = gm.group_idx
+                                        )AS
+                 MemberId
+          ON u.idx = MemberId.user_idx; `;
+    return new Promise((resolve, reject) => {
+      connection.query(getGroupMemberQuery, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  },
+  deleteGroup: (groupname) => {
+    const deleteGroupQuery = `
+    UPDATE groupmember
+    SET    active = false
+    WHERE  group_idx = (SELECT idx
+                        FROM   groups
+                        WHERE  groupname = '${groupname}');`;
+    return new Promise((resolve, reject) => {
+      connection.query(deleteGroupQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
+};
