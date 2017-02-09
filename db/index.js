@@ -13,7 +13,7 @@ module.exports = {
   getTotalSum: (userid) => {
     const getTotalSumQuery = `
     SELECT username,
-           cost
+           sum(cost) AS cost
     FROM (
            (SELECT sum(em.cost) AS cost,
                    e.recipient_idx AS user_idx
@@ -104,12 +104,13 @@ module.exports = {
                      active)
         VALUES      ((SELECT idx
                       FROM   user
-                      WHERE  username = '${memberName}'),
+                      WHERE  username = '${memberName.username}'),
                      (SELECT idx
                       FROM   groups
                       WHERE  groupname = '${body.groupname}'),
                       true); `;
     });
+    console.log(addNewMembersQuery);
     return new Promise((resolve, reject) => {
       connection.query(addNewGroupQuery + addNewMembersQuery, (err) => {
         if (err) return reject(err);
@@ -157,29 +158,19 @@ module.exports = {
   },
   editDropGroupMembers: (body) => {
     console.log(body);
+    let editDropGroupMembersQuery = '';
     // check and insert all unlisted (newly added) members
-    let editDropGroupMembersQuery = `
-    UPDATE groupmember
-    SET    active = 0
-    WHERE  user_idx = (SELECT idx
-                       FROM   user
-                       WHERE  username = '${body.groupmembers[0]}')
-           AND group_idx = (SELECT idx
-                            FROM   groups
-                            WHERE  groupname = '${body.groupname}');
-    `;
-
-    for (let i = 1; i < body.groupmembers.length; i += 1) {
+    body.groupmembers.forEach((groupmember) => {
       editDropGroupMembersQuery += `
       UPDATE groupmember
       SET    active = 0
       WHERE  user_idx = (SELECT idx
                          FROM   user
-                         WHERE  username = '${body.groupmembers[i]}')
+                         WHERE  username = '${groupmember.username}')
              AND group_idx = (SELECT idx
                               FROM   groups
                               WHERE  groupname = '${body.groupname}'); `;
-    }
+    });
     return new Promise((resolve, reject) => {
       connection.query(editDropGroupMembersQuery, (err) => {
         if (err) return reject(err);
@@ -189,29 +180,8 @@ module.exports = {
   },
   editNewGroupMembers: (body) => {
     // check and insert all unlisted (newly added) members
-    let editNewGroupMembersQuery = `
-    INSERT INTO groupmember
-                (user_idx,
-                 group_idx,
-                 active)
-    SELECT (SELECT idx
-            FROM   user
-            WHERE  username = '${body.groupmembers[0]}'),
-           (SELECT idx
-            FROM   groups
-            WHERE  groupname = '${body.groupname}'),
-           true
-    FROM   DUAL
-    WHERE  NOT EXISTS (SELECT user_idx
-                       FROM   groupmember
-                       WHERE  user_idx = (SELECT idx
-                                          FROM   user
-                                          WHERE  username = '${body.groupmembers[0]}')
-                              AND group_idx = (SELECT idx
-                                               FROM   groups
-                                               WHERE  groupname = '${body.groupname}'));     `;
-
-    for (let i = 1; i < body.groupmembers.length; i += 1) {
+    let editNewGroupMembersQuery = '';
+    body.groupmembers.forEach((groupmember) => {
       editNewGroupMembersQuery += `
       INSERT INTO groupmember
                   (user_idx,
@@ -219,7 +189,7 @@ module.exports = {
                    active)
       SELECT (SELECT idx
               FROM   user
-              WHERE  username = '${body.groupmembers[i]}'),
+              WHERE  username = '${groupmember.username}'),
              (SELECT idx
               FROM   groups
               WHERE  groupname = '${body.groupname}'),
@@ -229,11 +199,11 @@ module.exports = {
                          FROM   groupmember
                          WHERE  user_idx = (SELECT idx
                                             FROM   user
-                                            WHERE  username = '${body.groupmembers[i]}')
+                                            WHERE  username = '${groupmember.username}')
                                 AND group_idx = (SELECT idx
                                                  FROM   groups
                                                  WHERE  groupname = '${body.groupname}'));     `;
-    }
+    });
     return new Promise((resolve, reject) => {
       connection.query(editNewGroupMembersQuery, (err) => {
         if (err) return reject(err);
@@ -248,7 +218,7 @@ module.exports = {
       groupClause += ` OR groupname = "${grouplist[i].groupname}"`;
     }
     const getGroupMemberQuery = `
-    SELECT MemberId.groupname, u.username, MemberId.active
+    SELECT MemberId.groupname, u.username, u.email, MemberId.active
     FROM   user u
           INNER JOIN (SELECT gm.user_idx, GROUPLIST.groupname, gm.active
                   FROM   groupmember gm
@@ -357,6 +327,106 @@ module.exports = {
       connection.query(totalQuery, (err) => {
         if (err) return reject(err);
         return resolve();
+      });
+    });
+  },
+
+  togglePaid: (body) => {
+    const markPaidQuery = `
+    UPDATE eventmember
+    SET    ispaid = ${body.done}
+    WHERE  user_idx = (SELECT idx
+                       FROM   user
+                       WHERE  username = '${body.username}')
+           AND event_idx = (SELECT idx
+                            FROM   event
+                            WHERE  date = Str_to_date('${body.date}', '%Y-%m-%d')
+                                   AND eventname = '${body.eventname}')     `;
+    return new Promise((resolve, reject) => {
+      connection.query(markPaidQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
+  markAllToBePaid: (body) => {
+    const checkToBePaidQuery = `
+    SELECT user_idx,
+           event_idx
+    FROM   eventmember
+           INNER JOIN (SELECT idx
+                       FROM   event
+                       WHERE  recipient_idx = (SELECT idx
+                                               FROM   user
+                                               WHERE  username = '${body.recipient}')) AS
+                      A
+                   ON A.idx = event_idx
+                      AND eventmember.user_idx = (SELECT idx
+                                                  FROM   user
+                                                  WHERE  username = '${body.username}')
+    ;  `;
+    return new Promise((resolve, reject) => {
+      connection.query(checkToBePaidQuery, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    })
+    .then((eventList) => {
+      let totalPaymentquery = `
+      UPDATE eventmember
+      SET    ispaid = true
+      WHERE  user_idx = ${eventList[0].user_idx}
+             AND event_idx = ${eventList[0].event_idx};
+      `;
+      eventList.forEach((event) => {
+        totalPaymentquery += `
+        UPDATE eventmember
+        SET    ispaid = true
+        WHERE  user_idx = ${event.user_idx}
+               AND event_idx = ${event.event_idx};
+        `;
+        connection.query(totalPaymentquery, (err, res) => {
+          if (err) throw err;
+          return res;
+        });
+      });
+    });
+  },
+  markAllToBeReceived: (body) => {
+    const checkToBePaidQuery = `
+    SELECT user_idx,
+           event_idx
+    FROM   eventmember
+           INNER JOIN (SELECT idx
+                       FROM   event
+                       WHERE  recipient_idx = (SELECT idx
+                                               FROM   user
+                                               WHERE  username = '${body.username}')) AS
+                      A
+                   ON A.idx = event_idx
+                      AND eventmember.user_idx = (SELECT idx
+                                                  FROM   user
+                                                  WHERE  username = '${body.recipient}')
+    ;  `;
+    return new Promise((resolve, reject) => {
+      connection.query(checkToBePaidQuery, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    })
+    .then((eventList) => {
+      let totalPaymentquery = '';
+      eventList.forEach((event) => {
+        totalPaymentquery += `
+        UPDATE eventmember
+        SET    ispaid = true
+        WHERE  user_idx = ${event.user_idx}
+               AND event_idx = ${event.event_idx};
+        `;
+        connection.query(totalPaymentquery, (err, res) => {
+          if (err) throw err;
+          return res;
+        });
       });
     });
   },
