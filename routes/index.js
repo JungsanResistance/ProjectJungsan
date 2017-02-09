@@ -20,6 +20,11 @@ router.route('/transaction')
 .post(controller.transaction.post);
 
 router.route('/history')
-.get(controller.history.get);
+.get(controller.history.get)
+.put(controller.history.put);
+
+router.route('/total')
+.put(controller.total.put);
+
 
 module.exports = router;

@@ -50,44 +50,56 @@ module.exports = {
       return new Promise((resolve, reject) => (resolve()))
       .then(() => (db.addNewGroup(req.body)));
     },
+//group edit add new person failed
     put: (req) => {
+      const data = req.body.data;
       return new Promise((resolve, reject) => (resolve()))
       .then(() => {
         if (req.body.action === 'modifyGroupName') {
-          return db.modifyGroupName(req.body.data);
+          return db.modifyGroupName(data);
         } else if (req.body.action === 'modifyGroupMembers') {
-          return db.getGroupMember([{ groupname: req.body.data.groupname }])
+          return db.getGroupMember([{ groupname: data.groupname }])
           .then((memberList) => {
             const checker = {};
-            const dropped = { groupname: req.body.data.groupname, groupmembers: [] };
-            req.body.data.groupmembers.forEach((member) => {
+            const dropped = { groupname: data.groupname, groupmembers: [] };
+            data.groupmembers.forEach((member) => {
               checker[member.username] = true;
             });
             memberList.forEach((member) => {
               if (checker[member.username] !== true) {
-                dropped.groupmembers.push(member.username);
+                dropped.groupmembers.push(member);
               }
             });
             return dropped;
           })
-          .then(dropList => (db.editDropGroupMembers(dropList)));
+          .then((dropList) => {
+            if (dropList.groupmembers.length !== 0) {
+              db.editDropGroupMembers(dropList);
+            }
+          })
+          .then(() => (db.editNewGroupMembers(data)));
         } else if (req.body.action === 'modifyGroupAll') {
-          return db.modifyGroupName(req.body.data)
-          .then(() => (db.getGroupMember([{ groupname: req.body.data.groupname }])))
+          return db.modifyGroupName(data)
+          .then(() => (db.getGroupMember([{ groupname: data.groupname }])))
           .then((memberList) => {
             const checker = {};
-            const dropped = { groupname: req.body.data.groupname, groupmembers: [] };
-            req.body.data.groupmembers.forEach((member) => {
+            const dropped = { groupname: data.groupname, groupmembers: [] };
+            data.groupmembers.forEach((member) => {
               checker[member.username] = true;
             });
             memberList.forEach((member) => {
               if (checker[member.username] !== true) {
-                dropped.groupmembers.push(member.username);
+                dropped.groupmembers.push(member);
               }
             });
             return dropped;
           })
-          .then(dropList => (db.editDropGroupMembers(dropList)));
+          .then((dropList) => {
+            if (dropList.groupmembers.length !== 0) {
+              db.editDropGroupMembers(dropList);
+            }
+          })
+          .then(() => (db.editNewGroupMembers(data)));
         }
       });
     },
@@ -97,6 +109,17 @@ module.exports = {
       const currentUser = req.session.passport.user;
       return new Promise((resolve, reject) => (resolve()))
       .then(() => (db.getHistory(currentUser)));
+    },
+    put: (req) => {
+      return new Promise((resolve, reject) => (resolve()))
+      .then(() => (db.togglePaid(req.body)));
+    },
+  },
+  total: {
+    put: (req) => {
+      return new Promise((resolve, reject) => (resolve()))
+      .then(() => (db.markAllToBePaid(req.body)))
+      .then(() => (db.markAllToBeReceived(req.body)));
     },
   },
 };

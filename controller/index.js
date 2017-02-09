@@ -1,4 +1,5 @@
 const model = require('../model/index');
+const path = require('path')
 
 module.exports = {
   landing: {
@@ -32,7 +33,6 @@ module.exports = {
       return model.transaction.post(body)
       .then(() => {
         res.writeHead(201);
-        res.redirect('/')
         res.end();
       })
       .catch((err) => {
@@ -43,6 +43,7 @@ module.exports = {
     },
   },
   groupedit: {
+    // add email to returned object
     get: (req, res) => (model.groupedit.get(req))
     .then((result) => {
       const body = JSON.stringify(result);
@@ -76,6 +77,18 @@ module.exports = {
       const body = JSON.stringify(result);
       console.log(body);
       res.json(body);
+    }),
+    put: (req, res) => (model.history.put(req))
+    .then(() => {
+      res.writeHead(201);
+      res.end();
+    }),
+  },
+  total: {
+    put: (req, res) => (model.total.put(req))
+    .then(() => {
+      res.writeHead(201);
+      res.end();
     }),
   },
 };
