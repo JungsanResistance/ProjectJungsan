@@ -21,7 +21,7 @@ export default class AddNewGroup extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
   handleSubmit() {
-    axios.post('http://localhost:3000/api/group', {
+    axios.post('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/group', {
       groupname: this.state.groupname,
       groupmembers: this.state.groupmembers,
     })
@@ -41,48 +41,51 @@ export default class AddNewGroup extends React.Component {
     else if (event.target.className === 'addGroupMembers') {
       // console.log(this.state.emailToBeChecked)
       this.setState({
-        emailToBeChecked: event.target.value
+        emailToBeChecked: event.target.value,
       });
     }
   }
 
   handleAddMember() {
-
-
-
-    document.body.getElementsByClassName('addGroupMembers')[0].value =  '';
-
-    axios.get(`http://localhost:3000/api/group?target=email&email=${this.state.emailToBeChecked}`)
+    document.body.getElementsByClassName('addGroupMembers')[0].value = '';
+    axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/groupedit?target=email&email=${this.state.emailToBeChecked}`)
     .then((res) => {
-        console.log(res.data);
-        const data = JSON.parse(res.data);
-        if (data.length) {
-            const nextGroupmembers = this.state.groupmembers;
+      console.log(res.data);
+      const data = JSON.parse(res.data);
+      if (data.length) {
+        const nextGroupmembers = this.state.groupmembers;
 
-            const duplicateEmailCheck = this.state.groupmembers.some((item) => {
-              return item.email === data[0].email
-            });
-            console.log(duplicateEmailCheck)
-            if (!duplicateEmailCheck) {
-                nextGroupmembers.push({
-                  username: data[0].username,
-                  email: data[0].email,
-                });
-                this.setState({groupmembers: nextGroupmembers, errorMemberDuplicate: ''});
-            } else {
-                this.setState({errorMemberDuplicate: 'user is already added!'});
-            }
+        const duplicateEmailCheck = this.state.groupmembers.some((item) => {
+          return item.email === data[0].email;
+        });
+        console.log(duplicateEmailCheck)
+        if (!duplicateEmailCheck) {
+          nextGroupmembers.push({
+            username: data[0].username,
+            email: data[0].email,
+          });
+          this.setState({
+            groupmembers: nextGroupmembers,
+            errorMemberDuplicate: '',
+          });
         } else {
-            this.setState({errorMemberDuplicate: 'user email does not exist!'});
+          this.setState({
+            errorMemberDuplicate: 'user is already added!',
+          });
         }
+      } else {
+        this.setState({
+          errorMemberDuplicate: 'user email does not exist!',
+        });
+      }
     });
   }
 
   handleKeyPress(event) {
-
     if (event.charCode === 13) {
-      if (event.target.className === 'addGroupMembers')
+      if (event.target.className === 'addGroupMembers') {
         this.handleAddMember();
+      }
       else {
         this.handleGroupName();
       }
@@ -90,54 +93,60 @@ export default class AddNewGroup extends React.Component {
   }
 
   handleGroupName() {
-    axios.get(`http://localhost:3000/api/group?target=groupname&groupname=${this.state.groupname}`)
+    axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/group?target=groupname&groupname=${this.state.groupname}`)
     .then((res) => {
       const data = JSON.parse(res);
-      if(data.length) {
+      if (data.length) {
         this.setState({
-          errorGroupnameDuplicate: 'Group Name already exist. Try another Group Name!'
-        })
+          errorGroupnameDuplicate: 'Group Name already exist. Try another Group Name!',
+        });
       }
       else {
         this.setState({
           groupname: data[0],
           errorGroupnameDuplicate: '',
-        })
+        });
       }
-    })
+    });
   }
 
   handleMemberDelete(event) {
     const NextGroupmembers = [...this.state.groupmembers];
     NextGroupmembers.forEach((data, index) => {
-      if(data.email === event.target.name) {
+      if (data.email === event.target.name) {
         NextGroupmembers.splice(index, 1);
       }
-    })
+    });
     this.setState({
       groupmembers: NextGroupmembers,
       errorMemberDuplicate: '',
-    })
+    });
   }
 
   render() {
     const groupMembers = this.state.groupmembers.map((data) => {
-      return <p>{data.username} ({data.email}) <input type="submit" value="delete" name={data.email} onClick={this.handleMemberDelete} /></p>
-    })
+      return <p>
+        {data.username} ({data.email}) <input
+          type="submit" value="delete" name={data.email}
+          onClick={this.handleMemberDelete} />
+      </p>;
+    });
 
     return (
       <div>
         New Group Name:
-        <input type="text" className='inputGroupName'
-          onChange={this.handleInput} onKeyPress={this.handleKeyPress}/>
-          <input type="submit" value="중복확인" onClick={this.handleGroupName} />
+        <input
+          type="text" className="inputGroupName"
+          onChange={this.handleInput} onKeyPress={this.handleKeyPress} />
+        <input type="submit" value="중복확인" onClick={this.handleGroupName} />
         <p className="errorGroupnameDuplicate">{this.state.errorGroupnameDuplicate} </p>
         <br />
         <br />
         Add Members:
-        <input type="text" className="addGroupMembers" placeholder='ex) wnghee91@gmail.com'
-          onChange={this.handleInput} onKeyPress={this.handleKeyPress}/>
-        <input type="submit" onClick={this.handleAddMember} value="add"/>
+        <input
+          type="text" className="addGroupMembers" placeholder="ex) wnghee91@gmail.com"
+          onChange={this.handleInput} onKeyPress={this.handleKeyPress} />
+        <input type="submit" onClick={this.handleAddMember} value="add" />
         <p className="errorMemberDuplicate">{this.state.errorMemberDuplicate} </p>
         <br />
         <br />
@@ -148,7 +157,7 @@ export default class AddNewGroup extends React.Component {
         <br />
         <input type="submit" onClick={this.handleSubmit} className="submitNewGroup" />
       </div>
-    )
+    );
   }
 
 }

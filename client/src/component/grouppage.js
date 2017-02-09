@@ -10,17 +10,15 @@ export default class GroupPage extends React.Component {
   // }
 
   render() {
-    return(
+    return (
       <div>
         {this.props.params.groupname}
         <br />
         <br />
-      <Link to={"groupeditform/"+ this.props.params.groupname}>
-        <input type='submit' value="edit" />
+      <Link to={'groupeditform/'+ this.props.params.groupname}>
+        <input type="submit" value="edit" />
       </Link>
       </div>
-    )
-
+    );
   }
-
 }
