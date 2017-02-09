@@ -15,7 +15,7 @@ export default class GroupPage extends React.Component {
         {this.props.params.groupname}
         <br />
         <br />
-      <Link to='groupeditform'>
+      <Link to={"groupeditform/"+ this.props.params.groupname}>
         <input type='submit' value="edit" />
       </Link>
       </div>
