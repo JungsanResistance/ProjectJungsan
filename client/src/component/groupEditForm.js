@@ -22,7 +22,7 @@ export default class GroupEditForm extends React.Component {
   }
 
   componentWillMount() {
-    axios.get(`http://localhost:3000/api/groupedit?target=groupmembers&groupname=${this.props.params.groupname}`)
+    axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/groupedit?target=groupmembers&groupname=${this.props.params.groupname}`)
     .then((res) => {
       const groupData = JSON.parse(res.data);
       //Db로 보내주는 데이터 형태를 고려하여 active, username값만 유지(groupname은 생략)//
