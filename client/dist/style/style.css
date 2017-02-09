@@ -12,7 +12,8 @@ tr,td,th {
 }
 
 img{
-  width:25px;
+  /*width:25px;*/
+  height:20px;
 }
 .signIn {
   width: 200px;
@@ -40,8 +41,12 @@ img{
      font-family: 'Source Sans Pro', sans-serif;
 }
 
-.errorMemberDuplicate, .errorGroupnameDuplicate {
+.errorMemberDuplicateFalse, .errorGroupnameDuplicate {
   color:rgb(186, 18, 18);
+}
+
+.errorMemberDuplicateTrue {
+  color: rgb(17, 221, 19);
 }
 /*.myPageGroupName {
    color: white;

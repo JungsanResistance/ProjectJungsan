@@ -11,6 +11,7 @@ export default class AddNewGroup extends React.Component {
       emailToBeChecked: '',
       errorMemberDuplicate: '',
       errorGroupnameDuplicate: '',
+      groupDuplicateFlag: '',
     };
 
     this.handleInput = this.handleInput.bind(this);
@@ -21,7 +22,7 @@ export default class AddNewGroup extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
   handleSubmit() {
-    axios.post('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/group', {
+    axios.post('http://localhost:3000/api/groupedit', {
       groupname: this.state.groupname,
       groupmembers: this.state.groupmembers,
     })
@@ -36,6 +37,7 @@ export default class AddNewGroup extends React.Component {
     if (event.target.className === 'inputGroupName') {
       this.setState({
         groupname: event.target.value,
+        errorGroupnameDuplicate: '',
       });
     }
     else if (event.target.className === 'addGroupMembers') {
@@ -48,7 +50,7 @@ export default class AddNewGroup extends React.Component {
 
   handleAddMember() {
     document.body.getElementsByClassName('addGroupMembers')[0].value = '';
-    axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/groupedit?target=email&email=${this.state.emailToBeChecked}`)
+    axios.get(`http://localhost:3000/api/groupedit?target=email&email=${this.state.emailToBeChecked}`)
     .then((res) => {
       console.log(res.data);
       const data = JSON.parse(res.data);
@@ -93,19 +95,22 @@ export default class AddNewGroup extends React.Component {
   }
 
   handleGroupName() {
-    axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/group?target=groupname&groupname=${this.state.groupname}`)
+    axios.get(`http://localhost:3000/api/groupedit?target=groupname&groupname=${this.state.groupname}`)
     .then((res) => {
-      const data = JSON.parse(res);
+      const data = JSON.parse(res.data);
       if (data.length) {
         this.setState({
-          errorGroupnameDuplicate: 'Group Name already exist. Try another Group Name!',
-        });
+          errorGroupnameDuplicate: '이 그룹이름은 이미 있어 띵구야',
+          groupDuplicateFlag: "errorMemberDuplicateFalse",
+        })
       }
       else {
-        this.setState({
-          groupname: data[0],
-          errorGroupnameDuplicate: '',
-        });
+        console.log(this.state.groupname)
+          this.setState({
+            groupname: this.state.groupname,
+            errorGroupnameDuplicate: '멋진 그룹 이름이군요!',
+            groupDuplicateFlag: "errorMemberDuplicateTrue",
+          })
       }
     });
   }
@@ -139,7 +144,7 @@ export default class AddNewGroup extends React.Component {
           type="text" className="inputGroupName"
           onChange={this.handleInput} onKeyPress={this.handleKeyPress} />
         <input type="submit" value="중복확인" onClick={this.handleGroupName} />
-        <p className="errorGroupnameDuplicate">{this.state.errorGroupnameDuplicate} </p>
+        <p className={this.state.groupDuplicateFlag}>{this.state.errorGroupnameDuplicate} </p>
         <br />
         <br />
         Add Members:
@@ -147,7 +152,7 @@ export default class AddNewGroup extends React.Component {
           type="text" className="addGroupMembers" placeholder="ex) wnghee91@gmail.com"
           onChange={this.handleInput} onKeyPress={this.handleKeyPress} />
         <input type="submit" onClick={this.handleAddMember} value="add" />
-        <p className="errorMemberDuplicate">{this.state.errorMemberDuplicate} </p>
+        <p className="errorMemberDuplicateFalse">{this.state.errorMemberDuplicate} </p>
         <br />
         <br />
         Following Members will be added to your group: {this.state.groupname}
