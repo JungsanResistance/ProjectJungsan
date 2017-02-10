@@ -59,7 +59,7 @@ module.exports = {
     INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (
     (SELECT idx FROM groups where groupname='${body.groupname}'),
     STR_TO_DATE('${body.date}', '%Y-%m-%d'),
-    (SELECT idx FROM user where email='${body.recipient}'),
+    (SELECT idx FROM user where email='${body.recipient.email}'),
     '${body.eventName}',
     ${body.cost}
   );`;

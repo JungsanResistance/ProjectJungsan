@@ -30,7 +30,7 @@ module.exports = {
         return (groupEdit.editNewGroupMembers(data))
       } else if (req.body.action === 'modifyGroupAll') {
         return (groupEdit.modifyGroupName(data))
-        .then(() => (groupEdit.editNewGroupMembers(data)))
+        .then(() => (groupEdit.editAddGroupMembers(data)))
         .then(() => groupEdit.editActiveMemberStatus(data));
       }
     });
