@@ -1,5 +1,8 @@
-const model = require('../model/index');
-const path = require('path')
+const groupedit = require('../model/groupedit');
+const history = require('../model/history');
+const mypage = require('../model/mypage');
+const total = require('../model/total');
+const transaction = require('../model/transaction');
 
 module.exports = {
   landing: {
@@ -8,8 +11,8 @@ module.exports = {
       res.end();
     },
   },
-  mainPage: {
-    get: (req, res) => (model.mainPage.get(req))
+  myPage: {
+    get: (req, res) => (mypage.get(req))
     .catch((err) => {
       res.writeHead(400);
       res.end();
@@ -21,7 +24,7 @@ module.exports = {
     }),
   },
   transaction: {
-    get: (req, res) => (model.transaction.get(req))
+    get: (req, res) => (transaction.get(req))
     .then((result) => {
       const body = JSON.stringify(result);
       console.log(body);
@@ -30,7 +33,7 @@ module.exports = {
     post: (req, res) => {
       const body = req.body;
       console.log(body);
-      return model.transaction.post(body)
+      return transaction.post(body)
       .then(() => {
         res.writeHead(201);
         res.end();
@@ -44,13 +47,13 @@ module.exports = {
   },
   groupedit: {
     // add email to returned object
-    get: (req, res) => (model.groupedit.get(req))
+    get: (req, res) => (groupedit.get(req))
     .then((result) => {
       const body = JSON.stringify(result);
       console.log(body);
       res.json(body);
     }),
-    post: (req, res) => (model.groupedit.post(req))
+    post: (req, res) => (groupedit.post(req))
     .then(() => {
       res.writeHead(201);
       res.end();
@@ -60,7 +63,7 @@ module.exports = {
       res.end();
       throw err;
     }),
-    put: (req, res) => (model.groupedit.put(req))
+    put: (req, res) => (groupedit.put(req))
     .then(() => {
       res.writeHead(201);
       res.end();
@@ -72,20 +75,20 @@ module.exports = {
     }),
   },
   history: {
-    get: (req, res) => (model.history.get(req))
+    get: (req, res) => (history.get(req))
     .then((result) => {
       const body = JSON.stringify(result);
       console.log(body);
       res.json(body);
     }),
-    put: (req, res) => (model.history.put(req))
+    put: (req, res) => (history.put(req))
     .then(() => {
       res.writeHead(201);
       res.end();
     }),
   },
   total: {
-    put: (req, res) => (model.total.put(req))
+    put: (req, res) => (total.put(req))
     .then(() => {
       res.writeHead(201);
       res.end();

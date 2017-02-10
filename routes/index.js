@@ -13,7 +13,7 @@ router.route('/groupedit*')
 .put(controller.groupedit.put);
 
 router.route('/mypage')
-.get(controller.mainPage.get);
+.get(controller.myPage.get);
 
 router.route('/transaction')
 .get(controller.transaction.get)

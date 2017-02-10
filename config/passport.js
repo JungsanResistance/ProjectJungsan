@@ -1,7 +1,7 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const configAuth = require('./auth');
-const db = require('../db/index');
+const signin = require('../db/signin');
 
 module.exports = (passport) => {
   passport.serializeUser((userid, done) => {
@@ -9,7 +9,7 @@ module.exports = (passport) => {
   });
 
   passport.deserializeUser((id, done) => {
-    db.findAuthUserById(id)
+    signin.findAuthUserById(id)
     .then(user => (done(null, user[0])));
   });
 
@@ -19,12 +19,12 @@ module.exports = (passport) => {
     callbackURL: configAuth.googleAuth.callbackURL,
   },
   (accessToken, refreshToken, profile, done) => {
-    db.findAuthUserById(profile.id)
+    signin.findAuthUserById(profile.id)
     .then((user) => {
       if (user.length) {
         return done(null, user[0].userid);
       } else {
-        db.createNewUser(profile.id, profile.displayName, profile.emails[0].value)
+        signin.createNewUser(profile.id, profile.displayName, profile.emails[0].value)
         .then(() => done(null, profile.id));
       }
     });
