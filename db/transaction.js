@@ -67,10 +67,7 @@ module.exports = {
     const participants = [...body.participants];
     const costPerPerson = Math.floor(body.cost / participants.length);
     participants.forEach((member) => {
-      let isPaid = 'FALSE';
-      if (name === body.recipient) {
-        isPaid = 'TRUE';
-      }
+      let isPaid = member.ispaid;
       addEventMemberQuery += `
       INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (
       (SELECT idx FROM user where email='${member.email}'),
