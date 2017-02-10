@@ -24,7 +24,7 @@ module.exports = {
   },
   getUser: (email) => {
     const getAllUsersQuery = `
-    SELECT username, email
+    SELECT username, email, active
     FROM   user
     WHERE  email = '${email}';
     `;
