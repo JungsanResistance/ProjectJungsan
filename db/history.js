@@ -16,6 +16,7 @@ module.exports = {
        EVENTGROUPHISTORY.groupname,
        EVENTGROUPHISTORY.eventname,
        u.username,
+       u.email,
        EVENTGROUPHISTORY.cost,
        EVENTGROUPHISTORY.ispaid
     FROM   user u
@@ -62,7 +63,7 @@ module.exports = {
     SET    ispaid = ${body.ispaid}
     WHERE  user_idx = (SELECT idx
                        FROM   user
-                       WHERE  username = '${body.username}')
+                       WHERE  email = '${body.email}')
            AND event_idx = (SELECT idx
                             FROM   event
                             WHERE  date = Str_to_date('${body.date}', '%Y-%m-%d')

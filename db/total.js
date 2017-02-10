@@ -10,7 +10,7 @@ const connection = mysql.createConnection({
 });
 
 module.exports = {
-  markAllToBePaid: (body) => {
+  markAllToBePaid: (body, userid) => {
     const checkToBePaidQuery = `
     SELECT user_idx,
            event_idx
@@ -19,12 +19,12 @@ module.exports = {
                        FROM   event
                        WHERE  recipient_idx = (SELECT idx
                                                FROM   user
-                                               WHERE  username = '${body.recipient}')) AS
+                                               WHERE  email = '${body.recipient}')) AS
                       A
                    ON A.idx = event_idx
                       AND eventmember.user_idx = (SELECT idx
                                                   FROM   user
-                                                  WHERE  username = '${body.username}')
+                                                  WHERE  userid = '${userid}')
     ;  `;
     return new Promise((resolve, reject) => {
       connection.query(checkToBePaidQuery, (err, res) => {
@@ -53,7 +53,7 @@ module.exports = {
       });
     });
   },
-  markAllToBeReceived: (body) => {
+  markAllToBeReceived: (body, userid) => {
     const checkToBePaidQuery = `
     SELECT user_idx,
            event_idx
@@ -62,12 +62,12 @@ module.exports = {
                        FROM   event
                        WHERE  recipient_idx = (SELECT idx
                                                FROM   user
-                                               WHERE  username = '${body.username}')) AS
+                                               WHERE  userid = '${userid}')) AS
                       A
                    ON A.idx = event_idx
                       AND eventmember.user_idx = (SELECT idx
                                                   FROM   user
-                                                  WHERE  username = '${body.recipient}')
+                                                  WHERE  email = '${body.recipient}')
     ;  `;
     return new Promise((resolve, reject) => {
       connection.query(checkToBePaidQuery, (err, res) => {
