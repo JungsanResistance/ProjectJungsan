@@ -23,8 +23,9 @@ router.route('/history')
 .get(controller.history.get)
 .put(controller.history.put);
 
-router.route('/total')
-.put(controller.total.put);
+router.route('/misc')
+.get(controller.misc.get)
+.put(controller.misc.put);
 
 
 module.exports = router;

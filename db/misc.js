@@ -10,6 +10,19 @@ const connection = mysql.createConnection({
 });
 
 module.exports = {
+  getSelf: (userid) => {
+    const getSelfQuery = `
+    SELECT username, email
+    FROM   user
+    WHERE  userid = '${userid}';
+    `;
+    return new Promise((resolve, reject) => {
+      connection.query(getSelfQuery, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  },
   markAllToBePaid: (body, userid) => {
     const checkToBePaidQuery = `
     SELECT user_idx,
