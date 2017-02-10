@@ -13,6 +13,7 @@ module.exports = {
   getTotalSum: (userid) => {
     const getTotalSumQuery = `
     SELECT username,
+           email,
            sum(cost) AS cost
     FROM (
            (SELECT sum(em.cost) AS cost,
