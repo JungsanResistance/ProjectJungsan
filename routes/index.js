@@ -4,13 +4,13 @@ const router = express.Router();
 const controller = require('../controller/index');
 
 /* GET home page. */
-router.route('/')
+router.route('/signin')
 .get(controller.landing.get);
 
-router.route('/groupedit*')
-.get(controller.groupedit.get)
-.post(controller.groupedit.post)
-.put(controller.groupedit.put);
+router.route('/group*')
+.get(controller.group.get)
+.post(controller.group.post)
+.put(controller.group.put);
 
 router.route('/mypage')
 .get(controller.myPage.get);

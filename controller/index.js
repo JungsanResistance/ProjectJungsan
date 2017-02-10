@@ -45,7 +45,7 @@ module.exports = {
       });
     },
   },
-  groupedit: {
+  group: {
     // add email to returned object
     get: (req, res) => (groupedit.get(req))
     .then((result) => {
