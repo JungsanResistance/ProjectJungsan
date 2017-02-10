@@ -1,7 +1,7 @@
 const groupedit = require('../model/groupedit');
 const history = require('../model/history');
 const mypage = require('../model/mypage');
-const total = require('../model/total');
+const misc = require('../model/misc');
 const transaction = require('../model/transaction');
 
 module.exports = {
@@ -87,8 +87,14 @@ module.exports = {
       res.end();
     }),
   },
-  total: {
-    put: (req, res) => (total.put(req))
+  misc: {
+    get: (req, res) => (misc.get(req))
+    .then((result) => {
+      const body = JSON.stringify(result);
+      console.log(body);
+      res.json(body);
+    }),
+    put: (req, res) => (misc.put(req))
     .then(() => {
       res.writeHead(200);
       res.end();
