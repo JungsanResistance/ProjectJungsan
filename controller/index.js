@@ -65,7 +65,7 @@ module.exports = {
     }),
     put: (req, res) => (groupedit.put(req))
     .then(() => {
-      res.writeHead(201);
+      res.writeHead(200);
       res.end();
     })
     .catch((err) => {
@@ -83,14 +83,14 @@ module.exports = {
     }),
     put: (req, res) => (history.put(req))
     .then(() => {
-      res.writeHead(201);
+      res.writeHead(200);
       res.end();
     }),
   },
   total: {
     put: (req, res) => (total.put(req))
     .then(() => {
-      res.writeHead(201);
+      res.writeHead(200);
       res.end();
     }),
   },

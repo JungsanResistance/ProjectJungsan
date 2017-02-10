@@ -24,7 +24,7 @@ module.exports = {
   },
   getUser: (email) => {
     const getAllUsersQuery = `
-    SELECT username, email
+    SELECT username, email, active
     FROM   user
     WHERE  email = '${email}';
     `;
@@ -40,7 +40,7 @@ module.exports = {
       INSERT INTO groups (groupname) VALUES ('${body.groupname}');
     `;
     let addNewMembersQuery = '';
-    body.groupmembers.forEach((memberName) => {
+    body.groupmembers.forEach((member) => {
       addNewMembersQuery += `
         INSERT INTO groupmember
                     (user_idx,
@@ -48,7 +48,7 @@ module.exports = {
                      active)
         VALUES      ((SELECT idx
                       FROM   user
-                      WHERE  username = '${memberName.username}'),
+                      WHERE  email = '${member.email}'),
                      (SELECT idx
                       FROM   groups
                       WHERE  groupname = '${body.groupname}'),
@@ -57,29 +57,6 @@ module.exports = {
     console.log(addNewMembersQuery);
     return new Promise((resolve, reject) => {
       connection.query(addNewGroupQuery + addNewMembersQuery, (err) => {
-        if (err) return reject(err);
-        return resolve();
-      });
-    });
-  },
-  addGroupMember: (body) => {
-    let addNewMembersQuery = '';
-    body.groupmember.forEach((memberName) => {
-      addNewMembersQuery += `
-        INSERT INTO groupmember
-                    (user_idx,
-                     group_idx,
-                     active)
-        VALUES      ((SELECT idx
-                      FROM   user
-                      WHERE  username = '${memberName}'),
-                     (SELECT idx
-                      FROM   groups
-                      WHERE  groupname = '${body.groupname}'),
-                      true); `;
-    });
-    return new Promise((resolve, reject) => {
-      connection.query(addNewMembersQuery, (err) => {
         if (err) return reject(err);
         return resolve();
       });
@@ -109,7 +86,7 @@ module.exports = {
       SET    active = ${groupmember.active}
       WHERE  user_idx = (SELECT idx
                          FROM   user
-                         WHERE  username = '${groupmember.username}')
+                         WHERE  email = '${groupmember.email}')
              AND group_idx = (SELECT idx
                               FROM   groups
                               WHERE  groupname = '${body.newGroupname}'); `;
@@ -121,7 +98,7 @@ module.exports = {
       });
     });
   },
-  editNewGroupMembers: (body) => {
+  editAddGroupMembers: (body) => {
     // check and insert all unlisted (newly added) members
     let editNewGroupMembersQuery = '';
     body.groupmembers.forEach((groupmember) => {
@@ -132,7 +109,7 @@ module.exports = {
                    active)
       SELECT (SELECT idx
               FROM   user
-              WHERE  username = '${groupmember.username}'),
+              WHERE  email = '${groupmember.email}'),
              (SELECT idx
               FROM   groups
               WHERE  groupname = '${body.newGroupname}'),
@@ -142,7 +119,7 @@ module.exports = {
                          FROM   groupmember
                          WHERE  user_idx = (SELECT idx
                                             FROM   user
-                                            WHERE  username = '${groupmember.username}')
+                                            WHERE  email = '${groupmember.email}')
                                 AND group_idx = (SELECT idx
                                                  FROM   groups
                                                  WHERE  groupname = '${body.newGroupname}'));     `;
