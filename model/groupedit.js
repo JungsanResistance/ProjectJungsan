@@ -27,7 +27,8 @@ module.exports = {
       if (req.body.action === 'modifyGroupName') {
         return groupEdit.modifyGroupName(data);
       } else if (req.body.action === 'modifyGroupMembers') {
-        return (groupEdit.editNewGroupMembers(data))
+        return (groupEdit.editAddGroupMembers(data))
+        .then(() => groupEdit.editActiveMemberStatus(data));
       } else if (req.body.action === 'modifyGroupAll') {
         return (groupEdit.modifyGroupName(data))
         .then(() => (groupEdit.editAddGroupMembers(data)))
