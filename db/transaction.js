@@ -60,11 +60,11 @@ module.exports = {
     (SELECT idx FROM groups where groupname='${body.groupname}'),
     STR_TO_DATE('${body.date}', '%Y-%m-%d'),
     (SELECT idx FROM user where email='${body.recipient.email}'),
-    '${body.eventName}',
+    '${body.eventname}',
     ${body.cost}
   );`;
     let addEventMemberQuery = '';
-    const participants = [...body.selectedUserList];
+    const participants = [...body.participants];
     const costPerPerson = Math.floor(body.cost / participants.length);
     participants.forEach((member) => {
       let isPaid = 'FALSE';
@@ -73,8 +73,8 @@ module.exports = {
       }
       addEventMemberQuery += `
       INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (
-      (SELECT idx FROM user where username='${member.email}'),
-      (SELECT idx FROM event where eventname='${body.eventName}'),
+      (SELECT idx FROM user where email='${member.email}'),
+      (SELECT idx FROM event where eventname='${body.eventname}'),
       ${costPerPerson},
       ${isPaid}
     );`;
