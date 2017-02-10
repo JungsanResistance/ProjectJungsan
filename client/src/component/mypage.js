@@ -12,7 +12,7 @@ export default class Mypage extends React.Component {
     };
   }
   componentWillMount() {
-    axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/mypage')
+    axios.get('http://localhost:3000/api/mypage')
     .then((res) => {
       console.log(res.data);
       // console.log("axios get request here")

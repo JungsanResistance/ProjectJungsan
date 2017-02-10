@@ -22,7 +22,7 @@ export default class AddNewGroup extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
   handleSubmit() {
-    axios.post('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/groupedit', {
+    axios.post('http://localhost:3000/api/groupedit', {
       groupname: this.state.groupname,
       groupmembers: this.state.groupmembers,
     })
@@ -50,7 +50,7 @@ export default class AddNewGroup extends React.Component {
 
   handleAddMember() {
     document.body.getElementsByClassName('addGroupMembers')[0].value = '';
-    axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/groupedit?target=email&email=${this.state.emailToBeChecked}`)
+    axios.get(`http://localhost:3000/api/groupedit?target=email&email=${this.state.emailToBeChecked}`)
     .then((res) => {
       console.log(res.data);
       const data = JSON.parse(res.data);
@@ -95,7 +95,7 @@ export default class AddNewGroup extends React.Component {
   }
 
   handleGroupName() {
-    axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/groupedit?target=groupname&groupname=${this.state.groupname}`)
+    axios.get(`http://localhost:3000/api/groupedit?target=groupname&groupname=${this.state.groupname}`)
     .then((res) => {
       const data = JSON.parse(res.data);
       if (data.length) {
