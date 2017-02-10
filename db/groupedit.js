@@ -101,10 +101,10 @@ module.exports = {
     });
   },
   editActiveMemberStatus: (body) => {
-    let editDropGroupMembersQuery = '';
+    let editActiveMemberStatusQuery = '';
     // check and insert all unlisted (newly added) members
     body.groupmembers.forEach((groupmember) => {
-      editDropGroupMembersQuery += `
+      editActiveMemberStatusQuery += `
       UPDATE groupmember
       SET    active = ${groupmember.active}
       WHERE  user_idx = (SELECT idx
@@ -115,7 +115,7 @@ module.exports = {
                               WHERE  groupname = '${body.newGroupname}'); `;
     });
     return new Promise((resolve, reject) => {
-      connection.query(editDropGroupMembersQuery, (err) => {
+      connection.query(editActiveMemberStatusQuery, (err) => {
         if (err) return reject(err);
         return resolve();
       });
@@ -155,10 +155,11 @@ module.exports = {
     });
   },
   getGroupMember: (grouplist) => {
-    console.log(grouplist);
     let groupClause = `groupname = "${grouplist[0].groupname}"`;
-    for (let i = 1; i < grouplist.length; i += 1) {
-      groupClause += ` OR groupname = "${grouplist[i].groupname}"`;
+    if (grouplist.length > 1) {
+      for (let i = 1; i < grouplist.length; i += 1) {
+        groupClause += ` OR groupname = "${grouplist[i].groupname}"`;
+      }
     }
     const getGroupMemberQuery = `
     SELECT MemberId.groupname, u.username, u.email, MemberId.active
