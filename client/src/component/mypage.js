@@ -15,7 +15,7 @@ export default class Mypage extends React.Component {
     axios.get('http://localhost:3000/api/mypage')
     .then((res) => {
 
-      // console.log("axios get request here")
+      console.log("axios get request here", res.data)
       const getData = JSON.parse(res.data);
       const groupStorage = [];
       getData.groupList.forEach((group) => {
@@ -42,6 +42,7 @@ export default class Mypage extends React.Component {
         List.push(
           <tr>
             <td>{data.username}</td>
+            <td>{data.email}</td>
             <td>{data.cost}</td>
           </tr>,
         ));
@@ -64,6 +65,7 @@ export default class Mypage extends React.Component {
           <table className="sumListTable">
             <tr>
               <th>name</th>
+              <th>email</th>
               <th>cost</th>
             </tr>
             {List}

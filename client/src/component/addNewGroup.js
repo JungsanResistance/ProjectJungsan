@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-
+import Router, { replaceState, browserHistory } from 'react-router'
 export default class AddNewGroup extends React.Component {
 
   constructor() {
@@ -12,6 +12,7 @@ export default class AddNewGroup extends React.Component {
       errorMemberDuplicate: '',
       errorGroupnameDuplicate: '',
       groupDuplicateFlag: '',
+      submitMessage: '',
     };
 
     this.handleInput = this.handleInput.bind(this);
@@ -21,17 +22,41 @@ export default class AddNewGroup extends React.Component {
     this.handleMemberDelete = this.handleMemberDelete.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
-  handleSubmit() {
-    axios.post('http://localhost:3000/api/groupedit', {
-      groupname: this.state.groupname,
-      groupmembers: this.state.groupmembers,
-    })
+
+  componentWillMount() {
+    axios.get('http://localhost:3000/api/misc')
     .then((res) => {
-      console.log('post response:', res);
+      console.log(res);
+      const logInUserData = JSON.parse(res.data);
+      this.setState({
+        groupmembers: logInUserData,
+      })
     })
-    .catch((err) => {
-      console.log('error!!: ', err);
-    });
+  }
+  handleSubmit() {
+    if (!this.state.groupname.length) {
+      console.log("empty group name!!");
+      this.setState({
+        errorGroupnameDuplicate: '그룹 이름좀 넣으라고 이자식아'
+      })
+    }
+    else {
+      axios.post('http://localhost:3000/api/groupedit', {
+        groupname: this.state.groupname,
+        groupmembers: this.state.groupmembers,
+      })
+      .then((res) => {
+        if (res.status === 201) {
+          console.log('post response:', res);
+          browserHistory.push('/mypage');
+        } else {
+          console.log(res.status)
+        }
+      })
+      .catch((err) => {
+        console.log('error!!: ', err);
+      });
+    }
   }
   handleInput(event) {
     if (event.target.className === 'inputGroupName') {
@@ -128,12 +153,17 @@ export default class AddNewGroup extends React.Component {
   }
 
   render() {
-    const groupMembers = this.state.groupmembers.map((data) => {
-      return <p>
-        {data.username} ({data.email}) <input
-          type="submit" value="delete" name={data.email}
-          onClick={this.handleMemberDelete} />
-      </p>;
+    const groupMembers = this.state.groupmembers.map((data, index) => {
+      if(index !==0) {
+        return <li>
+          {data.username} ({data.email}) <input
+            type="submit" value="delete" name={data.email}
+            onClick={this.handleMemberDelete} />
+        </li>;
+      }
+      else {
+        return <li>{data.username} ({data.email}) : 그룹장 짱짱님</li>;
+      }
     });
 
     return (
@@ -156,10 +186,15 @@ export default class AddNewGroup extends React.Component {
         <br />
         Following Members will be added to your group: {this.state.groupname}
         <br />
-        {groupMembers}
+          <ul>
+            {groupMembers}
+          </ul>
         <br />
         <br />
         <input type="submit" onClick={this.handleSubmit} className="submitNewGroup" />
+        <br />
+        <br />
+        {this.state.submitMessage}
       </div>
     );
   }
