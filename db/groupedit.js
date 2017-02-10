@@ -24,7 +24,7 @@ module.exports = {
   },
   getUser: (email) => {
     const getAllUsersQuery = `
-    SELECT username, email, active
+    SELECT username, email
     FROM   user
     WHERE  email = '${email}';
     `;
@@ -65,11 +65,11 @@ module.exports = {
   modifyGroupName: (body) => {
     const modifyGroupNameQuery = `
     UPDATE groups
-    SET    groupname = '${body.newGroupname}'
+    SET    groupname = '${body.newgroupname}'
     WHERE  idx = (SELECT *
                   FROM   (SELECT idx
                           FROM   groups
-                          WHERE  groupname = '${body.oldGroupname}') AS a); `;
+                          WHERE  groupname = '${body.oldgroupname}') AS a); `;
     return new Promise((resolve, reject) => {
       connection.query(modifyGroupNameQuery, (err) => {
         if (err) return reject(err);
@@ -89,7 +89,7 @@ module.exports = {
                          WHERE  email = '${groupmember.email}')
              AND group_idx = (SELECT idx
                               FROM   groups
-                              WHERE  groupname = '${body.newGroupname}'); `;
+                              WHERE  groupname = '${body.newgroupname}'); `;
     });
     return new Promise((resolve, reject) => {
       connection.query(editActiveMemberStatusQuery, (err) => {
@@ -112,7 +112,7 @@ module.exports = {
               WHERE  email = '${groupmember.email}'),
              (SELECT idx
               FROM   groups
-              WHERE  groupname = '${body.newGroupname}'),
+              WHERE  groupname = '${body.newgroupname}'),
              true
       FROM   DUAL
       WHERE  NOT EXISTS (SELECT user_idx
@@ -122,7 +122,7 @@ module.exports = {
                                             WHERE  email = '${groupmember.email}')
                                 AND group_idx = (SELECT idx
                                                  FROM   groups
-                                                 WHERE  groupname = '${body.newGroupname}'));     `;
+                                                 WHERE  groupname = '${body.newgroupname}'));     `;
     });
     return new Promise((resolve, reject) => {
       connection.query(editNewGroupMembersQuery, (err) => {
@@ -139,8 +139,7 @@ module.exports = {
       }
     }
     const getGroupMemberQuery = `
-    SELECT MemberId.groupname, u.username, u.email, MemberId.active
-    FROM   user u
+    SELECT MemberId.groupname, u.username, u.email, MemberId.active    FROM   user u
           INNER JOIN (SELECT gm.user_idx, GROUPLIST.groupname, gm.active
                   FROM   groupmember gm
                   INNER JOIN

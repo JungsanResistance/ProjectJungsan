@@ -19,7 +19,7 @@ module.exports = {
                        FROM   event
                        WHERE  recipient_idx = (SELECT idx
                                                FROM   user
-                                               WHERE  email = '${body.recipient}')) AS
+                                               WHERE  email = '${body.recipientemail}')) AS
                       A
                    ON A.idx = event_idx
                       AND eventmember.user_idx = (SELECT idx
@@ -33,12 +33,7 @@ module.exports = {
       });
     })
     .then((eventList) => {
-      let totalPaymentquery = `
-      UPDATE eventmember
-      SET    ispaid = true
-      WHERE  user_idx = ${eventList[0].user_idx}
-             AND event_idx = ${eventList[0].event_idx};
-      `;
+      let totalPaymentquery = '';
       eventList.forEach((event) => {
         totalPaymentquery += `
         UPDATE eventmember
@@ -67,7 +62,7 @@ module.exports = {
                    ON A.idx = event_idx
                       AND eventmember.user_idx = (SELECT idx
                                                   FROM   user
-                                                  WHERE  email = '${body.recipient}')
+                                                  WHERE  email = '${body.recipientemail}')
     ;  `;
     return new Promise((resolve, reject) => {
       connection.query(checkToBePaidQuery, (err, res) => {

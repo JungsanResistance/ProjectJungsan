@@ -63,7 +63,7 @@ module.exports = {
     SET    ispaid = ${body.ispaid}
     WHERE  user_idx = (SELECT idx
                        FROM   user
-                       WHERE  email = '${body.email}')
+                       WHERE  email = '${body.recipientemail}')
            AND event_idx = (SELECT idx
                             FROM   event
                             WHERE  date = Str_to_date('${body.date}', '%Y-%m-%d')

@@ -16,11 +16,11 @@ export default class GroupEditForm extends React.Component {
       oldGroupmembers: [],
       errorMemberDuplicate: '',
       errorGroupnameDuplicate: '',
+      errorSubmit: '',
       groupDuplicateFlag: '',
     };
     this.handleAddMember = this.handleAddMember.bind(this);
     this.handleGroup = this.handleGroup.bind(this);
-    // this.handleGroupMember = this.handleGroupMember.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.handleMemberDelete = this.handleMemberDelete.bind(this);
     this.handleSubmitGroup = this.handleSubmitGroup.bind(this);
@@ -40,10 +40,9 @@ export default class GroupEditForm extends React.Component {
           email: data.email,
         };
       });
-      console.log(groupMemberData)
       this.setState({
-        newGroupmembers: groupMemberData,
-        oldGroupmembers: groupMemberData,
+        newGroupmembers: groupMemberData.map(groupMember => Object.assign({}, groupMember)),
+        oldGroupmembers: groupMemberData.map(groupMember => Object.assign({}, groupMember)),
       });
     });
   }
@@ -53,59 +52,107 @@ export default class GroupEditForm extends React.Component {
     const groupMemberCheck = JSON.stringify(this.state.newGroupmembers) === JSON.stringify(this.state.oldGroupmembers);
     const groupNameCheck = this.state.newGroupname === this.state.oldGroupname;
 
+    console.log(this.state.newGroupname)
     if ((groupNameCheck === false) && groupMemberCheck) {
-      axios.put(`http://localhost:3000/api/groupedit`,
-        {
-          action: 'modifyGroupName',
-          data: {
-            oldGroupname: this.state.oldGroupname,
-            newGroupname: this.state.newGroupname,
+        console.log('here : modifyGroupName')
+        axios.put(`http://localhost:3000/api/groupedit`,
+          {
+            action: 'modifyGroupName',
+            data: {
+              oldGroupname: this.state.oldGroupname,
+              newGroupname: this.state.newGroupname,
+            }
           }
-        }
-      )
-      .then((res) => {
-        console.log(res);
-      })
+        )
+        .then((res) => {
+          console.log('modifyGroupName::',res.status);
+          if(res.status === 200){
+            this.setState({
+              errorSubmit: '그룹이름이 수정되었습니다!',
+            })
+          } else {
+            this.setState({
+              errorSubmit: '에러..!? 운영자에게 연락주세요 ㅠㅠ',
+            })
+          }
+        })
+      // }
     }
-    else if (groupNameCheck && (groupMemberCheck=== false)) {
+    else if (groupNameCheck && (groupMemberCheck === false)) {
+      console.log('here : modifyGroupMembers')
       axios.put(`http://localhost:3000/api/groupedit`,
          {
            action: 'modifyGroupMembers',
            data: {
-             oldGroupname : this.state.oldGroupname,
+             oldGroupname: this.state.oldGroupname,
              newGroupname: this.state.newGroupname,
              groupmembers: this.state.newGroupmembers,
           }
          }
-      );
+      )
+      .then((res) => {
+        console.log('modifyGroupMembers::',res);
+        if(res.status === 200){
+          this.setState({
+            errorSubmit: '그룹멤버가 수정되었습니다!',
+          })
+        } else {
+          this.setState({
+            errorSubmit: '에러..!? 운영자에게 연락주세요 ㅠㅠ',
+          })
+        }
+      });
     }
-    else {
+    else if ((groupNameCheck || groupMemberCheck) === false) {
+      console.log('here : modifyGroupAll')
       axios.put(`http://localhost:3000/api/groupedit`,
          {
            action: 'modifyGroupAll',
            data: {
-             oldGroupname : this.state.oldGroupname,
+             oldGroupname: this.state.oldGroupname,
              newGroupname: this.state.newGroupname,
              groupmembers: this.state.newGroupmembers,
           }
-         }
-      );
+        }
+      )
+      .then((res) => {
+        console.log('modifyGroupAll::',res);
+        if(res.status === 200){
+          this.setState({
+            errorSubmit: '그룹멤버와 그룹이름이 수정되었습니다',
+          })
+        } else {
+          this.setState({
+            errorSubmit: '에러..!? 운영자에게 연락주세요 ㅠㅠ',
+          })
+        }
+      });
     }
-
-
+    else {
+      console.log("modify...??")
+      this.setState({
+        errorSubmit: '수정한다면서요...!?',
+      })
+    }
   };
 
   handleGroup(event) {
     if (event.target.className === 'editGroupName') {
-      this.setState({
-        newGroupname: event.target.value,
-      });
+      if(event.target.value.length){
+        this.setState({
+          newGroupname: event.target.value,
+        })
+      } else {
+        this.setState({
+          newGroupname: this.props.params.groupname,
+        });
+      }
     }
     else if (event.target.className === 'editGroupMember') {
-      this.setState({
-        emailToBeChecked: event.target.value,
-        errorMemberDuplicate: '',
-      });
+        this.setState({
+          emailToBeChecked: event.target.value,
+          errorMemberDuplicate: '',
+        })
     }
   }
 
@@ -127,7 +174,7 @@ export default class GroupEditForm extends React.Component {
           nextGroupmembers.push({
             username: data[0].username,
             email: data[0].email,
-            active: true,
+            active: 1,
           });
           this.setState({
             newGroupmembers: nextGroupmembers,
@@ -149,7 +196,7 @@ export default class GroupEditForm extends React.Component {
               emailToBeChecked: '',
             });
           } else {
-            nextGroupmembers[memberIndex].active = !nextGroupmembers[memberIndex].active;
+            nextGroupmembers[memberIndex].active = 1;
             this.setState({
               newGroupmembers: nextGroupmembers,
               errorMemberDuplicate: '추가되었습니다.',
@@ -167,40 +214,6 @@ export default class GroupEditForm extends React.Component {
     });
   }
 
-  // handleGroupMember() {
-  //   document.body.getElementsByClassName('editGroupMember')[0].value = '';
-  //   const nextGroupmembers = [...this.state.newGroupmembers];
-  //   let memberIndex;
-  //   let flag = false;
-  //   nextGroupmembers.forEach((item, index) => {
-  //     if (item.email === this.state.emailToBeChecked) {
-  //       memberIndex = index;
-  //       flag = true;
-  //     }
-  //   });
-  //   if (flag) {
-  //     if (nextGroupmembers[memberIndex].active) {
-  //       this.setState({
-  //         errorMemberDuplicate: '이미 추가된 친구입니다!',
-  //       });
-  //     } else {
-  //       nextGroupmembers[memberIndex].active = true;
-  //       this.setState({
-  //         newGroupmembers: nextGroupmembers,
-  //       });
-  //     }
-  //   } else {
-  //     nextGroupmembers.push({
-  //       username: this.state.memberName,
-  //       active: true,
-  //     });
-  //     this.setState({
-  //       newGroupmembers: nextGroupmembers,
-  //     });
-  //   }
-  // }
-
-
   handleKeyPress(event) {
     if (event.charCode === 13) {
       console.log(this.state.emailToBeChecked)
@@ -214,14 +227,16 @@ export default class GroupEditForm extends React.Component {
   }
 
   handleMemberDelete(event) {
+    console.log(this.state.oldGroupmembers)
     const NextGroupmembers = [...this.state.newGroupmembers];
     NextGroupmembers.map((data) => {
       if (data.username === event.target.name) {
-        data.active = false;
+        data.active = 0;
       }
     });
+    console.log(this.state.oldGroupmembers)
     this.setState({
-      groupmembers: NextGroupmembers,
+      newGroupmembers: NextGroupmembers,
       errorMemberDuplicate: '',
     });
   }
@@ -259,7 +274,7 @@ export default class GroupEditForm extends React.Component {
           <li>
             {member.username} ({member.email})
             <input
-            type="submit" name={member.username} value="delete" onClick={this.handleMemberDelete}/>
+            type="button" name={member.username} value="delete" onClick={this.handleMemberDelete}/>
           </li>)
       }
     });
@@ -287,6 +302,9 @@ export default class GroupEditForm extends React.Component {
           {members}
         </ul>
         <input type="submit" value="그룹수정" onClick={this.handleSubmitGroup} />
+        <br />
+        <br />
+        {this.state.errorSubmit}
       </div>
     );
   }
