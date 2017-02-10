@@ -14,7 +14,7 @@ export default class Mypage extends React.Component {
   componentWillMount() {
     axios.get('http://localhost:3000/api/mypage')
     .then((res) => {
-      console.log(res.data);
+
       // console.log("axios get request here")
       const getData = JSON.parse(res.data);
       const groupStorage = [];
@@ -48,8 +48,6 @@ export default class Mypage extends React.Component {
     }
 
     const groups = this.state.groupList.map((data) => {
-      console.log(data);
-      console.log(typeof data);
       return <li className="myPageGroupName"><Link to={"grouppage/"+data}>{data}</Link></li>;
     });
 

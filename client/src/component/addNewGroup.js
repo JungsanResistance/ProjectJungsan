@@ -56,7 +56,6 @@ export default class AddNewGroup extends React.Component {
       const data = JSON.parse(res.data);
       if (data.length) {
         const nextGroupmembers = this.state.groupmembers;
-
         const duplicateEmailCheck = this.state.groupmembers.some((item) => {
           return item.email === data[0].email;
         });
