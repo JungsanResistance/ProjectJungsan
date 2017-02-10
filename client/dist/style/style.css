@@ -4,6 +4,7 @@ table {
 
 tr,td,th {
   border:1px solid green;
+  text-align: center;
 }
 
 .sumListTable {
@@ -11,9 +12,12 @@ tr,td,th {
 }
 
 img{
-  width:200px;
+  /*width:25px;*/
+  height:20px;
 }
-
+.signIn {
+  width: 200px;
+}
 .selected {
   background-color: blue;
 }
@@ -31,12 +35,46 @@ img{
      color:rgb(42, 88, 226);
      padding:10px 20px 10px 20px;
      margin:20px;
-     display:inline-block;
+     display:block;
      border-radius: 10px;
      transition:all 0.1s;
      font-family: 'Source Sans Pro', sans-serif;
 }
 
-.errorMessage {
+.errorMemberDuplicateFalse, .errorGroupnameDuplicate {
   color:rgb(186, 18, 18);
+}
+
+.errorMemberDuplicateTrue {
+  color: rgb(17, 221, 19);
+}
+/*.myPageGroupName {
+   color: white;
+   text-align: center;
+   text-decoration: none;
+   display: block;
+   width: 120px;
+   margin-top: 4px;
+  font-family: 'Source Sans Pro', sans-serif;
+}*/
+
+.myPageGroupName:hover {
+ color: #666;
+}
+.routing {
+  overflow: auto;
+  list-style-type: none;
+  height: 25px;
+  float: left;
+  margin-right: 0px;
+  border-right: 1px solid #aaa;
+  padding: 0 20px;
+  text-decoration: none;
+  color: #ccc;
+  font-family: 'Source Sans Pro', sans-serif;
+  text-transform: uppercase;
+  -webkit-transition: all 0.5s ease;
+}
+.myPage {
+  padding-left: 180px;
 }
