@@ -11,7 +11,7 @@ tr,td,th {
   border-collapse: collapse;
 }
 
-img{
+.toggleImg{
   /*width:25px;*/
   height:20px;
 }
