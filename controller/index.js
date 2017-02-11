@@ -7,20 +7,18 @@ const transaction = require('../model/transaction');
 module.exports = {
   landing: {
     get: (req, res) => {
-      res.writeHead(200);
-      res.end();
+      res.sendStatus(200);
     },
   },
   myPage: {
     get: (req, res) => (mypage.get(req))
-    .catch((err) => {
-      res.writeHead(400);
-      res.end();
-    })
     .then((result) => {
       const body = JSON.stringify(result);
       console.log(body);
       res.json(body);
+    })
+    .catch((err) => {
+      res.sendStatus(400);
     }),
   },
   transaction: {
@@ -35,12 +33,10 @@ module.exports = {
       console.log(body);
       return transaction.post(body)
       .then(() => {
-        res.writeHead(201);
-        res.end();
+        res.sendStatus(201);
       })
       .catch((err) => {
-        res.writeHead(406);
-        res.end();
+        res.sendStatus(406);
         throw err;
       });
     },
@@ -55,22 +51,18 @@ module.exports = {
     }),
     post: (req, res) => (groupedit.post(req))
     .then(() => {
-      res.writeHead(201);
-      res.end();
+      res.sendStatus(201);
     })
     .catch((err) => {
-      res.writeHead(406);
-      res.end();
+      res.sendStatus(406);
       throw err;
     }),
     put: (req, res) => (groupedit.put(req))
     .then(() => {
-      res.writeHead(200);
-      res.end();
+      res.sendStatus(200);
     })
     .catch((err) => {
-      res.writeHead(406);
-      res.end();
+      res.sendStatus(406);
       throw err;
     }),
   },
@@ -83,8 +75,7 @@ module.exports = {
     }),
     put: (req, res) => (history.put(req))
     .then(() => {
-      res.writeHead(200);
-      res.end();
+      res.sendStatus(200);
     }),
   },
   misc: {
@@ -96,8 +87,11 @@ module.exports = {
     }),
     put: (req, res) => (misc.put(req))
     .then(() => {
-      res.writeHead(200);
-      res.end();
+      res.sendStatus(200);
+    })
+    .catch((err) => {
+      console.log('error', err)
+      res.sendStatus(406);
     }),
   },
 };
