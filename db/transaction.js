@@ -56,24 +56,21 @@ module.exports = {
   },
   postTransaction: (body) => {
     const createEventQuery = `
-    INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (
+    INSERT INTO event (group_idx, date, recipient_idx, eventname) VALUES (
     (SELECT idx FROM groups where groupname='${body.groupname}'),
     STR_TO_DATE('${body.date}', '%Y-%m-%d'),
-    (SELECT idx FROM user where email='${body.recipient.email}'),
-    '${body.eventname}',
-    ${body.cost}
+    (SELECT idx FROM user where email='${body.newrecipient.email}'),
+    '${body.eventname}'
   );`;
     let addEventMemberQuery = '';
     const participants = [...body.participants];
-    const costPerPerson = Math.floor(body.cost / participants.length);
     participants.forEach((member) => {
-      let isPaid = member.ispaid;
       addEventMemberQuery += `
       INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (
       (SELECT idx FROM user where email='${member.email}'),
       (SELECT idx FROM event where eventname='${body.eventname}'),
-      ${costPerPerson},
-      ${isPaid}
+      ${member.cost},
+      ${member.ispaid}
     );`;
     });
     return new Promise((resolve, reject) => {
