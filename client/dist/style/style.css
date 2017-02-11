@@ -3,7 +3,7 @@ table {
 }
 
 tr,td,th {
-  border:1px solid green;
+  border:0.5px solid black;
   text-align: center;
 }
 
@@ -19,7 +19,7 @@ tr,td,th {
   width: 200px;
 }
 .selected {
-  background-color: blue;
+  background-color: #5FCEC0;
 }
 
 .landing {
