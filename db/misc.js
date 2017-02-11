@@ -19,84 +19,114 @@ module.exports = {
     return new Promise((resolve, reject) => {
       connection.query(getSelfQuery, (err, res) => {
         if (err) return reject(err);
-        return resolve(res);
+        resolve(res);
       });
     });
   },
-  markAllToBePaid: (body, userid) => {
-    const checkToBePaidQuery = `
-    SELECT user_idx,
-           event_idx
-    FROM   eventmember
-           INNER JOIN (SELECT idx
-                       FROM   event
-                       WHERE  recipient_idx = (SELECT idx
-                                               FROM   user
-                                               WHERE  email = '${body.recipientemail}')) AS
-                      A
-                   ON A.idx = event_idx
-                      AND eventmember.user_idx = (SELECT idx
-                                                  FROM   user
-                                                  WHERE  userid = '${userid}')
-    ;  `;
+  resolveAllPayments: (body, userid) => {
+    const paymentInfo = {body, userid}
     return new Promise((resolve, reject) => {
-      connection.query(checkToBePaidQuery, (err, res) => {
+      connection.beginTransaction((err) => {
         if (err) return reject(err);
-        return resolve(res);
-      });
+        resolve();
+      })
+    })
+    .then((res) => {
+      console.log(res)
+      const lentEventListQuery = `
+      SELECT user_idx,
+             event_idx
+      FROM   eventmember
+             INNER JOIN (SELECT idx
+                         FROM   event
+                         WHERE  recipient_idx = (SELECT idx
+                                                 FROM   user
+                                                 WHERE  email = '${body.recipientemail}')) AS
+                        A
+                     ON A.idx = event_idx
+                        AND eventmember.user_idx = (SELECT idx
+                                                    FROM   user
+                                                    WHERE  userid = '${userid}')
+      ;  `;
+      return new Promise((resolve, reject) => {
+        connection.query(lentEventListQuery, (err, res) => {
+          if (err) return reject(err);
+          resolve(res);
+        });
+      })
     })
     .then((eventList) => {
-      let totalPaymentquery = '';
+      let resolvingLentQuery = '';
       eventList.forEach((event) => {
-        totalPaymentquery += `
+        resolvingLentQuery += `
         UPDATE eventmember
         SET    ispaid = true
         WHERE  user_idx = ${event.user_idx}
                AND event_idx = ${event.event_idx};
         `;
-        connection.query(totalPaymentquery, (err, res) => {
-          if (err) throw err;
-          return res;
+      });
+      return new Promise((resolve, reject) => {
+        connection.query(resolvingLentQuery, (err, res) => {
+          console.log('resolvingLent')
+          if (err) return reject(err);
+          resolve(res);
         });
       });
-    });
-  },
-  markAllToBeReceived: (body, userid) => {
-    const checkToBePaidQuery = `
-    SELECT user_idx,
-           event_idx
-    FROM   eventmember
-           INNER JOIN (SELECT idx
-                       FROM   event
-                       WHERE  recipient_idx = (SELECT idx
-                                               FROM   user
-                                               WHERE  userid = '${userid}')) AS
-                      A
-                   ON A.idx = event_idx
-                      AND eventmember.user_idx = (SELECT idx
-                                                  FROM   user
-                                                  WHERE  email = '${body.recipientemail}')
-    ;  `;
-    return new Promise((resolve, reject) => {
-      connection.query(checkToBePaidQuery, (err, res) => {
-        if (err) return reject(err);
-        return resolve(res);
-      });
+    })
+    .then((res) => {
+      console.log('loan')
+      const loanedEventListQuery = `
+      SELECT user_idx,
+             event_idx
+      FROM   eventmember
+             INNER JOIN (SELECT idx
+                         FROM   event
+                         WHERE  recipient_idx = (SELECT idx
+                                                 FROM   user
+                                                 WHERE  userid = '${userid}')) AS
+                        A
+                     ON A.idx = event_idx
+                        AND eventmember.user_idx = (SELECT idx
+                                                    FROM   user
+                                                    WHERE  email = '${body.recipientemail}')
+      ;  `;
+      return new Promise((resolve, reject) => {
+        connection.query(loanedEventListQuery, (err, res) => {
+          if (err) return reject(err);
+          resolve(res);
+        });
+      })
     })
     .then((eventList) => {
-      let totalPaymentquery = '';
+      let resolvingLoanedQuery = '';
       eventList.forEach((event) => {
-        totalPaymentquery += `
+        resolvingLoanedQuery += `
         UPDATE eventmember
         SET    ispaid = true
         WHERE  user_idx = ${event.user_idx}
                AND event_idx = ${event.event_idx};
         `;
-        connection.query(totalPaymentquery, (err, res) => {
-          if (err) throw err;
-          return res;
+      });
+      return new Promise((resolve, reject) => {
+        connection.query(resolvingLoanedQuery, (err, res) => {
+          if (err) return reject(err);
+          resolve(res);
         });
       });
+    })
+    .then((res) => {
+      return new Promise((resolve, reject) => {
+        connection.commit((err) => {
+          if (err) return reject(err);
+          resolve();
+        });
+      });
+      console.log('transaction complete!');
+    })
+    .catch((err) => {
+      console.log('Error in Transaction');
+      connection.rollback();
+      return Promise.reject(err);
     });
   },
 };
