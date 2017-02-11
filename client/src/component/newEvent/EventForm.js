@@ -11,13 +11,15 @@ export default class EventForm extends React.Component {
     super();
     this.state = {
       groupname: '',
-      selectedUserList: [],
+      selectedGroup: '',
+      selectedUserListToBeSent: [],
       eventName: '',
       date: '',
-      recipient: '이성준',
-      cost: 0,
-      groupList: {},
-      userList: [],
+      newrecipient: {},
+      oldrecipient: {},
+      totalCost: 0,
+      myAllGroupUserData: {},
+      // userList: [],
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.selectHandleChange = this.selectHandleChange.bind(this);
@@ -28,85 +30,124 @@ export default class EventForm extends React.Component {
     axios.get('http://localhost:3000/api/transaction')
     .then((res) => {
       const getData = JSON.parse(res.data);
-
       const groupStorage = {};
-
+      console.log(getData)
+      //
       getData.forEach((item) => {
         groupStorage[item.groupname] = [];
       });
-
       getData.forEach((item) => {
-        groupStorage[item.groupname].push(item.username);
+        groupStorage[item.groupname].push({
+          username: item.username,
+          email: item.email,
+          cost: 0,
+          ispaid: false,
+          selected: false,
+        });
       });
-
+      //
+      console.log(groupStorage)
       this.setState({
-        groupList: groupStorage,
+        myAllGroupUserData: groupStorage,
       });
     });
   }
   handleSubmit() {
     console.log('submit pressed');
+
     axios.post('http://localhost:3000/api/transaction', {
       groupname: this.state.groupname,
-      selectedUserList: this.state.selectedUserList,
-      eventName: this.state.eventName,
+      participants: this.state.selectedUserListToBeSent,
+      eventname: this.state.eventName,
       date: this.state.date,
-      recipient: this.state.recipient,
-      cost: this.state.cost,
+      newrecipient: this.state.newrecipient,
+      oldrecipient: this.state.oldrecipient,
     })
     .then((res) => {
       console.log('post response:', res);
-      this.context.router.push('/');
+      this.context.router.push('/mypage');
     })
     .catch((err) => {
       console.log('error!!: ', err);
     });
   }
-  selectHandleMember(event) {
-    console.log(event.target.id);
-    if (event.target.className === 'selected') {
-      event.target.className = 'unselected';
-    }
-    else {
-      event.target.className = 'selected';
+  selectHandleMember(event, selectedMember) {
+
+
+    const nextSelectedGroupMember = this.state.myAllGroupUserData[this.state.selectedGroup].map((member) => {
+      return member;
+    })
+
+    nextSelectedGroupMember.forEach((member) => {
+      if(member.email === selectedMember.email) {
+        member.selected = !member.selected;
+      }
+    })
+
+    const nextSelectedUserListToBeSent = nextSelectedGroupMember.filter((member) => {
+      return member.selected === true;
+    })
+    //복붙/
+    const newSelectedUserList = Object.assign({}, this.state.newSelectedUserList)
+    let count = 0;
+    if(this.state.selectedGroupMember){
+      this.state.selectedGroupMember.forEach((member) => {
+        if(member.selected) {
+          count += 1;
+        }
+      })
+    } else {
+      count = 1;
     }
 
-    const nextSelectedUserList = [...this.state.selectedUserList];
-    const userIndex = this.state.selectedUserList.indexOf(event.target.id);
-    if (userIndex === -1) {
-      nextSelectedUserList.push(event.target.id);
-      this.setState({
-        selectedUserList: nextSelectedUserList,
-      });
-    } else {
-      nextSelectedUserList.splice(userIndex, 1);
-      this.setState({
-        selectedUserList: nextSelectedUserList,
-      });
+    const indivCost = this.state.totalCost/count;
+    console.log(indivCost)
+    for(let member in newSelectedUserList) {
+      newSelectedUserList[member].cost = indivCost
     }
+
+    const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData)
+    for(let member in nextMyAllGroupUserData[this.state.selectedGroup]) {
+      nextMyAllGroupUserData[this.state.selectedGroup][member].cost = indivCost
+    }
+    //복붙//
+    this.setState({
+      selectedGroupMember : nextSelectedGroupMember,
+      selectedUserListToBeSent : nextSelectedUserListToBeSent,
+      myAllGroupUserData: nextMyAllGroupUserData,
+    })
   }
 
   selectHandleChange(event) {
     if (event.target.name === 'eventGroup') {
       if (event.target.value === 'select the group') {
         this.setState({
-          userList: [],
+          selectedUserListToBeSent: [],
         });
       }
       else if (event.target.value) {
-        const nextUserList = this.state.groupList[event.target.value].map((item) => {
-          return item;
-        });
+        // const nextUserList = this.state.myAllGroupUserData[event.target.value].map((item) => {
+        //   return item.username;
+        // });
         this.setState({
-          userList: nextUserList,
-          groupname: event.target.value,
+          selectedGroup: event.target.value,
+          // selectedUserListToBeSent: nextUserList,
+          // groupname: event.target.value,
         });
       }
     }
     else if (event.target.name === 'recipientList') {
-      this.setState({
-        recipient: event.target.value,
-      });
+      console.log(this.state.selectedGroup)
+      console.log(this.state.myAllGroupUserData[this.state.selectedGroup])
+      this.state.myAllGroupUserData[this.state.selectedGroup].forEach((member, index) => {
+        if (member.username === event.target.value) {
+          const nextNewRecipient = Object.assign({}, this.state.myAllGroupUserData[this.state.selectedGroup][index])
+          nextNewRecipient.ispaid = true;
+          this.setState({
+            newrecipient: nextNewRecipient,
+          });
+        }
+      })
     }
   }
 
@@ -117,8 +158,37 @@ export default class EventForm extends React.Component {
       });
     }
     else if (event.target.type === 'number') {
+      console.log("this.state.newSelectedUserList :",this.state.newSelectedUserList)
+      console.log("this.state.selectedUserListToBeSent.length :",this.state.selectedUserListToBeSent.length)
+      console.log("event.target.value ::", event.target.value)
+
+      const newSelectedUserList = Object.assign({}, this.state.newSelectedUserList)
+      let count = 0;
+      if(this.state.selectedGroupMember){
+        this.state.selectedGroupMember.forEach((member) => {
+          if(member.selected) {
+            count += 1;
+          }
+        })
+      } else {
+        count = 1;
+      }
+
+      const indivCost = event.target.value/count;
+      console.log(indivCost)
+      for(let member in newSelectedUserList) {
+        newSelectedUserList[member].cost = indivCost
+      }
+
+      const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData)
+      for(let member in nextMyAllGroupUserData[this.state.selectedGroup]) {
+        nextMyAllGroupUserData[this.state.selectedGroup][member].cost = indivCost
+      }
+
       this.setState({
-        cost: parseInt(event.target.value),
+        totalCost: parseInt(event.target.value),
+        selectedUserListToBeSent: newSelectedUserList,
+        myAllGroupUserData: nextMyAllGroupUserData,
       });
     }
     else if (event.target.type === 'text') {
@@ -128,27 +198,79 @@ export default class EventForm extends React.Component {
     }
   }
 
-
   render() {
+    console.log(this.state)
     // console.log('this.state', this.state);
-    const getGroupKeyArray = Object.keys(this.state.groupList);
+    const getGroupKeyArray = Object.keys(this.state.myAllGroupUserData);
     const groupSelection = getGroupKeyArray.map((item) => {
       return <option>{item}</option>;
     });
-    const userTable = this.state.userList.map((item) => {
-      return <td onClick={this.selectHandleMember} id={item} className="unselected">{item}</td>
-    });
 
+    //question to namse//
+    let userTable;
+    const selectedGroupMember = this.state.myAllGroupUserData[this.state.selectedGroup];
 
-    const recipientTable = this.state.userList.map((item) => {
-      return <option>{item}</option>;
-    });
+    if(Object.keys(this.state.myAllGroupUserData).length > 0 && this.state.selectedGroup.length > 0 ){
+      userTable = selectedGroupMember.map((member, index) => {
+        if(selectedGroupMember[index].selected) {
+          //question to namse, why !0 not working//
+          return (<tr
+             onClick={() => this.selectHandleMember(event, member)} className="selected">
+             <td>
+             {member.username} ({member.email})
+
+           </td>
+           <input
+             type='number' placeholder={this.state.myAllGroupUserData[this.state.selectedGroup][index].cost}
+             />
+           </tr>)
+
+        } else {
+          return (<tr
+             onClick={() => this.selectHandleMember(event, member)} className="unselected">
+             <td>
+             {member.username} ({member.email})
+           </td>
+           </tr>)
+
+        }
+      });
+    }
+    else {
+      //question to namse//
+      userTable = [];
+    }
+    //
+    // const nextUserList = this.state.myAllGroupUserData[event.target.value].map((item) => {
+    //   return item.username;
+    // });
+
+    let recipientTable;
+
+    if (this.state.selectedGroup.length){
+      recipientTable = this.state.myAllGroupUserData[this.state.selectedGroup].map((member) => {
+        return <option>{member.username}</option>;
+      });
+    } else {
+      recipientTable = [];
+    }
+
 
     return (
       <div>
         <form >
-        select the event date :
-        <p>
+
+        select your group :
+          <select
+            name="eventGroup" className="groupSelect"
+            onChange={this.selectHandleChange}>
+            <option>select the group</option>
+            {groupSelection}
+          </select>
+          <br />
+          <br />
+          <p>
+          select the event date :
           <input
             name="eventDate" className="inputDate" type="date"
             placeholder={moment().format('YYYY-MM-DD')}
@@ -161,21 +283,6 @@ export default class EventForm extends React.Component {
               onChange={this.inputHandleChange} />
           </p>
 
-        select your group :
-          <select
-            name="eventGroup" className="groupSelect"
-            onChange={this.selectHandleChange}>
-            <option>select the group</option>
-            {groupSelection}
-          </select>
-          <br />
-          <br />
-          select members :
-          <table>
-            {userTable}
-          </table>
-          <br />
-          <br />
           select recipient :
           <select
             name="recipientList" className="recipientSelect"
@@ -189,7 +296,11 @@ export default class EventForm extends React.Component {
               name="eventCost" className="inputEventCost" type="number"
               onChange={this.inputHandleChange} />
           </p>
-
+          <br />
+          select members :
+          <table>
+            {userTable}
+          </table>
           <br />
           <br />
           <input type="submit" value="submit" onClick={this.handleSubmit} />
