@@ -15,7 +15,7 @@ router.route('/group*')
 router.route('/mypage')
 .get(controller.myPage.get);
 
-router.route('/transaction')
+router.route('/transaction*')
 .get(controller.transaction.get)
 .post(controller.transaction.post);
 
