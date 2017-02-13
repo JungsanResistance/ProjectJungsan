@@ -54,26 +54,101 @@ module.exports = {
       });
     });
   },
+  getEventDetail: (groupname, eventname, date) => {
+    const getEventDetailQuery = `
+    SELECT g.groupname,
+           DATE_FORMAT(SPECIFIEDEVENT.date,'%Y-%m-%d')AS date,
+           SPECIFIEDEVENT.eventname
+    FROM   groups g
+           INNER JOIN (SELECT *
+                       FROM   event
+                       WHERE  eventname = '${eventname}'
+                              AND date = '${date}'
+                              AND group_idx = (SELECT idx
+                                               FROM   groups
+                                               WHERE
+                                  groupname = '${groupname}')) AS
+                                      SPECIFIEDEVENT
+                   ON g.idx = SPECIFIEDEVENT.group_idx;  `;
+    return new Promise((resolve, reject) => {
+      connection.query(getEventDetailQuery, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  },
+  getParticipantsDetail: (groupname, eventname, date) => {
+    const getParticipantsDetailQuery = `
+    SELECT u.username,
+           u.email,
+           SPECIFIEDEVENTMEMBERS.cost,
+           SPECIFIEDEVENTMEMBERS.ispaid
+    FROM   user u
+           INNER JOIN (SELECT *
+                       FROM   eventmember
+                       WHERE  event_idx = (SELECT idx
+                                           FROM   event
+                                           WHERE  eventname = '${eventname}'
+                                                  AND date = '${date}'
+                                                  AND group_idx = (SELECT idx
+                                                                   FROM   groups
+                                                                   WHERE
+                                                      groupname =
+                                                      '${groupname}')))
+                                    AS SPECIFIEDEVENTMEMBERS
+                   ON u.idx = SPECIFIEDEVENTMEMBERS.user_idx; `;
+    return new Promise((resolve, reject) => {
+      connection.query(getParticipantsDetailQuery, (err, res) => {
+        console.log(res);
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  },
+  getRecipientDetail: (groupname, eventname, date) => {
+    const getRecipientDetailQuery = `
+    SELECT u.username,
+           u.email,
+           em.cost,
+           em.ispaid
+    FROM   user u
+           INNER JOIN (SELECT idx,
+                              recipient_idx
+                       FROM   event
+                       WHERE  eventname = '${eventname}'
+                              AND date = '${date}'
+                              AND group_idx = (SELECT idx
+                                               FROM   groups
+                                               WHERE
+                                  groupname = '${groupname}')) e
+                   ON u.idx = e.recipient_idx
+           INNER JOIN eventmember em
+                   ON em.user_idx = u.idx
+                      AND em.event_idx = e.idx;   `;
+    return new Promise((resolve, reject) => {
+      connection.query(getRecipientDetailQuery, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  },
   postTransaction: (body) => {
     const createEventQuery = `
-    INSERT INTO event (group_idx, date, recipient_idx, eventname, totalcost) VALUES (
+    INSERT INTO event (group_idx, date, recipient_idx, eventname) VALUES (
     (SELECT idx FROM groups where groupname='${body.groupname}'),
     STR_TO_DATE('${body.date}', '%Y-%m-%d'),
-    (SELECT idx FROM user where email='${body.recipient.email}'),
-    '${body.eventname}',
-    ${body.cost}
+    (SELECT idx FROM user where email='${body.newrecipient.email}'),
+    '${body.eventname}'
   );`;
     let addEventMemberQuery = '';
     const participants = [...body.participants];
-    const costPerPerson = Math.floor(body.cost / participants.length);
     participants.forEach((member) => {
-      let isPaid = member.ispaid;
       addEventMemberQuery += `
       INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (
       (SELECT idx FROM user where email='${member.email}'),
       (SELECT idx FROM event where eventname='${body.eventname}'),
-      ${costPerPerson},
-      ${isPaid}
+      ${member.cost},
+      ${member.ispaid}
     );`;
     });
     return new Promise((resolve, reject) => {
