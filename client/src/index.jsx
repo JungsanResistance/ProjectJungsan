@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import Landing from './component/landing';
 import History from './component/history';
 import Mypage from './component/mypage';
-import Newevent from './component/newEvent/NewEvent';
+import NewTransaction from './component/NewTransaction';
 import AddNewGroup from './component/addNewGroup';
 import GroupPage from './component/grouppage';
 import GroupEditForm from './component/groupEditForm';
@@ -15,7 +15,7 @@ ReactDOM.render(
       <IndexRoute component={Landing} />
       <Route path="mypage" component={Mypage} />
       <Route path="history" component={History} />
-      <Route path="transaction" component={Newevent} />
+      <Route path="transaction" component={NewTransaction} />
       <Route path="group" component={AddNewGroup} />
       <Route path="groupeditform/:groupname" component={GroupEditForm} />
       <Route path="grouppage/:groupname" component={GroupPage} />
