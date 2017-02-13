@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import axios from 'axios';
+import Router, { browserHistory } from 'react-router'
 
 /* AWS url
 http://localhost:3000/
@@ -70,8 +71,14 @@ export default class NewTransaction extends React.Component {
       participants: this.state.selectedUserListToBeSent,
     })
     .then((res) => {
+      if (res.status === 201) {
+        alert('이벤트 등록 완료!')
+        browserHistory.push('/mypage');
+      } else {
+      console.log('alfjalkfjalsjflakjflkadsjflakjflksjaflkjdaslkj')
       console.log('post response:', res);
-      this.context.router.push('/mypage');
+      }
+      // this.context.router.push('/mypage');
     })
     .catch((err) => {
       console.log('error!!: ', err);

@@ -9,26 +9,24 @@ export default class History extends React.Component {
       history: [],
       imgUrl: '',
       ispaid: 0,
+      myEmail: '',
     };
     this.handleDone = this.handleDone.bind(this);
   }
   componentWillMount() {
-    axios.get('http://localhost:3000/api/history')
-    .then((res) => {
-      // console.log(res);
-      const getData = JSON.parse(res.data);
-      console.log(getData)
-      // const historyData = {
-      //   date : getData.date,
-      //   recipienteamil: getData.email,
-      //   eventname: getData.eventname,
-      //   ispaid: getData.ispaid,
-      // }
-      // console.log('getData', getData);
-      this.setState({
-        history: getData,
-      });
-    });
+
+    const myData = axios.get('http://localhost:3000/api/misc');
+    const historyData = axios.get('http://localhost:3000/api/history');
+
+    Promise.all([myData, historyData]).then(res => {
+      const myEmailData = JSON.parse(res[0].data)[0].email;
+      const getData = JSON.parse(res[1].data);
+
+        this.setState({
+          history: getData,
+          myEmail: myEmailData,
+        });
+    })
   }
 
   handleDone(index) {
@@ -57,26 +55,28 @@ export default class History extends React.Component {
   render() {
     const result = [];
     this.state.history.forEach((data, index) => {
-      let imgUrl = '';
-      console.log(data.ispaid)
-      if (data.ispaid) {
-        imgUrl = 'http://findicons.com/files/icons/808/on_stage/128/symbol_check.png';
-      }
-      else {
-        imgUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/X_mark.svg/896px-X_mark.svg.png';
-      }
-      console.log(data);
-      result.push(
-        <tr>
-          <td>{data.groupname}</td>
-          <td>{data.eventname}</td>
-          <td>{data.date}</td>
-          <td>{data.username} ({data.email})</td>
-          <td>{data.cost}</td>
-          <td ><img src={imgUrl} onClick={() => this.handleDone(index)}
-            className="toggleImg" /></td>
-        </tr>);
+      if (data.email !== this.state.myEmail) {
+        let imgUrl = '';
+        if (data.ispaid) {
+            imgUrl = 'http://findicons.com/files/icons/808/on_stage/128/symbol_check.png';
+          }
+          else {
+            imgUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/X_mark.svg/896px-X_mark.svg.png';
+          }
+          console.log(data);
+          result.push(
+            <tr>
+              <td>{data.groupname}</td>
+              <td>{data.eventname}</td>
+              <td>{data.date}</td>
+              <td>{data.username} ({data.email})</td>
+              <td>{data.cost}</td>
+              <td ><img src={imgUrl} onClick={() => this.handleDone(index)}
+                className="toggleImg" /></td>
+            </tr>);
+        }
     });
+
     return (
       <div className="historyTable">
         <table className="table">
