@@ -7,6 +7,10 @@ tr,td,th {
   text-align: center;
 }
 
+.inputStyle {
+  background-color:rgba(255, 209, 209, 0.5);
+}
+
 .sumListTable {
   border-collapse: collapse;
 }

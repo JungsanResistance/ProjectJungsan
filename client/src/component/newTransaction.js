@@ -20,12 +20,19 @@ export default class NewTransaction extends React.Component {
       oldrecipient: {},
       totalCost: 0,
       myAllGroupUserData: {},
+
+      groupStyle: '',
+      dateStyle: '',
+      eventNameStyle: '',
+      recipientStyle: '',
+      costStyle: '',
       // userList: [],
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.selectHandleChange = this.selectHandleChange.bind(this);
     this.inputHandleChange = this.inputHandleChange.bind(this);
     this.selectHandleMember = this.selectHandleMember.bind(this);
+    this.blankCheck = this.blankCheck.bind(this);
   }
   componentWillMount() {
     axios.get('http://localhost:3000/api/transaction?type=post')
@@ -53,7 +60,45 @@ export default class NewTransaction extends React.Component {
       });
     });
   }
+
+  blankCheck() {
+    console.log("selectedGroup:",this.state.selectedGroup)
+    console.log("date:",this.state.date)
+    console.log("eventName:",this.state.eventNameStyle)
+    console.log("newrecipient:",this.state.newrecipient)
+    console.log("totalCost:",this.state.totalCost)
+
+
+    let nextGroupStyle, nextDateStyle, nextEventNameStyle, nextNewRecipientStyle, nextCostStyle;
+
+    if (this.state.selectedGroup === '') {
+      nextGroupStyle = "inputStyle";
+    }
+    if (this.state.date === '') {
+      nextDateStyle = "inputStyle";
+    }
+    if (!this.state.eventName.length) {
+      nextEventNameStyle = "inputStyle";
+    }
+    if (!Object.keys(this.state.newrecipient).length){
+      nextNewRecipientStyle = "inputStyle";
+    }
+    if (!(this.state.totalCost > 0)) {
+      nextCostStyle = "inputStyle";
+    }
+    this.setState({
+      groupStyle: nextGroupStyle,
+      dateStyle: nextDateStyle,
+      eventNameStyle: nextEventNameStyle,
+      recipientStyle: nextNewRecipientStyle,
+      costStyle: nextCostStyle,
+    })
+  }
+
+
+
   handleSubmit() {
+    this.blankCheck()
     console.log('submit pressed');
     console.log({date: this.state.date,
           oldrecipient: this.state.oldrecipient,
@@ -61,7 +106,6 @@ export default class NewTransaction extends React.Component {
           groupname: this.state.selectedGroup,
           eventname: this.state.eventName,
           participants: this.state.selectedUserListToBeSent})
-
     axios.post('http://localhost:3000/api/transaction', {
       date: this.state.date,
       oldrecipient: this.state.oldrecipient,
@@ -71,22 +115,21 @@ export default class NewTransaction extends React.Component {
       participants: this.state.selectedUserListToBeSent,
     })
     .then((res) => {
+      console.log(res)
       if (res.status === 201) {
-        alert('이벤트 등록 완료!')
+        alert('이벤트가 등록되었습니다.')
         browserHistory.push('/mypage');
       } else {
-      console.log('alfjalkfjalsjflakjflkadsjflakjflksjaflkjdaslkj')
-      console.log('post response:', res);
+        alert('빈칸을 확인해주세요 ^^')
+        console.log('post response:', res);
       }
-      // this.context.router.push('/mypage');
-    })
-    .catch((err) => {
-      console.log('error!!: ', err);
     });
+
+
+
   }
+
   selectHandleMember(event, selectedMember) {
-
-
     const nextSelectedGroupMember = this.state.myAllGroupUserData[this.state.selectedGroup].map((member) => {
       return member;
     })
@@ -135,23 +178,19 @@ export default class NewTransaction extends React.Component {
     if (event.target.name === 'eventGroup') {
       if (event.target.value === 'select the group') {
         this.setState({
+          selectedGroup: '',
           selectedUserListToBeSent: [],
+          groupStyle: '',
         });
       }
       else if (event.target.value) {
-        // const nextUserList = this.state.myAllGroupUserData[event.target.value].map((item) => {
-        //   return item.username;
-        // });
         this.setState({
           selectedGroup: event.target.value,
-          // selectedUserListToBeSent: nextUserList,
-          // groupname: event.target.value,
+          groupStyle: '',
         });
       }
     }
     else if (event.target.name === 'recipientList') {
-      console.log(this.state.selectedGroup)
-      console.log(this.state.myAllGroupUserData[this.state.selectedGroup])
       this.state.myAllGroupUserData[this.state.selectedGroup].forEach((member, index) => {
         if (member.username === event.target.value) {
           const nextNewRecipient = Object.assign({}, this.state.myAllGroupUserData[this.state.selectedGroup][index])
@@ -159,6 +198,7 @@ export default class NewTransaction extends React.Component {
           this.setState({
             newrecipient: nextNewRecipient,
             oldrecipient: nextNewRecipient,
+            recipientStyle: '',
           });
         }
       })
@@ -169,12 +209,10 @@ export default class NewTransaction extends React.Component {
     if (event.target.type === 'date') {
       this.setState({
         date: event.target.value,
+        dateStyle: '',
       });
     }
     else if (event.target.type === 'number') {
-      console.log("this.state.newSelectedUserList :",this.state.newSelectedUserList)
-      console.log("this.state.selectedUserListToBeSent.length :",this.state.selectedUserListToBeSent.length)
-      console.log("event.target.value ::", event.target.value)
 
       const newSelectedUserList = Object.assign({}, this.state.newSelectedUserList)
       let count = 0;
@@ -189,7 +227,6 @@ export default class NewTransaction extends React.Component {
       }
 
       const indivCost = event.target.value/count;
-      console.log(indivCost)
       for(let member in newSelectedUserList) {
         newSelectedUserList[member].cost = indivCost
       }
@@ -203,11 +240,13 @@ export default class NewTransaction extends React.Component {
         totalCost: parseInt(event.target.value),
         selectedUserListToBeSent: newSelectedUserList,
         myAllGroupUserData: nextMyAllGroupUserData,
+        costStyle: '',
       });
     }
     else if (event.target.type === 'text') {
       this.setState({
         eventName: event.target.value,
+        eventNameStyle: '',
       });
     }
   }
@@ -219,12 +258,11 @@ export default class NewTransaction extends React.Component {
     const groupSelection = getGroupKeyArray.map((item) => {
       return <option>{item}</option>;
     });
-    console.log(groupSelection)
 
     //question to namse//
     let userTable;
     const selectedGroupMember = this.state.myAllGroupUserData[this.state.selectedGroup];
-
+    console.log('selectedGroup:', this.state.selectedGroup)
     if(Object.keys(this.state.myAllGroupUserData).length > 0 && this.state.selectedGroup.length > 0 ){
       userTable = selectedGroupMember.map((member, index) => {
         if(selectedGroupMember[index].selected) {
@@ -247,7 +285,6 @@ export default class NewTransaction extends React.Component {
              {member.username} ({member.email})
            </td>
            </tr>)
-
         }
       });
     }
@@ -277,7 +314,7 @@ export default class NewTransaction extends React.Component {
 
         select your group :
           <select
-            name="eventGroup" className="groupSelect"
+            name="eventGroup" className={this.state.groupStyle}
             onChange={this.selectHandleChange}>
             <option>select the group</option>
             {groupSelection}
@@ -287,20 +324,20 @@ export default class NewTransaction extends React.Component {
           <p>
           select the event date :
           <input
-            name="eventDate" className="inputDate" type="date"
+            name="eventDate" className={this.state.dateStyle} type="date"
             placeholder={moment().format('YYYY-MM-DD')}
             onChange={this.inputHandleChange} />
         </p>
           <p>
             event name :
             <input
-              type="text" placeholder="where did you eat?"
+              type="text" className={this.state.eventNameStyle} placeholder="where did you eat?"
               onChange={this.inputHandleChange} />
           </p>
 
           select recipient :
           <select
-            name="recipientList" className="recipientSelect"
+            name="recipientList" className={this.state.recipientStyle}
             onChange={this.selectHandleChange}>
             <option>select the recipient</option>
             {recipientTable}
@@ -308,7 +345,7 @@ export default class NewTransaction extends React.Component {
           <p>
             total event cost :
             <input
-              name="eventCost" className="inputEventCost" type="number"
+              name="eventCost" className={this.state.costStyle} type="number"
               onChange={this.inputHandleChange} />
           </p>
           <br />
@@ -318,7 +355,7 @@ export default class NewTransaction extends React.Component {
           </table>
           <br />
           <br />
-          <input type="submit" value="submit" onClick={this.handleSubmit} />
+          <input type="button" className="inputData" value="submit" onClick={this.handleSubmit} />
         </form>
       </div>
     );
