@@ -27,11 +27,11 @@ export default class NewTransaction extends React.Component {
     this.selectHandleMember = this.selectHandleMember.bind(this);
   }
   componentWillMount() {
-    axios.get('http://localhost:3000/api/transaction')
+    axios.get('http://localhost:3000/api/transaction?type=post')
     .then((res) => {
       const getData = JSON.parse(res.data);
       const groupStorage = {};
-      // console.log(getData)
+      console.log(getData)
       //
       getData.forEach((item) => {
         groupStorage[item.groupname] = [];
@@ -46,7 +46,7 @@ export default class NewTransaction extends React.Component {
         });
       });
       //
-      // console.log(groupStorage)
+      console.log(groupStorage)
       this.setState({
         myAllGroupUserData: groupStorage,
       });
@@ -212,6 +212,7 @@ export default class NewTransaction extends React.Component {
     const groupSelection = getGroupKeyArray.map((item) => {
       return <option>{item}</option>;
     });
+    console.log(groupSelection)
 
     //question to namse//
     let userTable;

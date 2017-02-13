@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import Landing from './component/landing';
 import History from './component/history';
 import Mypage from './component/mypage';
-import NewTransaction from './component/NewTransaction';
+import NewTransaction from './component/newTransaction';
 import AddNewGroup from './component/addNewGroup';
 import GroupPage from './component/grouppage';
 import GroupEditForm from './component/groupEditForm';
