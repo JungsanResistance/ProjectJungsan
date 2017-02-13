@@ -6,7 +6,7 @@ import axios from 'axios';
 http://localhost:3000/
 */
 
-export default class EventForm extends React.Component {
+export default class NewTransaction extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -31,7 +31,7 @@ export default class EventForm extends React.Component {
     .then((res) => {
       const getData = JSON.parse(res.data);
       const groupStorage = {};
-      console.log(getData)
+      // console.log(getData)
       //
       getData.forEach((item) => {
         groupStorage[item.groupname] = [];
@@ -46,7 +46,7 @@ export default class EventForm extends React.Component {
         });
       });
       //
-      console.log(groupStorage)
+      // console.log(groupStorage)
       this.setState({
         myAllGroupUserData: groupStorage,
       });
@@ -54,14 +54,20 @@ export default class EventForm extends React.Component {
   }
   handleSubmit() {
     console.log('submit pressed');
+    console.log({date: this.state.date,
+          oldrecipient: this.state.oldrecipient,
+          newrecipient: this.state.newrecipient,
+          groupname: this.state.selectedGroup,
+          eventname: this.state.eventName,
+          participants: this.state.selectedUserListToBeSent})
 
     axios.post('http://localhost:3000/api/transaction', {
-      groupname: this.state.groupname,
-      participants: this.state.selectedUserListToBeSent,
-      eventname: this.state.eventName,
       date: this.state.date,
-      newrecipient: this.state.newrecipient,
       oldrecipient: this.state.oldrecipient,
+      newrecipient: this.state.newrecipient,
+      groupname: this.state.selectedGroup,
+      eventname: this.state.eventName,
+      participants: this.state.selectedUserListToBeSent,
     })
     .then((res) => {
       console.log('post response:', res);
@@ -145,6 +151,7 @@ export default class EventForm extends React.Component {
           nextNewRecipient.ispaid = true;
           this.setState({
             newrecipient: nextNewRecipient,
+            oldrecipient: nextNewRecipient,
           });
         }
       })
@@ -199,7 +206,7 @@ export default class EventForm extends React.Component {
   }
 
   render() {
-    console.log(this.state)
+    // console.log(this.state)
     // console.log('this.state', this.state);
     const getGroupKeyArray = Object.keys(this.state.myAllGroupUserData);
     const groupSelection = getGroupKeyArray.map((item) => {
