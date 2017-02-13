@@ -17,7 +17,14 @@ export default class History extends React.Component {
     .then((res) => {
       // console.log(res);
       const getData = JSON.parse(res.data);
-      console.log('getData', getData);
+      console.log(getData)
+      // const historyData = {
+      //   date : getData.date,
+      //   recipienteamil: getData.email,
+      //   eventname: getData.eventname,
+      //   ispaid: getData.ispaid,
+      // }
+      // console.log('getData', getData);
       this.setState({
         history: getData,
       });
@@ -27,11 +34,19 @@ export default class History extends React.Component {
   handleDone(index) {
     const nextHistory = [...this.state.history];
     nextHistory[index].ispaid = !nextHistory[index].ispaid;
-    console.log('nextHistory[index]', nextHistory[index])
-    axios.put(`http://localhost:3000/api/history`, nextHistory[index])
+    console.log('Here!!!!!!!!:',nextHistory[index])
+    // console.log('nextHistory[index]', nextHistory[index])
+    const historyData = {
+      date : nextHistory[index].date,
+      recipienteamil: nextHistory[index].email,
+      eventname: nextHistory[index].eventname,
+      ispaid: nextHistory[index].ispaid,
+    };
+
+    axios.put(`http://localhost:3000/api/history`, historyData)
     .then((res) => {
       console.log(res);
-      if(res.status === 201)
+      if(res.status === 200)
         this.setState({
           history: nextHistory,
         })
@@ -56,7 +71,7 @@ export default class History extends React.Component {
           <td>{data.groupname}</td>
           <td>{data.eventname}</td>
           <td>{data.date}</td>
-          <td>{data.username}</td>
+          <td>{data.username} ({data.email})</td>
           <td>{data.cost}</td>
           <td ><img src={imgUrl} onClick={() => this.handleDone(index)}
             className="toggleImg" /></td>
@@ -69,7 +84,7 @@ export default class History extends React.Component {
             <th>groupname</th>
             <th>eventname</th>
             <th>date</th>
-            <th>name</th>
+            <th>name(email)</th>
             <th>cost</th>
             <th>status</th>
           </tr>
