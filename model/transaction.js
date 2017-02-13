@@ -51,7 +51,50 @@ module.exports = {
         result.newrecipient = JSONrecipientDetail[0];
         return result;
       });
+    } else if (query.type === 'check'){
+      console.log(query.groupname, query.eventname, query.date)
+      return new Promise((resolve, reject) => (resolve()))
+      .then(() => {
+        return new Promise((resolve, reject) => {
+          resolve(transaction.getEventDetail(query.groupname,query.eventname, query.date))
+        });
+      });
     }
   },
-  post: body => (transaction.postTransaction(body)),
+  post: req => (transaction.postTransaction(req.body)),
+  put: (req) => {
+    return new Promise((resolve, reject) => (resolve()))
+    .then(() => (
+      transaction.updateEventDetail(req.body)
+    ))
+    .then(() => {
+      console.log('updateEventDetail');
+      return new Promise((resolve, reject) => {
+        resolve(transaction.updateEventAddParticipants(req.body));
+      });
+    })
+    .then(() => {
+            console.log('updateEventAddParticipants');
+      return new Promise((resolve, reject) => {
+        resolve(transaction.getParticipantsDetail(req.body.groupname, req.body.neweventname, req.body.newdate));
+      });
+    })
+    .then((participantsDetail) => {
+            console.log('updateDrop');
+      let JSONparticipantsDetail = JSON.stringify(participantsDetail);
+      JSONparticipantsDetail = JSON.parse(JSONparticipantsDetail);
+      req.body.dropped = [];
+      JSONparticipantsDetail.forEach((oldparticipant) => {
+        req.body.dropped.push(oldparticipant.email);
+      });
+      req.body.participants.forEach((newparticipant) => {
+        req.body.dropped.splice((req.body.dropped.indexOf(newparticipant.email)), 1);
+      });
+      if (req.body.dropped.length) {
+        return new Promise((resolve, reject) => {
+          resolve(transaction.updateEventDropParticipants(req.body));
+        });
+      }
+    });
+  },
 };
