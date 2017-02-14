@@ -9,15 +9,22 @@ export default class Mypage extends React.Component {
     super();
     this.state = {
       groupList: [],
+      sumList: [],
+      myEmail: '',
     };
+    this.handleDone = this.handleDone.bind(this);
   }
-  componentWillMount() {
-    axios.get('http://localhost:3000/api/mypage')
-    .then((res) => {
 
-      console.log("axios get request here", res.data)
-      const getData = JSON.parse(res.data);
+  componentWillMount() {
+    const myData = axios.get('http://localhost:3000/api/misc');
+    const groupData = axios.get('http://localhost:3000/api/mypage');
+
+    Promise.all([myData, groupData]).then(res => {
+      const myEmailData = JSON.parse(res[0].data)[0].email
       const groupStorage = [];
+      const getData = JSON.parse(res[1].data);
+
+      console.log(myEmailData)
       getData.groupList.forEach((group) => {
         groupStorage.push(group.groupname);
       });
@@ -25,27 +32,52 @@ export default class Mypage extends React.Component {
       this.setState({
         groupList: groupStorage,
         sumList: getData.sumList,
+        myEmail: myEmailData,
       });
+    })
+  }
+
+  handleDone(index) {
+    const nextSumList = [...this.state.sumList];
+    const individualTransacionDone = {
+      recipientemail: nextSumList[index].email,
+    }
+
+    axios.put(`http://localhost:3000/api/misc`, individualTransacionDone)
+    .then((res) => {
+      console.log(res);
+      if(res.status === 200) {
+          nextSumList.splice(index, 1)
+          this.setState({
+            sumList: nextSumList,
+          })
+        }
     });
   }
+
   render() {
+    console.log('My Email Data ::::',this.state.myEmail)
     // console.log('this.state?', this.state)
     const List = [];
-
+    // console.log("here sumlist:",sumList)
     const {
       groupList,
       sumList,
     } = this.state;
-    // console.log('sumlist?', sumList)
-    if (sumList) {
-      sumList.forEach(data =>
-        List.push(
-          <tr>
-            <td>{data.username}</td>
-            <td>{data.email}</td>
-            <td>{data.cost}</td>
-          </tr>,
-        ));
+    if (sumList && this.state.myEmail) {
+      sumList.forEach((data, index) => {
+        console.log(data.email, this.state.myEmail)
+        if (data.email !== this.state.myEmail) {
+          List.push(
+            <tr>
+              <td>{data.username}</td>
+              <td>{data.email}</td>
+              <td>{data.cost}</td>
+              <td><button onClick={() => this.handleDone(index)}>정산완료</button></td>
+            </tr>,
+          )
+        }
+      });
     }
 
     const groups = this.state.groupList.map((data) => {
@@ -67,6 +99,7 @@ export default class Mypage extends React.Component {
               <th>name</th>
               <th>email</th>
               <th>cost</th>
+              <th></th>
             </tr>
             {List}
           </table>

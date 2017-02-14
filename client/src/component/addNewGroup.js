@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import Router, { replaceState, browserHistory } from 'react-router'
+import Router, { browserHistory } from 'react-router'
 export default class AddNewGroup extends React.Component {
 
   constructor() {

@@ -45,99 +45,108 @@ export default class GroupEditForm extends React.Component {
     });
   }
 
-  handleSubmitGroup() {
-    const groupMemberCheck = JSON.stringify(this.state.newGroupmembers) === JSON.stringify(this.state.oldGroupmembers);
-    const groupNameCheck = this.state.newGroupname === this.state.oldGroupname;
+  
 
-    const emptyGroupMembersCheck = this.state.newGroupmembers.every((member) => {
-      return member.active === 0;
-    });
-    console.log(emptyGroupMembersCheck)
-    if (emptyGroupMembersCheck) {
-      this.setState({
-        errorSubmit: '그룹에는 최소 1명의 멤버가 있어야 합니다',
+
+
+  handleSubmitGroup() {
+    this.handleGroupName()
+
+    if(this.state.errorGroupnameDuplicate !== '현재 사용하고 있는 그룹이름입니다.' &&
+    this.state.errorGroupnameDuplicate !== '이 그룹이름은 이미 있어 띵구야') {
+      const groupMemberCheck = JSON.stringify(this.state.newGroupmembers) === JSON.stringify(this.state.oldGroupmembers);
+      const groupNameCheck = this.state.newGroupname === this.state.oldGroupname;
+
+      const emptyGroupMembersCheck = this.state.newGroupmembers.every((member) => {
+        return member.active === 0;
       });
-    }
-    else {
-      if ((groupNameCheck === false) && groupMemberCheck) {
+      // console.log(emptyGroupMembersCheck)
+      if (emptyGroupMembersCheck) {
+        this.setState({
+          errorSubmit: '그룹에는 최소 1명의 멤버가 있어야 합니다',
+        });
+      }
+      else {
+        if ((groupNameCheck === false) && groupMemberCheck) {
+            axios.put(`http://localhost:3000/api/groupedit`,
+              {
+                action: 'modifyGroupName',
+                data: {
+                  oldgroupname: this.state.oldGroupname,
+                  newgroupname: this.state.newGroupname,
+                }
+              }
+            )
+            .then((res) => {
+              if (res.status === 200){
+                  console.log('post response:', res);
+                  // this.setState({
+                  //   errorSubmit: '그룹이름이 수정되었습니다!',
+                  // })
+                  alert('그룹 이름이 수정되었습니다')
+                  browserHistory.push('/mypage');
+                } else {
+                  console.log(res.status);
+                }
+              }
+            )
+          // }
+        }
+
+        else if (groupNameCheck && (groupMemberCheck === false)) {
           axios.put(`http://localhost:3000/api/groupedit`,
-            {
-              action: 'modifyGroupName',
-              data: {
-                oldgroupname: this.state.oldGroupname,
-                newgroupname: this.state.newGroupname,
+             {
+               action: 'modifyGroupMembers',
+               data: {
+                 oldgroupname: this.state.oldGroupname,
+                 newgroupname: this.state.newGroupname,
+                 groupmembers: this.state.newGroupmembers,
+              }
+             }
+          )
+          .then((res) => {
+            console.log(res);
+            if (res.status === 200){
+              // alert('그룹 이름이 수정되었습니다')
+              browserHistory.push('/mypage');
+              this.setState({
+                errorSubmit: '그룹멤버가 수정되었습니다!',
+              })
+            } else {
+              this.setState({
+                errorSubmit: '에러..!? 운영자에게 연락주세요 ㅠㅠ',
+              })
+            }
+          });
+        }
+        else if ((groupNameCheck || groupMemberCheck) === false) {
+          axios.put(`http://localhost:3000/api/groupedit`,
+             {
+               action: 'modifyGroupAll',
+               data: {
+                 oldgroupname: this.state.oldGroupname,
+                 newgroupname: this.state.newGroupname,
+                 groupmembers: this.state.newGroupmembers,
               }
             }
           )
           .then((res) => {
-            if (res.status === 200){
-                console.log('post response:', res);
-                // this.setState({
-                //   errorSubmit: '그룹이름이 수정되었습니다!',
-                // })
-                alert('그룹 이름이 수정되었습니다')
-                browserHistory.push('/mypage');
-              } else {
-                console.log(res.status);
-              }
+            if(res.status === 200){
+              this.setState({
+                errorSubmit: '그룹멤버와 그룹이름이 수정되었습니다',
+              })
+            } else {
+              this.setState({
+                errorSubmit: '에러..!? 운영자에게 연락주세요 ㅠㅠ',
+              })
             }
-          )
-        // }
-      }
-
-      else if (groupNameCheck && (groupMemberCheck === false)) {
-        axios.put(`http://localhost:3000/api/groupedit`,
-           {
-             action: 'modifyGroupMembers',
-             data: {
-               oldgroupname: this.state.oldGroupname,
-               newgroupname: this.state.newGroupname,
-               groupmembers: this.state.newGroupmembers,
-            }
-           }
-        )
-        .then((res) => {
-          console.log(res);
-          if (res.status === 200){
-            // alert('그룹 이름이 수정되었습니다')
-            browserHistory.push('/mypage');
-            this.setState({
-              errorSubmit: '그룹멤버가 수정되었습니다!',
-            })
-          } else {
-            this.setState({
-              errorSubmit: '에러..!? 운영자에게 연락주세요 ㅠㅠ',
-            })
-          }
-        });
-      }
-      else if ((groupNameCheck || groupMemberCheck) === false) {
-        axios.put(`http://localhost:3000/api/groupedit`,
-           {
-             action: 'modifyGroupAll',
-             data: {
-               oldgroupname: this.state.oldGroupname,
-               newgroupname: this.state.newGroupname,
-               groupmembers: this.state.newGroupmembers,
-            }
-          }
-        )
-        .then((res) => {
-          if(res.status === 200){
-            this.setState({
-              errorSubmit: '그룹멤버와 그룹이름이 수정되었습니다',
-            })
-          } else {
-            this.setState({
-              errorSubmit: '에러..!? 운영자에게 연락주세요 ㅠㅠ',
-            })
-          }
-        });
-      }
-      else {
-        this.setState({
-          errorSubmit: '수정한다면서요...!?',
-        })
+          });
+        }
+        else {
+          this.setState({
+            errorSubmit: '수정한다면서요...!?',
+          })
+        }
       }
     }
   };
@@ -171,7 +180,6 @@ export default class GroupEditForm extends React.Component {
     .then((res) => {
       const data = JSON.parse(res.data);
       const nextGroupmembers = [...this.state.newGroupmembers];
-
       if (data.length) {
         const duplicateEmailCheck = nextGroupmembers.some((item) => {
           return item.email === data[0].email;
@@ -250,11 +258,19 @@ export default class GroupEditForm extends React.Component {
     axios.get(`http://localhost:3000/api/groupedit?target=groupname&groupname=${this.state.newGroupname}`)
     .then((res) => {
       const data = JSON.parse(res.data);
+      console.log(data)
       if (data.length) {
-        this.setState({
-          errorGroupnameDuplicate: '이 그룹이름은 이미 있어 띵구야',
-          groupDuplicateFlag: "errorMemberDuplicateFalse",
-        })
+        if(data[0].groupname === this.props.params.groupname){
+          this.setState({
+            errorGroupnameDuplicate: '현재 사용하고 있는 그룹이름입니다.',
+            groupDuplicateFlag: "errorMemberDuplicateFalse",
+          })
+        } else {
+          this.setState({
+            errorGroupnameDuplicate: '이 그룹이름은 이미 있어 띵구야',
+            groupDuplicateFlag: "errorMemberDuplicateFalse",
+          })
+        }
       }
       else {
           this.setState({
@@ -301,7 +317,7 @@ export default class GroupEditForm extends React.Component {
         <ul>
           {members}
         </ul>
-        <input type="submit" value="그룹수정" onClick={this.handleSubmitGroup} />
+        <input type="button" value="그룹수정" onClick={this.handleSubmitGroup} />
         <br />
         <br />
         {this.state.errorSubmit}
