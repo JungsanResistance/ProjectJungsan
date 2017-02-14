@@ -1,4 +1,4 @@
-const groupedit = require('../model/groupedit');
+const group = require('../model/group');
 const history = require('../model/history');
 const mypage = require('../model/mypage');
 const misc = require('../model/misc');
@@ -47,13 +47,13 @@ module.exports = {
   },
   group: {
     // add email to returned object
-    get: (req, res) => (groupedit.get(req))
+    get: (req, res) => (group.get(req))
     .then((result) => {
       const body = JSON.stringify(result);
       console.log(body);
       res.json(body);
     }),
-    post: (req, res) => (groupedit.post(req))
+    post: (req, res) => (group.post(req))
     .then(() => {
       res.sendStatus(201);
     })
@@ -61,7 +61,7 @@ module.exports = {
       res.sendStatus(406);
       throw err;
     }),
-    put: (req, res) => (groupedit.put(req))
+    put: (req, res) => (group.put(req))
     .then(() => {
       res.sendStatus(200);
     })
@@ -78,7 +78,7 @@ module.exports = {
       res.json(body);
     })
     .catch((err) => {
-      res.sendStatus(400);
+      res.sendStatus(406);
       throw err;
     }),
     put: (req, res) => (history.put(req))

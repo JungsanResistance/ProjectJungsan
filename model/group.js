@@ -13,11 +13,13 @@ module.exports = {
         results = group.checkGroupname(req.query.groupname);
       }
       return results;
-    });
+    })
+    .catch(err => Promise.reject(err));
   },
   post: (req) => {
     return new Promise((resolve, reject) => (resolve()))
-    .then(() => (group.addNewGroup(req.body)));
+    .then(() => (group.addNewGroup(req.body)))
+    .catch(err => Promise.reject(err));
   },
 // group edit add new person failed
   put: (req) => {
@@ -34,6 +36,7 @@ module.exports = {
         .then(() => (group.editAddGroupMembers(data)))
         .then(() => group.editActiveMemberStatus(data));
       }
-    });
+    })
+    .catch(err => Promise.reject(err));
   },
 };
