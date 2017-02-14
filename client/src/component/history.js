@@ -32,19 +32,21 @@ export default class History extends React.Component {
   handleDone(index) {
     const nextHistory = [...this.state.history];
     nextHistory[index].ispaid = !nextHistory[index].ispaid;
-    console.log('Here!!!!!!!!:',nextHistory[index])
+    // console.log('Here!!!!!!!!:',nextHistory[index])
     // console.log('nextHistory[index]', nextHistory[index])
+    console.log(nextHistory[index].ispaid)
+    console.log("Here!",nextHistory[index])
     const historyData = {
       date : nextHistory[index].date,
-      recipienteamil: nextHistory[index].email,
+      recipientemail: nextHistory[index].email,
       eventname: nextHistory[index].eventname,
       ispaid: nextHistory[index].ispaid,
     };
 
     axios.put(`http://localhost:3000/api/history`, historyData)
     .then((res) => {
-      console.log(res);
       if(res.status === 200)
+      console.log("Are you come here??");
         this.setState({
           history: nextHistory,
         })
@@ -63,7 +65,7 @@ export default class History extends React.Component {
           else {
             imgUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/X_mark.svg/896px-X_mark.svg.png';
           }
-          console.log(data);
+          // console.log(data);
           result.push(
             <tr>
               <td>{data.groupname}</td>
