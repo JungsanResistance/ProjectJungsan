@@ -28,18 +28,22 @@ module.exports = {
       console.log(body);
       res.json(body);
     }),
-    post: (req, res) => {
-      const body = req.body;
-      console.log(body);
-      return transaction.post(body)
+    post: (req, res) => (transaction.post(req))
       .then(() => {
         res.sendStatus(201);
       })
       .catch((err) => {
         res.sendStatus(406);
         throw err;
-      });
-    },
+      }),
+    put: (req, res) => (transaction.put(req))
+    .then(() => {
+      res.sendStatus(200);
+    })
+    .catch((err) => {
+      console.log('error', err)
+      res.sendStatus(406);
+    }),
   },
   group: {
     // add email to returned object
