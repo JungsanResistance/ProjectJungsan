@@ -76,10 +76,18 @@ module.exports = {
       const body = JSON.stringify(result);
       console.log(body);
       res.json(body);
+    })
+    .catch((err) => {
+      res.sendStatus(400);
+      throw err;
     }),
     put: (req, res) => (history.put(req))
     .then(() => {
       res.sendStatus(200);
+    })
+    .catch((err) => {
+      res.sendStatus(406);
+      throw err;
     }),
   },
   misc: {
