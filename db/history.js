@@ -57,19 +57,45 @@ module.exports = {
       });
     });
   },
-  togglePaid: (body) => {
-    const markPaidQuery = `
+  toggleLoanPayment: (body) => {
+    const toggleLoanPaymentQuery = `
     UPDATE eventmember
     SET    ispaid = ${body.ispaid}
     WHERE  user_idx = (SELECT idx
                        FROM   user
                        WHERE  email = '${body.recipientemail}')
-           AND event_idx = (SELECT idx
-                            FROM   event
-                            WHERE  date = Str_to_date('${body.date}', '%Y-%m-%d')
-                                   AND eventname = '${body.eventname}')     `;
+                       AND event_idx = (SELECT idx
+                               FROM   event
+                               WHERE  eventname = '${body.eventname}'
+                                      AND date = '${body.date}'
+                                      AND group_idx = (SELECT idx
+                                                       FROM   groups
+                                                       WHERE
+                                          groupname = '${body.groupname}')); `;
     return new Promise((resolve, reject) => {
-      connection.query(markPaidQuery, (err) => {
+      connection.query(toggleLoanPaymentQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
+  toggleDebtPayment: (body) => {
+    const toggleDebtPaymentQuery = `
+    UPDATE eventmember
+    SET    ispaid = ${body.ispaid}
+    WHERE  user_idx = (SELECT idx
+                       FROM   user
+                       WHERE  userid = '${body.currentuser}')
+                       AND event_idx = (SELECT idx
+                               FROM   event
+                               WHERE  eventname = '${body.eventname}'
+                                      AND date = '${body.date}'
+                                      AND group_idx = (SELECT idx
+                                                       FROM   groups
+                                                       WHERE
+                                          groupname = '${body.groupname}')); `;
+    return new Promise((resolve, reject) => {
+      connection.query(toggleDebtPaymentQuery, (err) => {
         if (err) return reject(err);
         return resolve();
       });

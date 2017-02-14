@@ -40,7 +40,9 @@ module.exports = {
               AND em.ispaid=FALSE
             GROUP BY em.user_idx)) AS Z
             LEFT JOIN user u ON u.idx=Z.user_idx
-    GROUP BY Z.user_idx;`;
+    GROUP BY Z.user_idx
+    HAVING sum(cost) <> 0;
+`;
 
     return new Promise((resolve, reject) => {
       connection.query(getTotalSumQuery, (err, res) => {
