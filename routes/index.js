@@ -17,9 +17,10 @@ router.route('/mypage')
 
 router.route('/transaction*')
 .get(controller.transaction.get)
-.post(controller.transaction.post);
+.post(controller.transaction.post)
+.put(controller.transaction.put);
 
-router.route('/history')
+router.route('/history*')
 .get(controller.history.get)
 .put(controller.history.put);
 

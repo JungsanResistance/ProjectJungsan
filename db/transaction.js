@@ -99,7 +99,6 @@ module.exports = {
                    ON u.idx = SPECIFIEDEVENTMEMBERS.user_idx; `;
     return new Promise((resolve, reject) => {
       connection.query(getParticipantsDetailQuery, (err, res) => {
-        console.log(res);
         if (err) return reject(err);
         return resolve(res);
       });
@@ -154,6 +153,134 @@ module.exports = {
     return new Promise((resolve, reject) => {
       const totalQuery = createEventQuery + addEventMemberQuery;
       connection.query(totalQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
+  updateEventDetail: (body) => {
+    const updateEventNameQuery = `
+    UPDATE event
+    SET    eventname = '${body.neweventname}'
+    WHERE  idx = (SELECT *
+                  FROM   (SELECT idx
+                          FROM   event
+                          WHERE  eventname = '${body.oldeventname}'
+                                 AND date = '${body.olddate}'
+                                 AND group_idx = (SELECT idx
+                                                  FROM   groups
+                                                  WHERE
+                                     groupname = '${body.groupname}'))
+                         AS
+                         exactEventIndex);
+    `;
+    const updateEventDateQuery = `
+    UPDATE event
+    SET    date = '${body.newdate}'
+    WHERE  idx = (SELECT *
+                  FROM   (SELECT idx
+                          FROM   event
+                          WHERE  eventname = '${body.neweventname}'
+                                 AND date = '${body.olddate}'
+                                 AND group_idx = (SELECT idx
+                                                  FROM   groups
+                                                  WHERE
+                                     groupname = '${body.groupname}'))
+                         AS
+                         exactEventIndex);
+    `;
+    const updateRecipientQuery = `
+    UPDATE event
+    SET    recipient_idx = (SELECT idx FROM user where email = '${body.newrecipient.email}')
+    WHERE  idx = (SELECT *
+                  FROM   (SELECT idx
+                          FROM   event
+                          WHERE  eventname = '${body.neweventname}'
+                                 AND date = '${body.newdate}'
+                                 AND group_idx = (SELECT idx
+                                                  FROM   groups
+                                                  WHERE
+                                     groupname = '${body.groupname}'))
+                         AS
+                         exactEventIndex);
+    `;
+    return new Promise((resolve, reject) => {
+      const totalUpdateQuery = updateEventNameQuery + updateEventDateQuery + updateRecipientQuery;
+      connection.query(totalUpdateQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
+  updateEventAddParticipants: (body) => {
+    let updateEventAddParticipantsQuery = '';
+    body.participants.forEach((participant) => {
+      updateEventAddParticipantsQuery += `
+      INSERT INTO eventmember
+                  (user_idx,
+                   event_idx,
+                   cost,
+                   ispaid)
+      SELECT (SELECT idx
+              FROM   user
+              WHERE  email = '${participant.email}'),
+             (SELECT idx
+              FROM   event
+              WHERE  eventname = '${body.neweventname}'
+                     AND date = '${body.newdate}'
+                     AND group_idx = (SELECT idx
+                                      FROM   groups
+                                      WHERE  groupname = '${body.groupname}')),
+             5000,
+             false
+      FROM   DUAL
+      WHERE  NOT EXISTS (SELECT user_idx
+                         FROM   eventmember
+                         WHERE  user_idx = (SELECT idx
+                                            FROM   user
+                                            WHERE  email = '${participant.email}')
+                                AND event_idx = (SELECT idx
+                                                 FROM   event
+                                                 WHERE  eventname = '${body.neweventname}'
+                                                        AND date = '${body.newdate}'
+                                                        AND group_idx = (SELECT idx
+                                                                         FROM   groups
+                                                                         WHERE
+                                                            groupname =
+                                                            '${body.groupname}'
+                                                            )));
+      `;
+    });
+    return new Promise((resolve, reject) => {
+      connection.query(updateEventAddParticipantsQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
+  updateEventDropParticipants: (body) => {
+    let updateEventDropParticipantsQuery = '';
+    body.dropped.forEach((emailOfToBeDropped) => {
+      updateEventDropParticipantsQuery = `
+      DELETE FROM eventmember
+      WHERE  user_idx = (SELECT idx
+                         FROM   user
+                         WHERE  email = '${emailOfToBeDropped}')
+             AND event_idx = (SELECT *
+                              FROM   (SELECT idx
+                                      FROM   event
+                                      WHERE  eventname = '${body.neweventname}'
+                                             AND date = '${body.newdate}'
+                                             AND group_idx = (SELECT idx
+                                                              FROM   groups
+                                                              WHERE
+                                                 groupname = '${body.groupname}')) AS
+                                     exactEventIndex)
+      ; `;
+    });
+    console.log(updateEventDropParticipantsQuery);
+    return new Promise((resolve, reject) => {
+      connection.query(updateEventDropParticipantsQuery, (err) => {
         if (err) return reject(err);
         return resolve();
       });
