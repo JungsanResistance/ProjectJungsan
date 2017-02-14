@@ -7,7 +7,14 @@ module.exports = {
     .then(() => (history.getHistory(currentUser)));
   },
   put: (req) => {
-    return new Promise((resolve, reject) => (resolve()))
-    .then(() => (history.togglePaid(req.body)));
+    req.body.currentuser = req.session.passport.user;
+    if (req.query.type === 'loan') {
+      return new Promise((resolve, reject) => (resolve()))
+      .then(() => (history.toggleLoanPayment(req.body)));
+    }
+    else if (req.query.type === 'debt') {
+      return new Promise((resolve, reject) => (resolve()))
+      .then(() => (history.toggleDebtPayment(req.body)));
+    };
   },
 };

@@ -90,6 +90,8 @@ module.exports = {
       req.body.participants.forEach((newparticipant) => {
         req.body.dropped.splice((req.body.dropped.indexOf(newparticipant.email)), 1);
       });
+      console.log(JSONparticipantsDetail);
+            console.log(req.body.participants);
       if (req.body.dropped.length) {
         return new Promise((resolve, reject) => {
           resolve(transaction.updateEventDropParticipants(req.body));

@@ -278,6 +278,7 @@ module.exports = {
                                      exactEventIndex)
       ; `;
     });
+    console.log(updateEventDropParticipantsQuery);
     return new Promise((resolve, reject) => {
       connection.query(updateEventDropParticipantsQuery, (err) => {
         if (err) return reject(err);
