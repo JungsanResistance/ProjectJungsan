@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import Router, { browserHistory } from 'react-router'
 
 export default class History extends React.Component {
 
@@ -12,6 +13,7 @@ export default class History extends React.Component {
       myEmail: '',
     };
     this.handleDone = this.handleDone.bind(this);
+    this.handleEditEvent = this.handleEditEvent.bind(this);
   }
   componentWillMount() {
 
@@ -28,7 +30,11 @@ export default class History extends React.Component {
         });
     })
   }
-
+  // edit single event
+  handleEditEvent() {
+    browserHistory.push('/editEvent');
+  }
+  // handling event transaction finished
   handleDone(index) {
     const nextHistory = [...this.state.history];
     nextHistory[index].ispaid = !nextHistory[index].ispaid;
@@ -56,23 +62,34 @@ export default class History extends React.Component {
 
   render() {
     const result = [];
-    this.state.history.forEach((data, index) => {
-      if (data.email !== this.state.myEmail) {
+    let editButton = '';
+
+    this.state.history.forEach((event, index) => {
+      if (event.email !== this.state.myEmail) { // to hide me as a recipient in the history
         let imgUrl = '';
-        if (data.ispaid) {
+
+        if (event.isadmin) {
+          editButton = <input type="button" value="eventEdit" onClick={this.handleEditEvent} />;
+        }
+        else {
+          editButton = '';
+        }
+
+        if (event.ispaid) {
             imgUrl = 'http://findicons.com/files/icons/808/on_stage/128/symbol_check.png';
           }
           else {
             imgUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/X_mark.svg/896px-X_mark.svg.png';
           }
-          // console.log(data);
+          // console.log(event);
           result.push(
             <tr>
-              <td>{data.groupname}</td>
-              <td>{data.eventname}</td>
-              <td>{data.date}</td>
-              <td>{data.username} ({data.email})</td>
-              <td>{data.cost}</td>
+              <td>{event.groupname}</td>
+              <td>{event.eventname}</td>
+              <td>{event.date}</td>
+              <td>{event.username} ({event.email})</td>
+              <td>{event.cost}</td>
+              <td>{editButton}</td>
               <td ><img src={imgUrl} onClick={() => this.handleDone(index)}
                 className="toggleImg" /></td>
             </tr>);
@@ -88,6 +105,7 @@ export default class History extends React.Component {
             <th>date</th>
             <th>name(email)</th>
             <th>cost</th>
+            <th>edit</th>
             <th>status</th>
           </tr>
           {result}
