@@ -56,7 +56,7 @@ module.exports = {
       return new Promise((resolve, reject) => (resolve()))
       .then(() => {
         return new Promise((resolve, reject) => {
-          resolve(transaction.getEventDetail(query.groupname,query.eventname, query.date))
+          resolve(transaction.getEventDetail(query.groupname, query.eventname, query.date))
         });
       });
     }
