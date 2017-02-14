@@ -64,7 +64,10 @@ module.exports = {
       .catch(err => Promise.reject(err));
     }
   },
-  post: req => (transaction.postTransaction(req.body)),
+  post: (req) => {
+    req.body.userid = req.session.passport.user;
+    return transaction.postTransaction(req.body);
+  },
   put: (req) => {
     return new Promise((resolve, reject) => (resolve()))
     .then(() => (

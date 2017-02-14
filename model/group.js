@@ -17,6 +17,7 @@ module.exports = {
     .catch(err => Promise.reject(err));
   },
   post: (req) => {
+    req.body.userid = req.session.passport.user;
     return new Promise((resolve, reject) => (resolve()))
     .then(() => (group.addNewGroup(req.body)))
     .catch(err => Promise.reject(err));
