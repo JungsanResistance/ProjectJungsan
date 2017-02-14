@@ -13,6 +13,7 @@ module.exports = {
     .then((groupList) => {
       result.groupList = groupList;
       return result;
-    });
+    })
+    .catch(err => Promise.reject(err));
   },
 };

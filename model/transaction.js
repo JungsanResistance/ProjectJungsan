@@ -16,7 +16,8 @@ module.exports = {
         const body = JSON.stringify(groupList);
         const jsonBody = JSON.parse(body);
         return transaction.getGroupMember(jsonBody);
-      });
+      })
+      .catch(err => Promise.reject(err));
     } else if (query.type === 'put'){
       console.log(query.groupname, query.eventname, query.date)
       const result = {}
@@ -50,7 +51,8 @@ module.exports = {
         result.oldrecipient = JSONrecipientDetail[0];
         result.newrecipient = JSONrecipientDetail[0];
         return result;
-      });
+      })
+      .catch(err => Promise.reject(err));
     } else if (query.type === 'check'){
       console.log(query.groupname, query.eventname, query.date)
       return new Promise((resolve, reject) => (resolve()))
@@ -58,10 +60,14 @@ module.exports = {
         return new Promise((resolve, reject) => {
           resolve(transaction.getEventDetail(query.groupname, query.eventname, query.date))
         });
-      });
+      })
+      .catch(err => Promise.reject(err));
     }
   },
-  post: req => (transaction.postTransaction(req.body)),
+  post: (req) => {
+    req.body.userid = req.session.passport.user;
+    return transaction.postTransaction(req.body);
+  },
   put: (req) => {
     return new Promise((resolve, reject) => (resolve()))
     .then(() => (
@@ -97,6 +103,7 @@ module.exports = {
           resolve(transaction.updateEventDropParticipants(req.body));
         });
       }
-    });
+    })
+    .catch(err => Promise.reject(err));
   },
 };

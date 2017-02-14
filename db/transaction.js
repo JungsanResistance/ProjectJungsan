@@ -138,7 +138,19 @@ module.exports = {
     STR_TO_DATE('${body.date}', '%Y-%m-%d'),
     (SELECT idx FROM user where email='${body.newrecipient.email}'),
     '${body.eventname}'
-  );`;
+    );
+    INSERT INTO eventadmin (event_idx, admin_idx) VALUES (
+      (SELECT idx
+              FROM   event
+              WHERE  eventname = '${body.eventname}'
+                     AND date = '${body.date}'
+                     AND group_idx = (SELECT idx
+                                      FROM   groups
+                                      WHERE
+                         groupname = '${body.groupname}')),
+      (SELECT idx FROM user where userid = ${body.userid})
+    );
+    `;
     let addEventMemberQuery = '';
     const participants = [...body.participants];
     participants.forEach((member) => {
