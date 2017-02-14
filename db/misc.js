@@ -24,12 +24,11 @@ module.exports = {
     });
   },
   resolveAllPayments: (body, userid) => {
-    const paymentInfo = {body, userid}
     return new Promise((resolve, reject) => {
       connection.beginTransaction((err) => {
         if (err) return reject(err);
         resolve();
-      })
+      });
     })
     .then((res) => {
       console.log(res)
