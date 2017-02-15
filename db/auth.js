@@ -37,17 +37,17 @@ module.exports = {
   checkEventMember: (userid, groupname, eventname, date) => {
     const checkEventMemberQuery = `
     SELECT *
-    FROM   eventadmin
+    FROM   eventmember
     WHERE  event_idx = (SELECT idx
                         FROM   event
                         WHERE  eventname = '${eventname}'
                                AND date = '${date}'
                                AND group_idx = (SELECT idx
                                                 FROM   groups
-                                                WHERE
                                    groupname = '${groupname}'))
            AND user_idx = (SELECT idx
                             FROM   user
+                            WHERE
                             WHERE  userid = '${userid}')
                             `;
     console.log('ad',checkEventMemberQuery)
@@ -76,14 +76,14 @@ module.exports = {
       });
     });
   },
-  checkGroupAdmin: (userid, groupname) => {
+  checkGroupMember: (userid, groupname) => {
     const checkGroupAdminQuery = `
     SELECT *
-    FROM   groupadmin
+    FROM   groupmember
     WHERE  group_idx = (SELECT idx
                         FROM   groups
                         WHERE  groupname = '${groupname}')
-           AND admin_idx = (SELECT idx
+           AND user_idx = (SELECT idx
                             FROM   user
                             WHERE  userid = '${userid}')
                             `;

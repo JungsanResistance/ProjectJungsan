@@ -140,7 +140,7 @@ module.exports = {
     '${body.eventname}'
     ); `;
 
-    const addEventAdminQuery = `
+    const addEventCreatorQuery = `
     INSERT INTO eventadmin (event_idx, admin_idx) VALUES (
       (SELECT idx
               FROM   event
@@ -152,26 +152,31 @@ module.exports = {
                          groupname = '${body.groupname}')),
       (SELECT idx FROM user where userid = ${body.userid})
     );
-    INSERT INTO eventadmin (event_idx, admin_idx) VALUES (
-      (SELECT idx
-              FROM   event
-              WHERE  eventname = '${body.eventname}'
-                     AND date = '${body.date}'
-                     AND group_idx = (SELECT idx
-                                      FROM   groups
-                                      WHERE
-                         groupname = '${body.groupname}')),
-      (SELECT idx
-              FROM user
-              WHERE idx = (SELECT admin_idx
-                                  FROM groupadmin
-                                  WHERE group_idx = (SELECT idx
-                                                      FROM groups
-                                                      WHERE
-                                    groupname = '${body.groupname}')))
-    );
     `;
-    console.log(addEventAdminQuery)
+    let addGroupAdmintoEventQuery = '';
+    if (!body.isadmin) {
+      addGroupAdmintoEventQuery = `
+      INSERT INTO eventadmin (event_idx, admin_idx) VALUES (
+        (SELECT idx
+                FROM   event
+                WHERE  eventname = '${body.eventname}'
+                       AND date = '${body.date}'
+                       AND group_idx = (SELECT idx
+                                        FROM   groups
+                                        WHERE
+                           groupname = '${body.groupname}')),
+        (SELECT idx
+                FROM user
+                WHERE idx = (SELECT admin_idx
+                                    FROM groupadmin
+                                    WHERE group_idx = (SELECT idx
+                                                        FROM groups
+                                                        WHERE
+                                      groupname = '${body.groupname}')))
+      );
+      `;
+    }
+    console.log(addGroupAdmintoEventQuery);
     let addEventMemberQuery = '';
     const participants = [...body.participants];
     participants.forEach((member) => {
@@ -184,7 +189,7 @@ module.exports = {
     );`;
     });
     return new Promise((resolve, reject) => {
-      const totalQuery = createEventQuery + addEventAdminQuery + addEventMemberQuery;
+      const totalQuery = createEventQuery + addEventCreatorQuery + addGroupAdmintoEventQuery + addEventMemberQuery;
       connection.query(totalQuery, (err) => {
         if (err) return reject(err);
         return resolve();

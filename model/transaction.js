@@ -1,4 +1,5 @@
 const transaction = require('../db/transaction');
+const auth = require('../db/auth');
 
 module.exports = {
   get: (req) => {
@@ -66,10 +67,29 @@ module.exports = {
   },
   post: (req) => {
     req.body.userid = req.session.passport.user;
-    return transaction.postTransaction(req.body);
+    return auth.checkGroupMember(req.body.userid, req.body.groupname)
+    .then((isMember) => {
+      if (!isMember.length) return Promise.reject('Not a group member');
+      else return auth.checkGroupAdmin(req.body.userid, req.body.groupname);
+    })
+    // prevent adding duplicate admin if post creator === group admin
+    .then((isAdmin) => {
+      if (isAdmin.length) {
+        req.body.isadmin = true;
+      } else {
+        req.body.isadmin = false;
+      }
+      return transaction.postTransaction(req.body);
+    })
+    .catch(err => Promise.reject(err));
   },
   put: (req) => {
-    return new Promise((resolve, reject) => (resolve()))
+    req.body.userid = req.session.passport.user;
+    return auth.checkEventAdmin(req.body.userid, req.body.groupname,
+      req.body.oldeventname, req.body.olddate)
+    .then((isAdmin) => {
+      if (!isAdmin.length) return Promise.reject('Not the admin');
+    })
     .then(() => (
       transaction.updateEventDetail(req.body)
     ))

@@ -1,8 +1,22 @@
 const group = require('../db/group');
+const auth = require('../db/auth');
 
 module.exports = {
   get: (req) => {
+    const currentUser = req.session.passport.user;
     return new Promise((resolve, reject) => (resolve()))
+    .then(() =>{
+      if (req.query.target === 'groupmembers') {
+        return auth.checkGroupMember(currentUser, req.query.groupname);
+      }
+    })
+    .then((membercheck) => {
+      console.log('memcheck', membercheck);
+      if (!membercheck) return;
+      else if (membercheck.length === 0) {
+        return Promise.reject('Not a group member');
+      }
+    })
     .then(() => {
       let results;
       if (req.query.target === 'email') {
@@ -14,7 +28,10 @@ module.exports = {
       }
       return results;
     })
-    .catch(err => Promise.reject(err));
+    .catch(err => {
+      console.log('catch!');
+      return Promise.reject(err)
+    });
   },
   post: (req) => {
     req.body.userid = req.session.passport.user;
@@ -25,7 +42,10 @@ module.exports = {
 // group edit add new person failed
   put: (req) => {
     const data = req.body.data;
-    return new Promise((resolve, reject) => (resolve()))
+    return auth.checkGroupAdmin(req.session.passport.user, data.oldgroupname)
+    .then((isAdmin) => {
+      if (!isAdmin.length) return Promise.reject('Not the admin');
+    })
     .then(() => {
       if (req.body.action === 'modifyGroupName') {
         return group.modifyGroupName(data);
