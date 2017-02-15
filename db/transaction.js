@@ -140,7 +140,7 @@ module.exports = {
     '${body.eventname}'
     ); `;
 
-    const insertEventAdminQuery = `
+    const addEventAdminQuery = `
     INSERT INTO eventadmin (event_idx, admin_idx) VALUES (
       (SELECT idx
               FROM   event
@@ -163,14 +163,15 @@ module.exports = {
                          groupname = '${body.groupname}')),
       (SELECT idx
               FROM user
-              WHERE (SELECT admin_idx
+              WHERE idx = (SELECT admin_idx
                                   FROM groupadmin
-                                  WHERE group_idx = '(SELECT idx
+                                  WHERE group_idx = (SELECT idx
                                                       FROM groups
                                                       WHERE
-                                    groupname = ${body.groupname}')))
+                                    groupname = '${body.groupname}')))
     );
     `;
+    console.log(addEventAdminQuery)
     let addEventMemberQuery = '';
     const participants = [...body.participants];
     participants.forEach((member) => {
@@ -183,7 +184,7 @@ module.exports = {
     );`;
     });
     return new Promise((resolve, reject) => {
-      const totalQuery = createEventQuery + insertEventAdminQuery + addEventMemberQuery;
+      const totalQuery = createEventQuery + addEventAdminQuery + addEventMemberQuery;
       connection.query(totalQuery, (err) => {
         if (err) return reject(err);
         return resolve();
