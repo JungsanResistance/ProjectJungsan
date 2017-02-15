@@ -14,7 +14,7 @@ module.exports = {
     get: (req, res) => (mypage.get(req))
     .then((result) => {
       const body = JSON.stringify(result);
-      console.log(body);
+      console.log('result', body);
       res.json(body);
     })
     .catch((err) => {
