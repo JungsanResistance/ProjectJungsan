@@ -14,7 +14,7 @@ export default class History extends React.Component {
       ispaid: 0,
       myEmail: '',
     };
-    this.handleDone = this.handleDone.bind(this);
+    
     this.handleEditEvent = this.handleEditEvent.bind(this);
   }
   componentWillMount() {
@@ -37,31 +37,6 @@ export default class History extends React.Component {
     browserHistory.push('/editEvent');
   }
 
-  // handling event transaction finished
-  handleDone(index) {
-    const nextHistory = [...this.state.history];
-    nextHistory[index].ispaid = !nextHistory[index].ispaid;
-    // console.log('Here!!!!!!!!:',nextHistory[index])
-    // console.log('nextHistory[index]', nextHistory[index])
-    console.log(nextHistory[index].ispaid)
-    console.log("Here!",nextHistory[index])
-    const historyData = {
-      date : nextHistory[index].date,
-      recipientemail: nextHistory[index].email,
-      eventname: nextHistory[index].eventname,
-      ispaid: nextHistory[index].ispaid,
-    };
-
-    // update with query string.. type=?
-    // axios.put(`http://localhost:3000/api/history`, historyData)
-    // .then((res) => {
-    //   if(res.status === 200)
-    //   console.log("Are you come here??");
-    //     this.setState({
-    //       history: nextHistory,
-    //     })
-    // });
-  }
 
   render() {
     return (
