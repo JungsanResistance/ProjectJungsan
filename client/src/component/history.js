@@ -1,17 +1,21 @@
 import React from 'react';
 import axios from 'axios';
+import Router, { browserHistory } from 'react-router';
+import HistoryTable from './historyTable';
 
 export default class History extends React.Component {
 
   constructor() {
     super();
     this.state = {
-      history: [],
+      debtHistory: [],
+      loanedHistory: [],
       imgUrl: '',
       ispaid: 0,
       myEmail: '',
     };
     this.handleDone = this.handleDone.bind(this);
+    this.handleEditEvent = this.handleEditEvent.bind(this);
   }
   componentWillMount() {
 
@@ -21,14 +25,19 @@ export default class History extends React.Component {
     Promise.all([myData, historyData]).then(res => {
       const myEmailData = JSON.parse(res[0].data)[0].email;
       const getData = JSON.parse(res[1].data);
-
-        this.setState({
-          history: getData,
-          myEmail: myEmailData,
-        });
+      this.setState({
+        debtHistory: getData.debt,
+        loanedHistory: getData.loaned,
+        myEmail: myEmailData,
+      });
     })
   }
+  // edit single event // under the consturction
+  handleEditEvent() {
+    browserHistory.push('/editEvent');
+  }
 
+  // handling event transaction finished
   handleDone(index) {
     const nextHistory = [...this.state.history];
     nextHistory[index].ispaid = !nextHistory[index].ispaid;
@@ -43,54 +52,25 @@ export default class History extends React.Component {
       ispaid: nextHistory[index].ispaid,
     };
 
-    axios.put(`http://localhost:3000/api/history`, historyData)
-    .then((res) => {
-      if(res.status === 200)
-      console.log("Are you come here??");
-        this.setState({
-          history: nextHistory,
-        })
-    });
+    // update with query string.. type=?
+    // axios.put(`http://localhost:3000/api/history`, historyData)
+    // .then((res) => {
+    //   if(res.status === 200)
+    //   console.log("Are you come here??");
+    //     this.setState({
+    //       history: nextHistory,
+    //     })
+    // });
   }
 
-
   render() {
-    const result = [];
-    this.state.history.forEach((data, index) => {
-      if (data.email !== this.state.myEmail) {
-        let imgUrl = '';
-        if (data.ispaid) {
-            imgUrl = 'http://findicons.com/files/icons/808/on_stage/128/symbol_check.png';
-          }
-          else {
-            imgUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/X_mark.svg/896px-X_mark.svg.png';
-          }
-          // console.log(data);
-          result.push(
-            <tr>
-              <td>{data.groupname}</td>
-              <td>{data.eventname}</td>
-              <td>{data.date}</td>
-              <td>{data.username} ({data.email})</td>
-              <td>{data.cost}</td>
-              <td ><img src={imgUrl} onClick={() => this.handleDone(index)}
-                className="toggleImg" /></td>
-            </tr>);
-        }
-    });
-
     return (
       <div className="historyTable">
         <table className="table">
-          <tr>
-            <th>groupname</th>
-            <th>eventname</th>
-            <th>date</th>
-            <th>name(email)</th>
-            <th>cost</th>
-            <th>status</th>
-          </tr>
-          {result}
+          <HistoryTable debtHistory={this.state.debtHistory} myEmail={this.state.myEmail} />
+          <br />
+          <br />
+          <HistoryTable loanedHistory={this.state.loanedHistory} myEmail={this.state.myEmail} />
         </table>
       </div>
     );

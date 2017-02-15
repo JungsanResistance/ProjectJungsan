@@ -7,6 +7,7 @@ import NewTransaction from './component/newTransaction';
 import AddNewGroup from './component/addNewGroup';
 import GroupPage from './component/grouppage';
 import GroupEditForm from './component/groupEditForm';
+import EditEvent from './component/editEvent';
 import { Router, Route, browserHistory, IndexRoute } from 'react-router';
 
 ReactDOM.render(
@@ -19,6 +20,7 @@ ReactDOM.render(
       <Route path="group" component={AddNewGroup} />
       <Route path="groupeditform/:groupname" component={GroupEditForm} />
       <Route path="grouppage/:groupname" component={GroupPage} />
+      <Route path="editevent" component={EditEvent} />
     </Route>
   </Router>,
  document.getElementById('app'));
