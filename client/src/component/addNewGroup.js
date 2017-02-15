@@ -41,7 +41,9 @@ export default class AddNewGroup extends React.Component {
       })
     }
     else {
-      axios.post('http://localhost:3000/api/groupedit', {
+      console.log("groupname::",this.state.groupname,
+      "groupmembers::::", this.state.groupmembers,)
+      axios.post('http://localhost:3000/api/group', {
         groupname: this.state.groupname,
         groupmembers: this.state.groupmembers,
       })
