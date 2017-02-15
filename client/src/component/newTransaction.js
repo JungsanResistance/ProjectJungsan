@@ -88,7 +88,8 @@ export default class NewTransaction extends React.Component {
       nextCostStyle = 'inputStyle';
       count += 1;
     }
-    if (!this.state.selectedUserListToBeSent.length) {
+    console.log('selectedUserListToBeSent::', this.state.selectedUserListToBeSent)
+    if (this.state.selectedUserListToBeSent.length === 0) {
       groupMemberCount += 1;
     }
 
@@ -99,6 +100,8 @@ export default class NewTransaction extends React.Component {
       recipientStyle: nextNewRecipientStyle,
       costStyle: nextCostStyle,
     });
+
+    console.log('groupMemberCount ::::', groupMemberCount)
 
     if (!count && !groupMemberCount) {
       this.handleSubmit();
