@@ -1,0 +1,84 @@
+table {
+  bordercollape: collapse;
+}
+
+tr,td,th {
+  border:0.5px solid black;
+  text-align: center;
+}
+
+.inputStyle {
+  background-color:rgba(255, 209, 209, 0.5);
+}
+
+.sumListTable {
+  border-collapse: collapse;
+}
+
+.toggleImg{
+  /*width:25px;*/
+  height:20px;
+}
+.signIn {
+  width: 200px;
+}
+.selected {
+  background-color: #5FCEC0;
+}
+
+.landing {
+  font-size: 35px;
+  color: rgb(19, 71, 207);
+  text-align: center;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+.logout {
+  text-decoration: none;
+     font-size:2rem;
+     color:rgb(42, 88, 226);
+     padding:10px 20px 10px 20px;
+     margin:20px;
+     display:block;
+     border-radius: 10px;
+     transition:all 0.1s;
+     font-family: 'Source Sans Pro', sans-serif;
+}
+
+.errorMemberDuplicateFalse, .errorGroupnameDuplicate {
+  color:rgb(186, 18, 18);
+}
+
+.errorMemberDuplicateTrue {
+  color: rgb(17, 221, 19);
+}
+/*.myPageGroupName {
+   color: white;
+   text-align: center;
+   text-decoration: none;
+   display: block;
+   width: 120px;
+   margin-top: 4px;
+  font-family: 'Source Sans Pro', sans-serif;
+}*/
+
+.myPageGroupName:hover {
+ color: #666;
+}
+.routing {
+  overflow: auto;
+  list-style-type: none;
+  height: 25px;
+  float: left;
+  margin-right: 0px;
+  border-right: 1px solid #aaa;
+  padding: 0 20px;
+  text-decoration: none;
+  color: #ccc;
+  font-family: 'Source Sans Pro', sans-serif;
+  text-transform: uppercase;
+  -webkit-transition: all 0.5s ease;
+}
+.myPage {
+  padding-left: 180px;
+}
