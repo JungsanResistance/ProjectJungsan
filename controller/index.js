@@ -33,9 +33,15 @@ module.exports = {
         res.sendStatus(201);
       })
       .catch((err) => {
-        res.sendStatus(406);
-        throw err;
-      }),
+        if (err === 'Not a group member') {
+          res.sendStatus(401);
+          throw err;
+        } else {
+          res.sendStatus(406);
+          throw err;
+        }
+      }
+    ),
     put: (req, res) => (transaction.put(req))
     .then(() => {
       res.sendStatus(200);
@@ -52,6 +58,15 @@ module.exports = {
       const body = JSON.stringify(result);
       console.log(body);
       res.json(body);
+    })
+    .catch((err) => {
+      if (err === 'Not a group member') {
+        res.sendStatus(401);
+        throw err;
+      } else {
+        res.sendStatus(406);
+        throw err;
+      }
     }),
     post: (req, res) => (group.post(req))
     .then(() => {
@@ -66,8 +81,13 @@ module.exports = {
       res.sendStatus(200);
     })
     .catch((err) => {
-      res.sendStatus(406);
-      throw err;
+      if (err === 'Not the admin') {
+        res.sendStatus(401);
+        throw err;
+      } else {
+        res.sendStatus(406);
+        throw err;
+      }
     }),
   },
   history: {
