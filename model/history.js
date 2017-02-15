@@ -1,4 +1,5 @@
-const history = require('../db/history');
+const history = require('../db/history')
+const admin = require('../db/admin');
 
 module.exports = {
   get: (req) => {
@@ -10,15 +11,36 @@ module.exports = {
     .then((debtEventList) => {
       let JSONdebtEventList = JSON.stringify(debtEventList);
       JSONdebtEventList = JSON.parse(JSONdebtEventList);
-      result.debt = JSONdebtEventList;
+      const mapDebtEventwithAdmin = JSONdebtEventList.map(event =>
+        admin.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
+        .then((isAdmin) => {
+          if (isAdmin.length) event.isadmin = true;
+          else event.isadmin = false;
+          return event;
+        })
+      );
+      Promise.all(mapDebtEventwithAdmin)
+      .then((data) => {
+        result.debt = data;
+      });
       return history.getLoanHistory(currentUser);
     })
     .then((loanedEventList) => {
-      console.log(loanedEventList);
       let JSONloanedEventList = JSON.stringify(loanedEventList);
       JSONloanedEventList = JSON.parse(JSONloanedEventList);
-      result.loaned = JSONloanedEventList;
-      return result;
+      const mapLoanedEventwithAdmin = JSONloanedEventList.map(event =>
+        admin.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
+        .then((isAdmin) => {
+          if (isAdmin.length) event.isadmin = true;
+          else event.isadmin = false;
+          return event;
+        })
+      );
+      return Promise.all(mapLoanedEventwithAdmin)
+      .then((data) => {
+        result.loaned = data;
+        return result;
+      });
     })
     .catch(err => Promise.reject(err));
   },

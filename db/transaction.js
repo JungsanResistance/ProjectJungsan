@@ -138,7 +138,9 @@ module.exports = {
     STR_TO_DATE('${body.date}', '%Y-%m-%d'),
     (SELECT idx FROM user where email='${body.newrecipient.email}'),
     '${body.eventname}'
-    );
+    ); `;
+
+    const insertEventAdminQuery = `
     INSERT INTO eventadmin (event_idx, admin_idx) VALUES (
       (SELECT idx
               FROM   event
@@ -149,6 +151,21 @@ module.exports = {
                                       WHERE
                          groupname = '${body.groupname}')),
       (SELECT idx FROM user where userid = ${body.userid})
+    );
+    INSERT INTO eventadmin (event_idx, admin_idx) VALUES (
+      (SELECT idx
+              FROM   event
+              WHERE  eventname = '${body.eventname}'
+                     AND date = '${body.date}'
+                     AND group_idx = (SELECT idx
+                                      FROM   groups
+                                      WHERE
+                         groupname = '${body.groupname}')),
+      (SELECT idx
+              FROM user
+              WHERE (SELECT admin_idx
+                                  FROM groupadmin
+                                  WHERE groupname = '${body.groupname}'))
     );
     `;
     let addEventMemberQuery = '';
@@ -163,7 +180,7 @@ module.exports = {
     );`;
     });
     return new Promise((resolve, reject) => {
-      const totalQuery = createEventQuery + addEventMemberQuery;
+      const totalQuery = createEventQuery + insertEventAdminQuery + addEventMemberQuery;
       connection.query(totalQuery, (err) => {
         if (err) return reject(err);
         return resolve();
