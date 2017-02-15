@@ -34,6 +34,48 @@ module.exports = {
       });
     });
   },
+  checkEventMember: (userid, groupname, eventname, date) => {
+    const checkEventMemberQuery = `
+    SELECT *
+    FROM   eventadmin
+    WHERE  event_idx = (SELECT idx
+                        FROM   event
+                        WHERE  eventname = '${eventname}'
+                               AND date = '${date}'
+                               AND group_idx = (SELECT idx
+                                                FROM   groups
+                                                WHERE
+                                   groupname = '${groupname}'))
+           AND user_idx = (SELECT idx
+                            FROM   user
+                            WHERE  userid = '${userid}')
+                            `;
+    console.log('ad',checkEventMemberQuery)
+    return new Promise((resolve, reject) => {
+      connection.query(checkEventMemberQuery, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  },
+  checkGroupAdmin: (userid, groupname) => {
+    const checkGroupAdminQuery = `
+    SELECT *
+    FROM   groupadmin
+    WHERE  group_idx = (SELECT idx
+                        FROM   groups
+                        WHERE  groupname = '${groupname}')
+           AND admin_idx = (SELECT idx
+                            FROM   user
+                            WHERE  userid = '${userid}')
+                            `;
+    return new Promise((resolve, reject) => {
+      connection.query(checkGroupAdminQuery, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  },
   checkGroupAdmin: (userid, groupname) => {
     const checkGroupAdminQuery = `
     SELECT *

@@ -1,5 +1,5 @@
 const mypage = require('../db/mypage');
-const admin = require('../db/admin');
+const auth = require('../db/auth');
 
 module.exports = {
   get: (req) => {
@@ -15,7 +15,7 @@ module.exports = {
       let JSONgroupList = JSON.stringify(groupList);
       JSONgroupList = JSON.parse(JSONgroupList);
       const mapGroupPromise = JSONgroupList.map(group =>
-        admin.checkGroupAdmin(currentUser, group.groupname)
+        auth.checkGroupAdmin(currentUser, group.groupname)
         .then((isAdmin) => {
           if (isAdmin.length) group.isadmin = true;
           else group.isadmin = false;
