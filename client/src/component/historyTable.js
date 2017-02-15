@@ -1,23 +1,72 @@
 import React from 'react';
 import Router, { browserHistory } from 'react-router';
+import axios from 'axios';
 
 export default class HistoryTable extends React.Component {
   constructor() {
     super();
     this.state = {
       tableName: '',
-      eventList: [],
+      debtHistory: [],
+      loanedHistory: [],
     }
-  }
-  componentDidMount() {
 
+    this.handleDone = this.handleDone.bind(this);
   }
+
+  // handling event transaction finished
+
+
+
+
+  handleDone(event,index) {
+
+    let historyType, type;
+
+    if(this.props.debtHistory){
+      historyType = this.props.debtHistory;
+      type = 'debt';
+    } else {
+      historyType = this.props.loanedHistory
+      type = 'loan';
+    }
+    console.log("historyTypehistoryType:::",historyType)
+    console.log(index)
+    const nextHistory = [...historyType];
+    console.log("Historydata::",nextHistory[index])
+    nextHistory[index].ispaid = !nextHistory[index].ispaid;
+    const historyData = {
+      date : nextHistory[index].date,
+      recipientemail: nextHistory[index].email,
+      eventname: nextHistory[index].eventname,
+      groupname: nextHistory[index].groupname,
+      ispaid: nextHistory[index].ispaid,
+    };
+
+    axios.put(`http://localhost:3000/api/history?type=${type}`, historyData)
+    .then(res => {
+      if(res.status === 200) {
+        if(this.props.debtHistory){
+          this.setState({
+            debtHistory: nextHistory,
+          })
+        }
+        else {
+          this.setState({
+            loanedHistory: nextHistory,
+          })
+        }
+      }
+    })
+  }
+
   render() {
+
     console.log('this.props', this.props)
     console.log(this.state.eventList)
-
+    const eventList = [];
     let editButton = '';
-    let history, tableName;
+    let history, tableName, tableType;
 
     if (this.props.debtHistory) {
       history = this.props.debtHistory;
@@ -29,36 +78,35 @@ export default class HistoryTable extends React.Component {
     }
 
     console.log('history?', history, 'this.state.eventList', this.state.eventList)
-    history.forEach((event, index) => {
-      if (event.email !== this.props.myEmail) { // to hide me as a recipient in the history
+    history.forEach((eventItem, index) => {
+      if (eventItem.email !== this.props.myEmail) { // to hide me as a recipient in the history
         let imgUrl = '';
 
-        if (event.isadmin) {
-          editButton = <input type="button" value="eventEdit" onClick={this.handleEditEvent} />;
-        }
-        else {
-          editButton = '';
-        }
+        // if (eventItem.isadmin) {
+        //   editButton = <input type="button" value="eventEdit" onClick={this.handleEditEvent} />;
+        // }
+        // else {
+        //   editButton = '';
+        // }
 
-        if (event.ispaid) {
+        if (eventItem.ispaid) {
             imgUrl = 'http://findicons.com/files/icons/808/on_stage/128/symbol_check.png';
           }
-          else {
-            imgUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/X_mark.svg/896px-X_mark.svg.png';
-          }
-          // console.log(event);
-          this.state.eventList.push(
-            <tr>
-              <td>{event.groupname}</td>
-              <td>{event.eventname}</td>
-              <td>{event.date}</td>
-              <td>{event.username} ({event.email})</td>
-              <td>{event.cost}</td>
-              <td>{editButton}</td>
-              <td ><img src={imgUrl} onClick={() => this.handleDone(index)}
-                className="toggleImg" /></td>
-            </tr>);
+        else {
+          imgUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/X_mark.svg/896px-X_mark.svg.png';
         }
+        eventList.push(
+        <tr>
+          <td>{eventItem.groupname}</td>
+          <td>{eventItem.eventItemname}</td>
+          <td>{eventItem.date}</td>
+          <td>{eventItem.username} ({eventItem.email})</td>
+          <td>{eventItem.cost}</td>
+          <td>{editButton}</td>
+          <td ><img src={imgUrl} onClick={(event) => this.handleDone(event,index)}
+            className="toggleImg" /></td>
+        </tr>);
+      }
     });
 
     return (
@@ -76,7 +124,7 @@ export default class HistoryTable extends React.Component {
           <th>edit</th>
           <th>status</th>
         </tr>
-        {this.state.eventList}
+        {eventList}
       </div>
     );
   }

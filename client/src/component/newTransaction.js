@@ -53,9 +53,12 @@ export default class NewTransaction extends React.Component {
           selected: false,
         });
       });
+
+      const allEvents = getHistory.debt.concat(getHistory.loaned)
+
       this.setState({
         myAllGroupUserData: groupStorage,
-        allPastEvents: getHistory,
+        allPastEvents: allEvents,
       });
     });
   }
@@ -133,7 +136,7 @@ export default class NewTransaction extends React.Component {
     });
   }
 
-  selectHandleMember(event, selectedMember) {
+  selectHandleMember(selectedMember) {
     const nextSelectedGroupMember = this.state.myAllGroupUserData[this.state.selectedGroup].map((member) => {
       return member;
     });
@@ -330,13 +333,15 @@ export default class NewTransaction extends React.Component {
     const groupSelection = getGroupKeyArray.map((item) => {
       return <option>{item}</option>;
     });
+    console.log("getGroupKeyArray::",getGroupKeyArray)
+    console.log("groupSelection:::", groupSelection)
     let userTable;
     const selectedGroupMember = this.state.myAllGroupUserData[this.state.selectedGroup];
     if (Object.keys(this.state.myAllGroupUserData).length > 0 && this.state.selectedGroup.length > 0 ) {
       userTable = selectedGroupMember.map((member, index) => {
         if (selectedGroupMember[index].selected) {
           return (
-            <tr onClick={() => this.selectHandleMember(event, member)} className="selected">
+            <tr onClick={() => this.selectHandleMember(member)} className="selected">
               <td>
                {member.username} ({member.email})
             </td>
