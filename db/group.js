@@ -39,8 +39,8 @@ module.exports = {
     const addNewGroupQuery = `
       INSERT INTO groups (groupname) VALUES ('${body.groupname}');
       INSERT INTO groupadmin (group_idx, admin_idx) VALUES (
-        SELECT idx FROM groups where groupname = '${body.groupname}',
-        SELECT idx FROM user where userid = '${body.userid}'
+        (SELECT idx FROM groups where groupname = '${body.groupname}'),
+        (SELECT idx FROM user where userid = '${body.userid}')
       );
     `;
     let addNewMembersQuery = '';
