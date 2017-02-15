@@ -136,7 +136,7 @@ export default class NewTransaction extends React.Component {
     });
   }
 
-  selectHandleMember(selectedMember) {
+  selectHandleMember(event,selectedMember) {
     const nextSelectedGroupMember = this.state.myAllGroupUserData[this.state.selectedGroup].map((member) => {
       return member;
     });
@@ -341,7 +341,7 @@ export default class NewTransaction extends React.Component {
       userTable = selectedGroupMember.map((member, index) => {
         if (selectedGroupMember[index].selected) {
           return (
-            <tr onClick={() => this.selectHandleMember(member)} className="selected">
+            <tr onClick={() => this.selectHandleMember(event, member)} className="selected">
               <td>
                {member.username} ({member.email})
             </td>
