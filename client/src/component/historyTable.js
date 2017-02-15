@@ -98,7 +98,7 @@ export default class HistoryTable extends React.Component {
         eventList.push(
         <tr>
           <td>{eventItem.groupname}</td>
-          <td>{eventItem.eventItemname}</td>
+          <td>{eventItem.eventname}</td>
           <td>{eventItem.date}</td>
           <td>{eventItem.username} ({eventItem.email})</td>
           <td>{eventItem.cost}</td>
