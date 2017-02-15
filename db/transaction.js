@@ -165,7 +165,10 @@ module.exports = {
               FROM user
               WHERE (SELECT admin_idx
                                   FROM groupadmin
-                                  WHERE groupname = '${body.groupname}'))
+                                  WHERE group_idx = '(SELECT idx
+                                                      FROM groups
+                                                      WHERE
+                                    groupname = ${body.groupname}')))
     );
     `;
     let addEventMemberQuery = '';

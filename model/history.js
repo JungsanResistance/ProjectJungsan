@@ -1,5 +1,5 @@
 const history = require('../db/history')
-const admin = require('../db/admin');
+const auth = require('../db/auth');
 
 module.exports = {
   get: (req) => {
@@ -12,7 +12,7 @@ module.exports = {
       let JSONdebtEventList = JSON.stringify(debtEventList);
       JSONdebtEventList = JSON.parse(JSONdebtEventList);
       const mapDebtEventwithAdmin = JSONdebtEventList.map(event =>
-        admin.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
+        auth.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
         .then((isAdmin) => {
           if (isAdmin.length) event.isadmin = true;
           else event.isadmin = false;
@@ -29,7 +29,7 @@ module.exports = {
       let JSONloanedEventList = JSON.stringify(loanedEventList);
       JSONloanedEventList = JSON.parse(JSONloanedEventList);
       const mapLoanedEventwithAdmin = JSONloanedEventList.map(event =>
-        admin.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
+        auth.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
         .then((isAdmin) => {
           if (isAdmin.length) event.isadmin = true;
           else event.isadmin = false;
