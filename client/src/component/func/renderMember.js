@@ -14,19 +14,27 @@ export default class RenderMembers extends React.Component {
     console.log("groupname:", this.props.groupname)
     axios.get(`http://localhost:3000/api/group?target=groupmembers&groupname=${this.props.groupname}`)
     .then((res) => {
-      if(res.status === 200) {
+      if (res.status === 200) {
       const groupData = JSON.parse(res.data);
       console.log(groupData)
+      this.setState({
+        groupmemberList: groupData,
+      });
       }
     })
   }
 
 
   render() {
-
-
+    const members = this.state.groupmemberList.map((member) => {
+      return <li>{member.username} ({member.email})</li>
+    });
     return (
-      <li>Test</li>
-    )
+      <div>
+        <ul>
+          {members}
+        </ul>
+      </div>
+    );
   }
 }
