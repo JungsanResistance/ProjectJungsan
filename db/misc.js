@@ -30,9 +30,8 @@ module.exports = {
         resolve();
       });
     })
-    .then((res) => {
-      console.log(res)
-      const lentEventListQuery = `
+    .then(() => {
+      const inDebtEventListQuery = `
       SELECT user_idx,
              event_idx
       FROM   eventmember
@@ -47,30 +46,34 @@ module.exports = {
                                                     FROM   user
                                                     WHERE  userid = '${userid}')
       ;  `;
+      console.log(inDebtEventListQuery);
       return new Promise((resolve, reject) => {
-        connection.query(lentEventListQuery, (err, res) => {
+        connection.query(inDebtEventListQuery, (err, res) => {
           if (err) return reject(err);
           resolve(res);
         });
       })
     })
-    .then((eventList) => {
-      let resolvingLentQuery = '';
-      eventList.forEach((event) => {
-        resolvingLentQuery += `
-        UPDATE eventmember
-        SET    ispaid = true
-        WHERE  user_idx = ${event.user_idx}
-               AND event_idx = ${event.event_idx};
-        `;
-      });
-      return new Promise((resolve, reject) => {
-        connection.query(resolvingLentQuery, (err, res) => {
-          console.log('resolvingLent')
-          if (err) return reject(err);
-          resolve(res);
+    .then((inDebtEventList) => {
+      console.log(inDebtEventList);
+      let resolvingDebtQuery = '';
+      if (inDebtEventList.length) {
+        inDebtEventList.forEach((event) => {
+          resolvingDebtQuery += `
+          UPDATE eventmember
+          SET    ispaid = true
+          WHERE  user_idx = ${event.user_idx}
+                 AND event_idx = ${event.event_idx};
+          `;
         });
-      });
+        return new Promise((resolve, reject) => {
+          connection.query(resolvingDebtQuery, (err, res) => {
+            console.log('resolvingDebt')
+            if (err) return reject(err);
+            resolve(res);
+          });
+        });
+      }
     })
     .then((res) => {
       console.log('loan')
@@ -96,22 +99,25 @@ module.exports = {
         });
       })
     })
-    .then((eventList) => {
+    .then((loanedEventList) => {
       let resolvingLoanedQuery = '';
-      eventList.forEach((event) => {
-        resolvingLoanedQuery += `
-        UPDATE eventmember
-        SET    ispaid = true
-        WHERE  user_idx = ${event.user_idx}
-               AND event_idx = ${event.event_idx};
-        `;
-      });
-      return new Promise((resolve, reject) => {
-        connection.query(resolvingLoanedQuery, (err, res) => {
-          if (err) return reject(err);
-          resolve(res);
+      console.log(loanedEventList)
+      if (loanedEventList.length) {
+        loanedEventList.forEach((event) => {
+          resolvingLoanedQuery += `
+          UPDATE eventmember
+          SET    ispaid = true
+          WHERE  user_idx = ${event.user_idx}
+                 AND event_idx = ${event.event_idx};
+          `;
         });
-      });
+        return new Promise((resolve, reject) => {
+          connection.query(resolvingLoanedQuery, (err, res) => {
+            if (err) return reject(err);
+            resolve(res);
+          });
+        });
+      }
     })
     .then((res) => {
       return new Promise((resolve, reject) => {
