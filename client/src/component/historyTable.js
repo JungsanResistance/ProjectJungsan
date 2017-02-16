@@ -98,7 +98,7 @@ export default class HistoryTable extends React.Component {
           <td>{eventItem.eventname}</td>
           <td>{eventItem.date}</td>
           <td>{eventItem.username} ({eventItem.email})</td>
-          <td>{eventItem.cost}</td>
+          <td>{Math.abs(eventItem.cost)}</td>
           <td><Link to={"history/"+JSON.stringify({
               groupname : eventItem.groupname,
               eventname : eventItem.eventname,

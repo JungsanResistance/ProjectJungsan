@@ -190,14 +190,16 @@ export default class NewTransaction extends React.Component {
 
     nextSelectedUserListToBeSent.forEach((member) => {
       member.cost = indivCost;
-    })
+    });
 
     const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
     nextMyAllGroupUserData[this.state.selectedGroup].forEach((member) => {
       member.cost = indivCost
     });
 
+    //
     if (this.state.groupMemberErrorMesseage.length) {
+      console.log("error message exist")
       this.setState({
         selectedGroupMember: nextSelectedGroupMember,
         selectedUserListToBeSent: nextSelectedUserListToBeSent,
@@ -205,6 +207,7 @@ export default class NewTransaction extends React.Component {
         groupMemberErrorMesseage: '',
       });
     } else {
+      console.log("error message exist")
       this.setState({
         selectedGroupMember: nextSelectedGroupMember,
         selectedUserListToBeSent: nextSelectedUserListToBeSent,
@@ -246,7 +249,7 @@ export default class NewTransaction extends React.Component {
         }
       this.state.myAllGroupUserData[this.state.selectedGroup].forEach((member, index) => {
         if (member.username === event.target.value) {
-          const nextNewRecipient = Object.assign({}, this.state.myAllGroupUserData[this.state.selectedGroup][index])
+          const nextNewRecipient = Object.assign({}, this.state.myAllGroupUserData[this.state.selectedGroup][index]);
           nextNewRecipient.ispaid = true;
           this.setState({
             newrecipient: nextNewRecipient,
@@ -313,8 +316,10 @@ export default class NewTransaction extends React.Component {
         dateStyle: '',
       });
     }
+
     else if (event.target.type === 'number') {
-      const newSelectedUserList = Object.assign({}, this.state.newSelectedUserList)
+      // const newSelectedUserList = Object.assign({}, this.state.newSelectedUserList)
+      const nextSelectedUserListToBeSent = [... this.state.selectedUserListToBeSent];
       let count = 0;
       if (this.state.selectedGroupMember) {
         this.state.selectedGroupMember.forEach((member) => {
@@ -327,9 +332,10 @@ export default class NewTransaction extends React.Component {
       }
 
       const indivCost = event.target.value / count;
-      for (let member in newSelectedUserList) {
-        newSelectedUserList[member].cost = indivCost
-      }
+
+      nextSelectedUserListToBeSent.forEach((member) => {
+        member.cost = indivCost;
+      })
 
       const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
       for (let member in nextMyAllGroupUserData[this.state.selectedGroup]) {
@@ -338,7 +344,7 @@ export default class NewTransaction extends React.Component {
 
       this.setState({
         totalCost: parseInt(event.target.value),
-        selectedUserListToBeSent: newSelectedUserList,
+        selectedUserListToBeSent: nextSelectedUserListToBeSent,
         myAllGroupUserData: nextMyAllGroupUserData,
         costStyle: '',
       });
@@ -373,7 +379,7 @@ export default class NewTransaction extends React.Component {
                {member.username} ({member.email})
             </td>
               <input
-             type='number' placeholder={this.state.myAllGroupUserData[this.state.selectedGroup][index].cost}
+             type='number' placeholder={Math.round(this.state.myAllGroupUserData[this.state.selectedGroup][index].cost)}
              />
             </tr>);
         } else {

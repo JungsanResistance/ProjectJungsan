@@ -35,7 +35,10 @@ export default class GroupPage extends React.Component {
 
     return (
       <div>
+        <h1>
         {this.props.params.groupname}
+        </h1>
+        <br />
         <RenderMembers groupname={this.props.params.groupname} />
         <br />
         <br />
