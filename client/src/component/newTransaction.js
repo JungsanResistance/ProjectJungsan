@@ -165,6 +165,7 @@ export default class NewTransaction extends React.Component {
         member.selected = !member.selected;
       }
     });
+    console.log('nextSelectedGroupMember', nextSelectedGroupMember)
 
     // 2. filter selected member and store in selecteduser list to send post later
     const nextSelectedUserListToBeSent = nextSelectedGroupMember.filter((member) => {
@@ -331,7 +332,9 @@ export default class NewTransaction extends React.Component {
         count = 1;
       }
 
-      const indivCost = event.target.value / count;
+      // const indivCost = event.target.value / count;
+      console.log(Math.round((event.target.value / count)/100))
+      const indivCost = 100 * Math.ceil((event.target.value / count) / 100);
 
       nextSelectedUserListToBeSent.forEach((member) => {
         member.cost = indivCost;

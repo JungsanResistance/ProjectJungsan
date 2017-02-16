@@ -19,17 +19,14 @@ export default class HistoryTable extends React.Component {
 
     let historyType, type;
 
-    if(this.props.debtHistory){
+    if (this.props.debtHistory){
       historyType = this.props.debtHistory;
       type = 'debt';
     } else {
       historyType = this.props.loanedHistory
       type = 'loan';
     }
-    console.log("historyTypehistoryType:::",historyType)
-    console.log(index)
     const nextHistory = [...historyType];
-    console.log("Historydata::",nextHistory[index])
     nextHistory[index].ispaid = !nextHistory[index].ispaid;
     const historyData = {
       date : nextHistory[index].date,
@@ -57,9 +54,6 @@ export default class HistoryTable extends React.Component {
   }
 
   render() {
-
-    console.log('this.props', this.props)
-    console.log(this.state.eventList)
     const eventList = [];
     let editButton = '';
     let history, tableName, tableType;
@@ -72,15 +66,13 @@ export default class HistoryTable extends React.Component {
       history = this.props.loanedHistory;
       tableName = '받아야함';
     }
-    console.log('this.state', this.state)
-    console.log('history?', history, 'this.state.eventList', this.state.eventList)
-    if(history) {
-    history.forEach((eventItem, index) => {
+    if (history) {
+      history.forEach((eventItem, index) => {
       if (eventItem.email !== this.props.myEmail) { // to hide me as a recipient in the history
         let editButton;
         let imgUrl = '';
         if (eventItem.isadmin) {
-          editButton = <input type="button" value="eventEdit" onClick={this.handleEditEvent} />;
+          editButton = <input type="button" value="eventEdit" />;
         }
         else {
           editButton = '';
@@ -103,8 +95,6 @@ export default class HistoryTable extends React.Component {
               groupname : eventItem.groupname,
               eventname : eventItem.eventname,
               date : eventItem.date,
-              recipient : eventItem.username,
-              email : eventItem.email,
             })}>
             {editButton}</Link>
           </td>
