@@ -11,9 +11,8 @@ module.exports = {
     .then((debtEventList) => {
       let JSONdebtEventList = JSON.stringify(debtEventList);
       JSONdebtEventList = JSON.parse(JSONdebtEventList);
-      let mapDebtEventwithAdmin = new Promise((resolve, reject) => resolve([]));
       if (JSONdebtEventList.length) {
-        mapDebtEventwithAdmin = JSONdebtEventList.map(event =>
+        const mapDebtEventwithAdmin = JSONdebtEventList.map(event =>
           auth.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
           .then((isAdmin) => {
             if (isAdmin.length) event.isadmin = true;
@@ -21,38 +20,36 @@ module.exports = {
             return event;
           })
         );
+        return Promise.all(mapDebtEventwithAdmin)
       }
-      return Promise.all(mapDebtEventwithAdmin)
+      return Promise.resolve()
       .then((data) => {
-        result.debt = data;
+        console.log('data');
+        (!data) ? result.debt = [] : result.debt = data;
         return history.getLoanHistory(currentUser);
       });
     })
     .then((loanedEventList) => {
       console.log('loan', loanedEventList);
-      if (loanedEventList.length) {
-        let JSONloanedEventList = JSON.stringify(loanedEventList);
-        JSONloanedEventList = JSON.parse(JSONloanedEventList);
-        let mapDebtEventwithAdmin = new Promise((resolve, reject) => resolve([]));
-        if (JSONloanedEventList.length) {
-          mapLoanedEventwithAdmin = JSONloanedEventList.map(event =>
-            auth.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
-            .then((isAdmin) => {
-              if (isAdmin.length) event.isadmin = true;
-              else event.isadmin = false;
-              return event;
-            })
-          );
-        }
-        return Promise.all(mapLoanedEventwithAdmin)
-        .then((data) => {
-          result.loaned = data;
-          return result;
-        });
-      } else {
-        result.loaned = [];
-        return result;
+      let JSONloanedEventList = JSON.stringify(loanedEventList);
+      JSONloanedEventList = JSON.parse(JSONloanedEventList);
+      if (JSONloanedEventList.length) {
+        const mapLoanedEventwithAdmin = JSONloanedEventList.map(event =>
+          auth.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
+          .then((isAdmin) => {
+            if (isAdmin.length) event.isadmin = true;
+            else event.isadmin = false;
+            return event;
+          })
+        );
+        return Promise.all(mapLoanedEventwithAdmin);
       }
+      return Promise.resolve()
+      .then((data) => {
+        console.log('data2', data)
+        !data ? result.loaned = [] : result.loaned = data;
+        return result;
+      });
     })
     .catch(err => Promise.reject(err));
   },
