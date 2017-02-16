@@ -11,6 +11,7 @@ module.exports = {
     .then((debtEventList) => {
       let JSONdebtEventList = JSON.stringify(debtEventList);
       JSONdebtEventList = JSON.parse(JSONdebtEventList);
+      console.log(JSONdebtEventList)
       if (JSONdebtEventList.length) {
         const mapDebtEventwithAdmin = JSONdebtEventList.map(event =>
           auth.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
@@ -20,19 +21,21 @@ module.exports = {
             return event;
           })
         );
-        return Promise.all(mapDebtEventwithAdmin)
+        return Promise.all(mapDebtEventwithAdmin);
       }
       return Promise.resolve()
-      .then((data) => {
-        console.log('data');
-        (!data) ? result.debt = [] : result.debt = data;
-        return history.getLoanHistory(currentUser);
-      });
+    })
+    .then((data) => {
+      console.log('data');
+      (!data) ? result.debt = [] : result.debt = data;
+      console.log(result);
+      return history.getLoanHistory(currentUser);
     })
     .then((loanedEventList) => {
       console.log('loan', loanedEventList);
       let JSONloanedEventList = JSON.stringify(loanedEventList);
       JSONloanedEventList = JSON.parse(JSONloanedEventList);
+      console.log(JSONloanedEventList)
       if (JSONloanedEventList.length) {
         const mapLoanedEventwithAdmin = JSONloanedEventList.map(event =>
           auth.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
@@ -44,12 +47,14 @@ module.exports = {
         );
         return Promise.all(mapLoanedEventwithAdmin);
       }
+      console.log('hi')
       return Promise.resolve()
-      .then((data) => {
-        console.log('data2', data)
-        !data ? result.loaned = [] : result.loaned = data;
-        return result;
-      });
+    })
+    .then((data) => {
+      console.log('data2', data)
+      !data ? result.loaned = [] : result.loaned = data;
+      console.log('result2', result)
+      return result;
     })
     .catch(err => Promise.reject(err));
   },
