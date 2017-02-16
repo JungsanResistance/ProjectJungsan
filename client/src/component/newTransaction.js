@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import axios from 'axios';
-import Router, { browserHistory } from 'react-router'
+import Router, { browserHistory } from 'react-router';
 
 export default class NewTransaction extends React.Component {
   constructor() {
@@ -55,10 +55,10 @@ export default class NewTransaction extends React.Component {
       });
       console.log(getData)
       console.log('groupStorage:', groupStorage )
-      console.log()
       console.log(getHistory)
 
-      const allEvents = getHistory.debt.concat(getHistory.loaned)
+      // add debtHistory array and loanHistory array
+      const allEvents = getHistory.debt.concat(getHistory.loaned);
 
       this.setState({
         myAllGroupUserData: groupStorage,
@@ -67,34 +67,35 @@ export default class NewTransaction extends React.Component {
     });
   }
 
+  // no empty input is allowed
   blankCheck() {
-    let count = 0;
-    let groupMemberCount = 0;
+    let blankCount = 0;
+    let anyMemberSelected = true;
     let nextGroupStyle, nextDateStyle, nextEventNameStyle, nextNewRecipientStyle, nextCostStyle;
 
     if (this.state.selectedGroup === '') {
       nextGroupStyle = 'inputStyle';
-      count += 1;
+      blankCount += 1;
     }
     if (this.state.date === '') {
       nextDateStyle = 'inputStyle';
-      count += 1;
+      blankCount += 1;
     }
     if (!this.state.eventName.length) {
       nextEventNameStyle = 'inputStyle';
-      count += 1;
+      blankCount += 1;
     }
     if (!Object.keys(this.state.newrecipient).length) {
       nextNewRecipientStyle = 'inputStyle';
-      count += 1;
+      blankCount += 1;
     }
     if (!(this.state.totalCost > 0)) {
       nextCostStyle = 'inputStyle';
-      count += 1;
+      blankCount += 1;
     }
     console.log('selectedUserListToBeSent::', this.state.selectedUserListToBeSent)
     if (this.state.selectedUserListToBeSent.length === 0) {
-      groupMemberCount += 1;
+      anyMemberSelected = false;
     }
 
     this.setState({
@@ -105,17 +106,20 @@ export default class NewTransaction extends React.Component {
       costStyle: nextCostStyle,
     });
 
-    console.log('groupMemberCount ::::', groupMemberCount)
+    console.log('blankCount', blankCount, 'anyMemberSelected ::::', anyMemberSelected)
 
-    if (!count && !groupMemberCount) {
-      this.handleSubmit();
-    } else {
-      if (count) {
+    if (!blankCount && anyMemberSelected) {
+      if (!this.state.eventErrorMesseage.length) {
+        this.handleSubmit();
+      }
+    }
+    else {
+      if (blankCount) {
         this.setState({
           errorMesseage: '빈칸을 모두 채워주세요 ㅠ',
         });
       }
-      if (groupMemberCount) {
+      if (!anyMemberSelected) {
         this.setState({
           groupMemberErrorMesseage: '함께 식사한 친구들을 선택해주세요',
         });
@@ -123,6 +127,7 @@ export default class NewTransaction extends React.Component {
     }
   }
 
+  // post new transaction record
   handleSubmit() {
     axios.post('http://localhost:3000/api/transaction', {
       date: this.state.date,
@@ -143,24 +148,33 @@ export default class NewTransaction extends React.Component {
     });
   }
 
-  selectHandleMember(event,selectedMember) {
+  selectHandleMember(event, selectedMember) {
+    /*
+      1. nextSelectedGroupMember: this is for RENDERING
+      2. nextSelectedUserListToBeSent: this is for posting
+    */
+
+    // 1. get members for specific group
     const nextSelectedGroupMember = this.state.myAllGroupUserData[this.state.selectedGroup].map((member) => {
       return member;
     });
 
+    // toggle selected flag when selecting member
     nextSelectedGroupMember.forEach((member) => {
       if (member.email === selectedMember.email) {
         member.selected = !member.selected;
       }
     });
 
+    // 2. filter selected member and store in selecteduser list to send post later
     const nextSelectedUserListToBeSent = nextSelectedGroupMember.filter((member) => {
       return member.selected === true;
     });
 
-    //not state...//
-    const newSelectedUserList = Object.assign({}, this.state.newSelectedUserList)
+    // const newSelectedUserList = Object.assign({}, nextSelectedUserListToBeSent) // don't think we need this deep copy....
 
+
+    // to evaluate the number of selected members
     let count = 0;
     if (this.state.selectedGroupMember) {
       this.state.selectedGroupMember.forEach((member) => {
@@ -173,14 +187,15 @@ export default class NewTransaction extends React.Component {
     }
 
     const indivCost = this.state.totalCost / count;
-    for (let member in newSelectedUserList) {
-      newSelectedUserList[member].cost = indivCost
-    }
 
-    const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData)
-    for (let member in nextMyAllGroupUserData[this.state.selectedGroup]) {
-      nextMyAllGroupUserData[this.state.selectedGroup][member].cost = indivCost
-    }
+    nextSelectedUserListToBeSent.forEach((member) => {
+      member.cost = indivCost;
+    })
+
+    const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
+    nextMyAllGroupUserData[this.state.selectedGroup].forEach((member) => {
+      member.cost = indivCost
+    });
 
     if (this.state.groupMemberErrorMesseage.length) {
       this.setState({
@@ -243,6 +258,7 @@ export default class NewTransaction extends React.Component {
     }
   }
 
+  // this function will check if the event already exist
   eventDuplicateCheck(event) {
     let eventDuplicateExist = false;
     if (event.target.name === 'eventGroup') {
@@ -272,7 +288,6 @@ export default class NewTransaction extends React.Component {
         }
       });
     }
-
     if (eventDuplicateExist) {
       this.setState({
         eventErrorMesseage: '중복된 이벤트가 있습니다',
@@ -338,9 +353,7 @@ export default class NewTransaction extends React.Component {
   }
 
   render() {
-    console.log(this.state.myAllGroupUserData)
     const getGroupKeyArray = Object.keys(this.state.myAllGroupUserData);
-    console.log(getGroupKeyArray)
     const groupSelection = getGroupKeyArray.map((item) => {
       return <option>{item}</option>;
     });
@@ -348,7 +361,9 @@ export default class NewTransaction extends React.Component {
     // console.log("groupSelection:::", groupSelection)
 
     let userTable;
+    // retrieve group members for specific group
     const selectedGroupMember = this.state.myAllGroupUserData[this.state.selectedGroup];
+    // render both selected and unselected member and apply style together
     if (Object.keys(this.state.myAllGroupUserData).length > 0 && this.state.selectedGroup.length > 0 ) {
       userTable = selectedGroupMember.map((member, index) => {
         if (selectedGroupMember[index].selected) {
@@ -376,7 +391,7 @@ export default class NewTransaction extends React.Component {
     }
 
     let recipientTable;
-
+    // render recipient drop down list
     if (this.state.selectedGroup.length) {
       recipientTable = this.state.myAllGroupUserData[this.state.selectedGroup].map((member) => {
         return <option>{member.username}</option>;
