@@ -67,7 +67,7 @@ module.exports = {
   },
   post: (req) => {
     req.body.userid = req.session.passport.user;
-    return getEventDetail(req.body.groupname, req.body.eventname, req.body.date)
+    return transaction.getEventDetail(req.body.groupname, req.body.eventname, req.body.date)
     .then((isDuplicate) => {
       if (isDuplicate.length) return Promise.reject('Is a duplicate');
       else return auth.checkGroupMember(req.body.userid, req.body.groupname)

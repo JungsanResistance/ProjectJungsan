@@ -33,7 +33,10 @@ module.exports = {
         res.sendStatus(201);
       })
       .catch((err) => {
-        if (err === 'Not a group member') {
+        if (err === 'Is a duplicate') {
+          res.sendStatus(400);
+          throw err;
+        } else if (err === 'Not a group member') {
           res.sendStatus(401);
           throw err;
         } else {
