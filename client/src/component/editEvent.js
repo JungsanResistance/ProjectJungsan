@@ -23,7 +23,6 @@ export default class EditEvent extends React.Component {
 
   componentWillMount() {
     const selectedEventData = JSON.parse(this.props.params.eventInfo);
-    console.log('param data', selectedEventData);
 
     // all groups I belong info
     const getGroupData = axios.get('http://localhost:3000/api/transaction?type=post');
@@ -35,10 +34,7 @@ export default class EditEvent extends React.Component {
     .then((res) => {
       const groupContents = JSON.parse(res[0].data);
       const eventContents = JSON.parse(res[1].data);
-      console.log('groupContents', groupContents)
-      console.log('Ev', eventContents)
 
-      console.log(eventContents.participants)
       // calculate the total cost
       const totalCost = eventContents.participants.reduce((total, member) => {
         return total + member.cost;
@@ -46,7 +42,8 @@ export default class EditEvent extends React.Component {
       let selectedGroupMember = groupContents.filter((member) => {
         return member.groupname === eventContents.groupname;
       });
-      console.log('1nd selectedGroupMember', selectedGroupMember);
+
+      // storage to contain necessary member info
       const storage = [];
       selectedGroupMember = selectedGroupMember.forEach((member) => {
         storage.push({
@@ -56,20 +53,19 @@ export default class EditEvent extends React.Component {
           cost: 0,
         });
       });
-      console.log(storage);
+
+      // here we filter matching participated member and set selected flag to true
       storage.forEach((member) => {
         eventContents.participants.forEach((selectedMember) => {
-            if (member.email === selectedMember.email) {
-              console.log(member.email, selectedMember.email)
-              console.log(selectedMember.cost)
-              member.selected = true;
-              member.cost = selectedMember.cost;
-              console.log(member)
-            }
+          if (member.email === selectedMember.email) {
+            member.selected = true;
+            member.cost = selectedMember.cost;
+          }
         });
       });
-      console.log('2nd selectedGroupMember', storage)
 
+      // here we prevent the error when eventContents has no newrecipent....
+      // eventually we need to delete this part
       let newrecipientInfo;
 
       if (eventContents.newrecipient) {
@@ -122,8 +118,9 @@ export default class EditEvent extends React.Component {
       count = 1
     }
 
-    const indivCost = this.state.totalCost / count;
-    console.log(indivCost, this.state.totalCost)
+    const indivCost = 100 * Math.ceil((this.state.totalCost / (count * 100)));
+
+    // const indivCost = this.state.totalCost / count;
     nextParticipants.forEach((member) => {
       member.cost = indivCost;
     });
@@ -137,24 +134,21 @@ export default class EditEvent extends React.Component {
     this.setState({
       participants: nextParticipants,
       groupMemberList: nextGroupMemberList,
-    })
+    });
   }
 
   render() {
     // console.log(this.state.newrecipient)
-      const recipientList = this.state.participants.map((member) => {
-        if (member.email !== this.state.newrecipient.email) {
-          return <option>{member.username}</option>
-        }
-      })
+    const recipientList = this.state.participants.map((member) => {
+      if (member.email !== this.state.newrecipient.email) {
+        return <option>{member.username}</option>
+      }
+    });
 
 
     let userTable;
-    console.log(this.state.groupMemberList);
-    console.log(this.state.totalCost)
     if (Object.keys(this.state.groupMemberList).length > 0 && this.state.totalCost > 0) {
       userTable = this.state.groupMemberList.map((member, index) => {
-        console.log('member', member)
         if (member.selected) {
           return (
             <tr onClick={() => this.selectHandleMember(event, member)} className="selected">
@@ -223,6 +217,6 @@ export default class EditEvent extends React.Component {
         <br />
         <br />
       </div>
-    )
+    );
   }
 }

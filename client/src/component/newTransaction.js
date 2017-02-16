@@ -332,9 +332,8 @@ export default class NewTransaction extends React.Component {
         count = 1;
       }
 
-      // const indivCost = event.target.value / count;
-      console.log(Math.round((event.target.value / count)/100))
-      const indivCost = 100 * Math.ceil((event.target.value / count) / 100);
+      // roundup 100 KRW 
+      const indivCost = 100 * Math.ceil((event.target.value / (count * 100)));
 
       nextSelectedUserListToBeSent.forEach((member) => {
         member.cost = indivCost;
@@ -373,7 +372,8 @@ export default class NewTransaction extends React.Component {
     // retrieve group members for specific group
     const selectedGroupMember = this.state.myAllGroupUserData[this.state.selectedGroup];
     // render both selected and unselected member and apply style together
-    if (Object.keys(this.state.myAllGroupUserData).length > 0 && this.state.selectedGroup.length > 0 ) {
+    if (Object.keys(this.state.myAllGroupUserData).length > 0
+    && this.state.selectedGroup.length > 0) {
       userTable = selectedGroupMember.map((member, index) => {
         if (selectedGroupMember[index].selected) {
           return (
