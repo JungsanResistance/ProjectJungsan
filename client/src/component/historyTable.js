@@ -72,8 +72,9 @@ export default class HistoryTable extends React.Component {
       history = this.props.loanedHistory;
       tableName = '받아야함';
     }
-
+    console.log('this.state', this.state)
     console.log('history?', history, 'this.state.eventList', this.state.eventList)
+    if(history) {
     history.forEach((eventItem, index) => {
       if (eventItem.email !== this.props.myEmail) { // to hide me as a recipient in the history
         let editButton;
@@ -111,7 +112,8 @@ export default class HistoryTable extends React.Component {
             className="toggleImg" /></td>
         </tr>);
       }
-    });
+    })
+  };
 
     return (
       <div>

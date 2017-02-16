@@ -24,7 +24,6 @@ export default class Mypage extends React.Component {
       const groupStorage = [];
       const getData = JSON.parse(res[1].data);
 
-      console.log(myEmailData)
       getData.groupList.forEach((group) => {
         groupStorage.push(group.groupname);
       });
@@ -56,10 +55,7 @@ export default class Mypage extends React.Component {
   }
 
   render() {
-    console.log('My Email Data ::::',this.state.myEmail)
-    // console.log('this.state?', this.state)
     const List = [];
-    // console.log("here sumlist:",sumList)
     const {
       groupList,
       sumList,

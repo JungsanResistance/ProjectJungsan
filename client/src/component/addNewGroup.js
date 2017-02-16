@@ -121,24 +121,32 @@ export default class AddNewGroup extends React.Component {
   }
 
   handleGroupName() {
-    axios.get(`http://localhost:3000/api/groupedit?target=groupname&groupname=${this.state.groupname}`)
-    .then((res) => {
-      const data = JSON.parse(res.data);
-      if (data.length) {
-        this.setState({
-          errorGroupnameDuplicate: '이 그룹이름은 이미 있어 띵구야',
-          groupDuplicateFlag: "errorMemberDuplicateFalse",
-        })
-      }
-      else {
-        console.log(this.state.groupname)
+    if (!this.state.groupname.length) {
+      this.setState({
+        errorGroupnameDuplicate: '그룹 이름을 입력해주세요',
+        groupDuplicateFlag: "errorMemberDuplicateFalse",
+      })
+    }
+    else {
+      axios.get(`http://localhost:3000/api/groupedit?target=groupname&groupname=${this.state.groupname}`)
+      .then((res) => {
+        const data = JSON.parse(res.data);
+        if (data.length) {
           this.setState({
-            groupname: this.state.groupname,
-            errorGroupnameDuplicate: '멋진 그룹 이름이군요!',
-            groupDuplicateFlag: "errorMemberDuplicateTrue",
+            errorGroupnameDuplicate: '이 그룹이름은 이미 있어 띵구야',
+            groupDuplicateFlag: "errorMemberDuplicateFalse",
           })
-      }
-    });
+        }
+        else {
+          console.log(this.state.groupname)
+            this.setState({
+              groupname: this.state.groupname,
+              errorGroupnameDuplicate: '멋진 그룹 이름이군요!',
+              groupDuplicateFlag: "errorMemberDuplicateTrue",
+            })
+        }
+      });
+    }
   }
 
   handleMemberDelete(event) {
