@@ -9,38 +9,48 @@ module.exports = {
       resolve(history.getDebtHistory(currentUser));
     })
     .then((debtEventList) => {
-      let JSONdebtEventList = JSON.stringify(debtEventList);
-      JSONdebtEventList = JSON.parse(JSONdebtEventList);
-      const mapDebtEventwithAdmin = JSONdebtEventList.map(event =>
-        auth.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
-        .then((isAdmin) => {
-          if (isAdmin.length) event.isadmin = true;
-          else event.isadmin = false;
-          return event;
-        })
-      );
-      Promise.all(mapDebtEventwithAdmin)
-      .then((data) => {
-        result.debt = data;
-      });
+      if (debtEventList.length) {
+        let JSONdebtEventList = JSON.stringify(debtEventList);
+        JSONdebtEventList = JSON.parse(JSONdebtEventList);
+        const mapDebtEventwithAdmin = JSONdebtEventList.map(event =>
+          auth.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
+          .then((isAdmin) => {
+            if (isAdmin.length) event.isadmin = true;
+            else event.isadmin = false;
+            return event;
+          })
+        );
+        Promise.all(mapDebtEventwithAdmin)
+        .then((data) => {
+          result.debt = data;
+        });
+      } else {
+        result.debt = [];
+      }
       return history.getLoanHistory(currentUser);
     })
     .then((loanedEventList) => {
-      let JSONloanedEventList = JSON.stringify(loanedEventList);
-      JSONloanedEventList = JSON.parse(JSONloanedEventList);
-      const mapLoanedEventwithAdmin = JSONloanedEventList.map(event =>
-        auth.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
-        .then((isAdmin) => {
-          if (isAdmin.length) event.isadmin = true;
-          else event.isadmin = false;
-          return event;
-        })
-      );
-      return Promise.all(mapLoanedEventwithAdmin)
-      .then((data) => {
-        result.loaned = data;
+      console.log('loan', loanedEventList);
+      if (loanedEventList.length) {
+        let JSONloanedEventList = JSON.stringify(loanedEventList);
+        JSONloanedEventList = JSON.parse(JSONloanedEventList);
+        const mapLoanedEventwithAdmin = JSONloanedEventList.map(event =>
+          auth.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
+          .then((isAdmin) => {
+            if (isAdmin.length) event.isadmin = true;
+            else event.isadmin = false;
+            return event;
+          })
+        );
+        return Promise.all(mapLoanedEventwithAdmin)
+        .then((data) => {
+          result.loaned = data;
+          return result;
+        });
+      } else {
+        result.loaned = [];
         return result;
-      });
+      }
     })
     .catch(err => Promise.reject(err));
   },
