@@ -1,5 +1,5 @@
 import React from 'react';
-import Router, { browserHistory } from 'react-router';
+import Router, { browserHistory, Link } from 'react-router';
 import axios from 'axios';
 
 export default class HistoryTable extends React.Component {
@@ -15,10 +15,6 @@ export default class HistoryTable extends React.Component {
   }
 
   // handling event transaction finished
-
-
-
-
   handleDone(event,index) {
 
     let historyType, type;
@@ -80,14 +76,14 @@ export default class HistoryTable extends React.Component {
     console.log('history?', history, 'this.state.eventList', this.state.eventList)
     history.forEach((eventItem, index) => {
       if (eventItem.email !== this.props.myEmail) { // to hide me as a recipient in the history
+        let editButton;
         let imgUrl = '';
-
-        // if (eventItem.isadmin) {
-        //   editButton = <input type="button" value="eventEdit" onClick={this.handleEditEvent} />;
-        // }
-        // else {
-        //   editButton = '';
-        // }
+        if (eventItem.isadmin) {
+          editButton = <input type="button" value="eventEdit" onClick={this.handleEditEvent} />;
+        }
+        else {
+          editButton = '';
+        }
 
         if (eventItem.ispaid) {
             imgUrl = 'http://findicons.com/files/icons/808/on_stage/128/symbol_check.png';
@@ -102,7 +98,15 @@ export default class HistoryTable extends React.Component {
           <td>{eventItem.date}</td>
           <td>{eventItem.username} ({eventItem.email})</td>
           <td>{eventItem.cost}</td>
-          <td>{editButton}</td>
+          <td><Link to={"history/"+JSON.stringify({
+              groupname : eventItem.groupname,
+              eventname : eventItem.eventname,
+              date : eventItem.date,
+              recipient : eventItem.username,
+              email : eventItem.email,
+            })}>
+            {editButton}</Link>
+          </td>
           <td ><img src={imgUrl} onClick={(event) => this.handleDone(event,index)}
             className="toggleImg" /></td>
         </tr>);

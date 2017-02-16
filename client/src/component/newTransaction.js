@@ -53,6 +53,10 @@ export default class NewTransaction extends React.Component {
           selected: false,
         });
       });
+      console.log(getData)
+      console.log('groupStorage:', groupStorage )
+      console.log()
+      console.log(getHistory)
 
       const allEvents = getHistory.debt.concat(getHistory.loaned)
 
@@ -154,7 +158,9 @@ export default class NewTransaction extends React.Component {
       return member.selected === true;
     });
 
+    //not state...//
     const newSelectedUserList = Object.assign({}, this.state.newSelectedUserList)
+
     let count = 0;
     if (this.state.selectedGroupMember) {
       this.state.selectedGroupMember.forEach((member) => {
@@ -332,12 +338,15 @@ export default class NewTransaction extends React.Component {
   }
 
   render() {
+    console.log(this.state.myAllGroupUserData)
     const getGroupKeyArray = Object.keys(this.state.myAllGroupUserData);
+    console.log(getGroupKeyArray)
     const groupSelection = getGroupKeyArray.map((item) => {
       return <option>{item}</option>;
     });
-    console.log("getGroupKeyArray::",getGroupKeyArray)
-    console.log("groupSelection:::", groupSelection)
+    // console.log("getGroupKeyArray::",getGroupKeyArray)
+    // console.log("groupSelection:::", groupSelection)
+
     let userTable;
     const selectedGroupMember = this.state.myAllGroupUserData[this.state.selectedGroup];
     if (Object.keys(this.state.myAllGroupUserData).length > 0 && this.state.selectedGroup.length > 0 ) {
@@ -378,7 +387,6 @@ export default class NewTransaction extends React.Component {
 
     return (
       <div>
-        <form >
           그룹을 선택해주세요 :
           <select
             name="eventGroup" className={this.state.groupStyle}
@@ -429,7 +437,6 @@ export default class NewTransaction extends React.Component {
           <br />
           <br />
           {this.state.errorMesseage}
-        </form>
       </div>
     );
   }

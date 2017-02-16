@@ -20,7 +20,7 @@ ReactDOM.render(
       <Route path="group" component={AddNewGroup} />
       <Route path="groupeditform/:groupname" component={GroupEditForm} />
       <Route path="grouppage/:groupname" component={GroupPage} />
-      <Route path="editevent" component={EditEvent} />
+      <Route path="history/:eventInfo" component={EditEvent} />
     </Route>
   </Router>,
  document.getElementById('app'));
