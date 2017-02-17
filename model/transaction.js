@@ -69,15 +69,18 @@ module.exports = {
     req.body.userid = req.session.passport.user;
     return transaction.getEventDetail(req.body.groupname, req.body.eventname, req.body.date)
     .then((isDuplicate) => {
+      console.log('isnotduplicate');
       if (isDuplicate.length) return Promise.reject('Is a duplicate');
       else return auth.checkGroupMember(req.body.userid, req.body.groupname)
     })
     .then((isMember) => {
+      console.log('ismember');
       if (!isMember.length) return Promise.reject('Not a group member');
       else return auth.checkGroupAdmin(req.body.userid, req.body.groupname);
     })
     // prevent adding duplicate admin if post creator === group admin
     .then((isAdmin) => {
+            console.log('isadmin', isAdmin);
       if (isAdmin.length) {
         req.body.isadmin = true;
       } else {
