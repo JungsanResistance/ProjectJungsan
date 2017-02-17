@@ -15,6 +15,7 @@ export default class EditEvent extends React.Component {
       newrecipient: {},
       oldrecipient: {},
       participants: [],
+      oldparticipants: [],
       groupMemberList: [],
       totalCost: 0,
       errorMesseage: '',
@@ -94,6 +95,7 @@ export default class EditEvent extends React.Component {
         newrecipient: eventContents.newrecipient,
         oldrecipient: eventContents.oldrecipient,
         participants: eventContents.participants,
+        oldparticipants: eventContents.participants,
         totalCost: totalCost,
         groupMemberList: storage,
       });
@@ -110,7 +112,26 @@ export default class EditEvent extends React.Component {
       oldeventname: this.state.oldeventname,
       neweventname: this.state.neweventname,
       participants: this.state.participants,
-    })
+    });
+
+    let nothingChangedCount = 0
+    if (this.state.olddate !== this.state.newdate) {
+      nothingChangedCount += 1;
+    }
+    if (this.state.oldrecipient.email !== this.state.newrecipient.email) {
+      nothingChangedCount += 1;
+    }
+    if (this.state.oldeventname !== this.state.neweventname) {
+      nothingChangedCount += 1;
+    }
+    if (JSON.stringify(this.state.participants) !== JSON.stringify(this.state.oldparticipants)) {
+      nothingChangedCount += 1;
+    }
+
+    if (!nothingChangedCount) {
+      alert('변경된 이벤트 정보가 없습니다');
+      browserHistory.push('/history')
+    } else {
     axios.put(`http://localhost:3000/api/transaction`,
       {
         olddate: this.state.olddate,
@@ -134,8 +155,9 @@ export default class EditEvent extends React.Component {
         else {
           console.log('시스템 오류...')
         }
-      })
+      });
     }
+  }
 
   inputHandleChange(event) {
     if (event.target.type === 'number') {

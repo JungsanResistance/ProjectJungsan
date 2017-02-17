@@ -3,7 +3,7 @@ import moment from 'moment';
 import axios from 'axios';
 import Router, { browserHistory } from 'react-router';
 
-export default class NewTransaction extends React.Component {
+export default class NewEvent extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -270,17 +270,18 @@ export default class NewTransaction extends React.Component {
       }
     }
     else if (event.target.name === 'recipientList') {
-        if (event.target.value === "select the recipient") {
-          this.setState({
-            newrecipient: {},
-            groupMemberErrorMesseage: '',
-          });
-        }
+      if (event.target.value === "select the recipient") {
+        this.setState({
+          newrecipient: {},
+          groupMemberErrorMesseage: '',
+        });
+      }
+
       let nextNewRecipient, nextMyAllGroupUserData;
       this.state.myAllGroupUserData[this.state.selectedGroup].forEach((member, index) => {
         if (member.username === event.target.value) {
-          nextNewRecipient = Object.assign({}, this.state.myAllGroupUserData[this.state.selectedGroup][index]);
-          nextNewRecipient.ispaid = true;
+           nextNewRecipient = Object.assign({}, this.state.myAllGroupUserData[this.state.selectedGroup][index]);
+           nextNewRecipient.ispaid = true;
         }
         else if (member.email === this.state.newrecipient.email) {
           nextMyAllGroupUserData = this.state.myAllGroupUserData[this.state.selectedGroup].map(member => {
