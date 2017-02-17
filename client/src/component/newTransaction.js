@@ -129,6 +129,7 @@ export default class NewTransaction extends React.Component {
 
   // post new transaction record
   handleSubmit() {
+    console.log(this.state.selectedUserListToBeSent)
     axios.post('http://localhost:3000/api/transaction', {
       date: this.state.date,
       oldrecipient: this.state.oldrecipient,
@@ -187,7 +188,7 @@ export default class NewTransaction extends React.Component {
       count = 1;
     }
 
-    const indivCost = this.state.totalCost / count;
+    const indivCost = 100 * Math.ceil(this.state.totalCost / (count *100));
 
     nextSelectedUserListToBeSent.forEach((member) => {
       member.cost = indivCost;
@@ -332,7 +333,7 @@ export default class NewTransaction extends React.Component {
         count = 1;
       }
 
-      // roundup 100 KRW 
+      // roundup 100 KRW
       const indivCost = 100 * Math.ceil((event.target.value / (count * 100)));
 
       nextSelectedUserListToBeSent.forEach((member) => {
