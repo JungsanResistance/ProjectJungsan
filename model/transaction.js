@@ -3,7 +3,6 @@ const auth = require('../db/auth');
 
 module.exports = {
   get: (req) => {
-    console.log('hi');
     const currentUser = req.session.passport.user;
     const query = req.query;
     console.log(query);
@@ -13,7 +12,7 @@ module.exports = {
         transaction.getGroupList(currentUser)
       ))
       .then((groupList) => {
-        console.log(groupList);
+        console.log('grouplist',groupList);
         const body = JSON.stringify(groupList);
         const jsonBody = JSON.parse(body);
         return transaction.getGroupMember(jsonBody);
@@ -66,6 +65,7 @@ module.exports = {
     }
   },
   post: (req) => {
+    console.log(req.body);
     req.body.userid = req.session.passport.user;
     return transaction.getEventDetail(req.body.groupname, req.body.eventname, req.body.date)
     .then((isDuplicate) => {
