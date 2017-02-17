@@ -3,7 +3,7 @@ import moment from 'moment';
 import axios from 'axios';
 import Router, { browserHistory } from 'react-router';
 
-export default class NewTransaction extends React.Component {
+export default class NewEvent extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -13,7 +13,6 @@ export default class NewTransaction extends React.Component {
       eventName: '',
       date: '',
       newrecipient: {},
-      oldrecipient: {},
       totalCost: 0,
       myAllGroupUserData: {},
       allPastEvents: [],
@@ -71,6 +70,7 @@ export default class NewTransaction extends React.Component {
   blankCheck() {
     let blankCount = 0;
     let anyMemberSelected = true;
+    let receipientSelectedFlag = true;
     let nextGroupStyle, nextDateStyle, nextEventNameStyle, nextNewRecipientStyle, nextCostStyle;
 
     if (this.state.selectedGroup === '') {
@@ -93,6 +93,21 @@ export default class NewTransaction extends React.Component {
       nextCostStyle = 'inputStyle';
       blankCount += 1;
     }
+
+    console.log('this.state.selectedUserListToBeSent::',this.state.selectedUserListToBeSent)
+
+    const isRecipientSelected = this.state.selectedUserListToBeSent.some((member) => {
+      return member.email === this.state.newrecipient.email
+    });
+
+    if(!isRecipientSelected) {
+      receipientSelectedFlag = false;
+    }
+
+    // console.log('receipientSelectedCount', receipientSelectedCount)
+
+    console.log('isRecipientSelected', isRecipientSelected);
+
     console.log('selectedUserListToBeSent::', this.state.selectedUserListToBeSent)
     if (this.state.selectedUserListToBeSent.length === 0) {
       anyMemberSelected = false;
@@ -106,14 +121,19 @@ export default class NewTransaction extends React.Component {
       costStyle: nextCostStyle,
     });
 
-    console.log('blankCount', blankCount, 'anyMemberSelected ::::', anyMemberSelected)
+    console.log('blankCount', blankCount, 'anyMemberSelected ::::', anyMemberSelected,'receipientSelectedFlag :::', receipientSelectedFlag )
 
-    if (!blankCount && anyMemberSelected) {
+    if (!blankCount && anyMemberSelected && receipientSelectedFlag) {
       if (!this.state.eventErrorMesseage.length) {
         this.handleSubmit();
       }
     }
     else {
+      if (!receipientSelectedFlag) {
+        this.setState({
+          errorMesseage: '돈 낸 사람을 포함시켜주세요^^;;;',
+        })
+      }
       if (blankCount) {
         this.setState({
           errorMesseage: '빈칸을 모두 채워주세요 ㅠ',
@@ -132,7 +152,6 @@ export default class NewTransaction extends React.Component {
     console.log(this.state.selectedUserListToBeSent)
     axios.post('http://localhost:3000/api/transaction', {
       date: this.state.date,
-      oldrecipient: this.state.oldrecipient,
       newrecipient: this.state.newrecipient,
       groupname: this.state.selectedGroup,
       eventname: this.state.eventName,
@@ -154,6 +173,13 @@ export default class NewTransaction extends React.Component {
       1. nextSelectedGroupMember: this is for RENDERING
       2. nextSelectedUserListToBeSent: this is for posting
     */
+
+    //멤버 추가시 에러 메세지를 삭제//
+    if(this.state.errorMesseage.length) {
+      this.setState({
+        errorMesseage: '',
+      })
+    }
 
     // 1. get members for specific group
     const nextSelectedGroupMember = this.state.myAllGroupUserData[this.state.selectedGroup].map((member) => {
@@ -200,6 +226,7 @@ export default class NewTransaction extends React.Component {
     });
 
     //
+
     if (this.state.groupMemberErrorMesseage.length) {
       console.log("error message exist")
       this.setState({
@@ -243,22 +270,30 @@ export default class NewTransaction extends React.Component {
       }
     }
     else if (event.target.name === 'recipientList') {
-        if (event.target.value === "select the recipient") {
-          this.setState({
-            newrecipient: {},
-            groupMemberErrorMesseage: '',
-          });
-        }
+      if (event.target.value === "select the recipient") {
+        this.setState({
+          newrecipient: {},
+          groupMemberErrorMesseage: '',
+        });
+      }
+
+      let nextNewRecipient, nextMyAllGroupUserData;
       this.state.myAllGroupUserData[this.state.selectedGroup].forEach((member, index) => {
         if (member.username === event.target.value) {
-          const nextNewRecipient = Object.assign({}, this.state.myAllGroupUserData[this.state.selectedGroup][index]);
-          nextNewRecipient.ispaid = true;
-          this.setState({
-            newrecipient: nextNewRecipient,
-            oldrecipient: nextNewRecipient,
-            recipientStyle: '',
-          });
+           nextNewRecipient = Object.assign({}, this.state.myAllGroupUserData[this.state.selectedGroup][index]);
+           nextNewRecipient.ispaid = true;
         }
+        else if (member.email === this.state.newrecipient.email) {
+          nextMyAllGroupUserData = this.state.myAllGroupUserData[this.state.selectedGroup].map(member => {
+            return member;
+          })
+          nextMyAllGroupUserData[index].ispaid = false;
+        }
+      });
+      this.setState({
+        newrecipient: nextNewRecipient,
+        myAllGroupUserData: nextMyAllGroupUserData,
+        recipientStyle: '',
       });
     }
   }
@@ -266,42 +301,54 @@ export default class NewTransaction extends React.Component {
   // this function will check if the event already exist
   eventDuplicateCheck(event) {
     let eventDuplicateExist = false;
-    if (event.target.name === 'eventGroup') {
-      this.state.allPastEvents.forEach((pastEvent) => {
-        if (pastEvent.groupname === event.target.value &&
-          pastEvent.date === this.state.date &&
-          pastEvent.eventname === this.state.eventName) {
-          eventDuplicateExist = true;
-        }
-      });
-    }
-    else if (event.target.type === 'date') {
-      this.state.allPastEvents.forEach((pastEvent) => {
-        if (pastEvent.groupname === this.state.selectedGroup &&
-          pastEvent.date === event.target.value &&
-          pastEvent.eventname === this.state.eventName) {
-          eventDuplicateExist = true;
-        }
-      });
-    }
-    else if (event.target.type === 'text') {
-      this.state.allPastEvents.forEach((pastEvent) => {
-        if (pastEvent.groupname === this.state.selectedGroup &&
-          pastEvent.date === this.state.date &&
-          pastEvent.eventname === event.target.value) {
-          eventDuplicateExist = true;
-        }
-      });
-    }
-    if (eventDuplicateExist) {
-      this.setState({
-        eventErrorMesseage: '중복된 이벤트가 있습니다',
-      });
-    } else {
-      this.setState({
-        eventErrorMesseage: '',
-      });
-    }
+    return new Promise((resolve, reject) => {
+      resolve(event.target)
+    })
+    .then((eventTarget) => {
+      // console.log('event:::::', event.value)
+      if (eventTarget.name === 'eventGroup') {
+        console.log(eventTarget.value, this.state.eventName, this.state.date);
+        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
+        .then(res => {
+          if(res.data.length-2) {
+            return true;
+          }
+        })
+      }
+      else if (eventTarget.name === 'eventDate') {
+        console.log(this.state.selectedGroup, this.state.eventName, eventTarget.value);
+        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
+        .then(res => {
+          console.log(res.data)
+          if(res.data.length-2) {
+            return true;
+          }
+        })
+      }
+      else if (eventTarget.type === 'text') {
+        console.log(this.state.selectedGroup, eventTarget.value, this.state.date);
+        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
+        .then(res => {
+          console.log(res.data)
+          if(res.data.length-2) {
+            return true;
+          }
+        })
+      }
+    })
+    .then((eventDuplicateExist) => {
+      console.log("eventDuplicateExist::::::", eventDuplicateExist)
+      if (eventDuplicateExist) {
+        console.log('come here????')
+        this.setState({
+          eventErrorMesseage: '중복된 이벤트가 있습니다',
+        });
+      } else {
+        this.setState({
+          eventErrorMesseage: '',
+        });
+      }
+    })
   }
 
   inputHandleChange(event) {

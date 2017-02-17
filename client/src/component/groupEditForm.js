@@ -29,6 +29,7 @@ export default class GroupEditForm extends React.Component {
   componentWillMount() {
     axios.get(`http://localhost:3000/api/groupedit?target=groupmembers&groupname=${this.props.params.groupname}`)
     .then((res) => {
+      console.log("res!!!!!!!!!",res)
       const groupData = JSON.parse(res.data);
       const groupMemberData = groupData.map((data) => {
         return {
@@ -66,10 +67,10 @@ export default class GroupEditForm extends React.Component {
         if ((groupNameCheck === false) && groupMemberCheck) {
             axios.put(`http://localhost:3000/api/groupedit`,
               {
-                action: 'modifyGroupName',
-                data: {
+                body: {
                   oldgroupname: this.state.oldGroupname,
                   newgroupname: this.state.newGroupname,
+                  action: 'modifyGroupName',
                 }
               }
             )
@@ -139,9 +140,8 @@ export default class GroupEditForm extends React.Component {
           });
         }
         else {
-          this.setState({
-            errorSubmit: '수정한다면서요...!?',
-          })
+          alert('수정사항이 없습니다.')
+          browserHistory.push('/mypage');
         }
       }
     }
@@ -254,14 +254,9 @@ export default class GroupEditForm extends React.Component {
     axios.get(`http://localhost:3000/api/groupedit?target=groupname&groupname=${this.state.newGroupname}`)
     .then((res) => {
       const data = JSON.parse(res.data);
-      console.log(data)
-      if (data.length) {
-        if(data[0].groupname === this.props.params.groupname){
-          this.setState({
-            errorGroupnameDuplicate: '현재 사용하고 있는 그룹이름입니다.',
-            groupDuplicateFlag: "errorMemberDuplicateFalse",
-          })
-        } else {
+      console.log(data.length )
+      if (data.length && this.state.newGroupname !== this.props.params.groupname) {
+        if (this.state.newGroupname === data[0].groupname) {
           this.setState({
             errorGroupnameDuplicate: '이 그룹이름은 이미 있어 띵구야',
             groupDuplicateFlag: "errorMemberDuplicateFalse",
@@ -269,11 +264,11 @@ export default class GroupEditForm extends React.Component {
         }
       }
       else {
-          this.setState({
-            groupname: this.state.newGroupname,
-            errorGroupnameDuplicate: '멋진 그룹 이름이군요!',
-            groupDuplicateFlag: "errorMemberDuplicateTrue",
-          })
+        this.setState({
+          groupname: this.state.newGroupname,
+          errorGroupnameDuplicate: '사용할 수 있는 이름이군요!',
+          groupDuplicateFlag: "errorMemberDuplicateTrue",
+        })
       }
     });
   }
