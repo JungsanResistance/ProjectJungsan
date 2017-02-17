@@ -15,10 +15,12 @@ export default class EditEvent extends React.Component {
       participants: [],
       groupMemberList: [],
       totalCost: 0,
+      errorMesseage: '',
     };
 
     this.selectHandleChange = this.selectHandleChange.bind(this);
     this.selectHandleMember = this.selectHandleMember.bind(this);
+    this.inputHandleChange = this.inputHandleChange.bind(this);
   }
 
   componentWillMount() {
@@ -79,13 +81,22 @@ export default class EditEvent extends React.Component {
         groupname: eventContents.groupname,
         eventname: eventContents.eventname,
         date: eventContents.date,
-        newrecipient: newrecipientInfo,
+        newrecipient: eventContents.newrecipient,
         oldrecipient: eventContents.oldrecipient,
         participants: eventContents.participants,
         totalCost: totalCost,
         groupMemberList: storage,
       });
     });
+  }
+
+  inputHandleChange(event) {
+    if (event.target.type === 'number') {
+      const nextSelectedUserList = this.state.groupMemberList.filter((member) => {
+        return member.selected = true;
+      });
+
+    }
   }
 
   selectHandleChange(event) {
