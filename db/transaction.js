@@ -29,7 +29,6 @@ module.exports = {
     });
   },
   getGroupMember: (grouplist) => {
-    console.log(grouplist);
     let groupClause = `groupname = "${grouplist[0].groupname}"`;
     for (let i = 1; i < grouplist.length; i += 1) {
       groupClause += ` OR groupname = "${grouplist[i].groupname}"`;
@@ -124,7 +123,6 @@ module.exports = {
            INNER JOIN eventmember em
                    ON em.user_idx = u.idx
                       AND em.event_idx = e.idx;   `;
-    console.log('rec?',getRecipientDetailQuery);
     return new Promise((resolve, reject) => {
       connection.query(getRecipientDetailQuery, (err, res) => {
         if (err) return reject(err);
@@ -183,7 +181,14 @@ module.exports = {
       addEventMemberQuery += `
       INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (
       (SELECT idx FROM user where email='${member.email}'),
-      (SELECT idx FROM event where eventname='${body.eventname}'),
+      (SELECT idx
+              FROM   event
+              WHERE  eventname = '${body.eventname}'
+                     AND date = '${body.date}'
+                     AND group_idx = (SELECT idx
+                                      FROM   groups
+                                      WHERE
+                         groupname = '${body.groupname}')),
       ${member.cost},
       ${member.ispaid}
     );`;
