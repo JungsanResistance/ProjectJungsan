@@ -124,6 +124,7 @@ module.exports = {
            INNER JOIN eventmember em
                    ON em.user_idx = u.idx
                       AND em.event_idx = e.idx;   `;
+    console.log('rec?',getRecipientDetailQuery);
     return new Promise((resolve, reject) => {
       connection.query(getRecipientDetailQuery, (err, res) => {
         if (err) return reject(err);
@@ -176,7 +177,6 @@ module.exports = {
       );
       `;
     }
-    console.log(addGroupAdmintoEventQuery);
     let addEventMemberQuery = '';
     const participants = [...body.participants];
     participants.forEach((member) => {
@@ -316,7 +316,6 @@ module.exports = {
                                      exactEventIndex)
       ; `;
     });
-    console.log(updateEventDropParticipantsQuery);
     return new Promise((resolve, reject) => {
       connection.query(updateEventDropParticipantsQuery, (err) => {
         if (err) return reject(err);
