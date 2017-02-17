@@ -15,57 +15,77 @@ export default class EditEvent extends React.Component {
       participants: [],
       groupMemberList: [],
       totalCost: 0,
-    }
+    };
 
     this.selectHandleChange = this.selectHandleChange.bind(this);
     this.selectHandleMember = this.selectHandleMember.bind(this);
   }
 
   componentWillMount() {
-
     const selectedEventData = JSON.parse(this.props.params.eventInfo);
+
+    // all groups I belong info
     const getGroupData = axios.get('http://localhost:3000/api/transaction?type=post');
+
+    // Event info
     const getEventData = axios.get(`http://localhost:3000/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`);
+
     Promise.all([getGroupData, getEventData])
-    .then(res => {
-      const groupContents = JSON.parse(res[0].data)
+    .then((res) => {
+      const groupContents = JSON.parse(res[0].data);
       const eventContents = JSON.parse(res[1].data);
+
+      // calculate the total cost
       const totalCost = eventContents.participants.reduce((total, member) => {
-        return total.cost + member.cost;
-      })
-
-      console.log(groupContents, eventContents.groupname)
-
-      const selectedGroupList = groupContents.filter((member) => {
-        console.log(member.groupname)
+        return total + member.cost;
+      }, 0);
+      let selectedGroupMember = groupContents.filter((member) => {
         return member.groupname === eventContents.groupname;
       });
 
-      console.log(selectedGroupList)
-
-      selectedGroupList.forEach((member) => {
-        eventContents.participants.forEach((selectedMember) => {
-            if(member.email === selectedMember.email) {
-              member.selected = true ;
-            } else {
-              member.selected = false;
-            }
+      // storage to contain necessary member info
+      const storage = [];
+      selectedGroupMember = selectedGroupMember.forEach((member) => {
+        storage.push({
+          email: member.email,
+          username: member.username,
+          selected: false,
+          cost: 0,
         });
       });
 
-      console.log('groupContents', selectedGroupList);
+      // here we filter matching participated member and set selected flag to true
+      storage.forEach((member) => {
+        eventContents.participants.forEach((selectedMember) => {
+          if (member.email === selectedMember.email) {
+            member.selected = true;
+            member.cost = selectedMember.cost;
+          }
+        });
+      });
+
+      // here we prevent the error when eventContents has no newrecipent....
+      // eventually we need to delete this part
+      let newrecipientInfo;
+
+      if (eventContents.newrecipient) {
+        newrecipientInfo = eventContents.newrecipient;
+      } else {
+        newrecipientInfo = '';
+      }
+
 
       this.setState({
         groupname: eventContents.groupname,
-        eventname : eventContents.eventname,
-        date : eventContents.date,
-        newrecipient: eventContents.newrecipient,
+        eventname: eventContents.eventname,
+        date: eventContents.date,
+        newrecipient: newrecipientInfo,
         oldrecipient: eventContents.oldrecipient,
         participants: eventContents.participants,
         totalCost: totalCost,
-        groupMemberList: selectedGroupList,
-      })
-    })
+        groupMemberList: storage,
+      });
+    });
   }
 
   selectHandleChange(event) {
@@ -74,75 +94,81 @@ export default class EditEvent extends React.Component {
 
   selectHandleMember(event, selectedMember) {
 
-    let copyGroupMemberList = this.state.groupMemberList.map((member) => {
+    // deep copy
+    let nextGroupMemberList = this.state.groupMemberList.map((member) => {
       return member;
     });
-    copyGroupMemberList.forEach((member) => {
+
+    // toggle selected flag
+    nextGroupMemberList.forEach((member) => {
       if (member.email === selectedMember.email) {
         member.selected = !member.selected;
       }
     });
 
-    const nextParticipants = copyGroupMemberList.filter((member) => {
+    const nextParticipants = nextGroupMemberList.filter((member) => {
       return member.selected === true;
     });
 
+
     let count = 0;
-    if (this.state.nextparticipants) {
-      count = this.state.nextparticipants
+    if (nextParticipants) {
+      count = nextParticipants.length
     } else {
       count = 1
     }
 
-    const indivCost = this.state.totalCost / count;
-    for (let member in nextparticipants) {
-      nextparticipants[member].cost = indivCost
-    }
+    const indivCost = 100 * Math.ceil((this.state.totalCost / (count * 100)));
+
+    // const indivCost = this.state.totalCost / count;
+    nextParticipants.forEach((member) => {
+      member.cost = indivCost;
+    });
+
+    nextGroupMemberList.forEach((member) => {
+      if (member.selected) {
+        member.cost = indivCost;
+      }
+    });
 
     this.setState({
       participants: nextParticipants,
-      groupMemberList: copyGroupMemberList,
-    })
-
+      groupMemberList: nextGroupMemberList,
+    });
   }
 
-
-
-
   render() {
-    // console.log('eventInfo:::::', this.props.params.eventInfo)
-    console.log('stateData!!!!!!:::', this.state)
-
-    const recipientList = this.state.participants.map(member => {
-      if(member.email !== this.state.newrecipient.email) {
+    // console.log(this.state.newrecipient)
+    const recipientList = this.state.participants.map((member) => {
+      if (member.email !== this.state.newrecipient.email) {
         return <option>{member.username}</option>
       }
-    })
-    console.log(this.state.groupMemberList)
+    });
+
+
     let userTable;
-      if (Object.keys(this.state.groupMemberList).length > 0) {
-        userTable = this.state.groupMemberList.map((member, index) => {
-          console.log(member.selected)
-          if (member.selected) {
-            return (
-              <tr onClick={() => this.selectHandleMember(event, member)} className="selected">
-                <td>
-                 {member.username} ({member.email})
-              </td>
-                <input
-               type='number' placeholder={this.state.groupMemberList[index].cost}
-               />
-              </tr>);
-          } else {
-            return (
-              <tr onClick={() => this.selectHandleMember(event, member)} className="unselected">
-                <td>
-                  {member.username} ({member.email})
-             </td>
-           </tr>);
-          }
-        })
-      }
+    if (Object.keys(this.state.groupMemberList).length > 0 && this.state.totalCost > 0) {
+      userTable = this.state.groupMemberList.map((member, index) => {
+        if (member.selected) {
+          return (
+            <tr onClick={() => this.selectHandleMember(event, member)} className="selected">
+              <td>
+               {member.username} ({member.email})
+            </td>
+              <input
+             type="number" placeholder={this.state.groupMemberList[index].cost}
+             />
+            </tr>);
+        } else {
+          return (
+            <tr onClick={() => this.selectHandleMember(event, member)} className="unselected">
+              <td>
+                {member.username} ({member.email})
+           </td>
+         </tr>);
+        }
+      })
+    }
     else {
       userTable = [];
     }
@@ -150,7 +176,7 @@ export default class EditEvent extends React.Component {
     return (
       <div>
         <p>
-        누구랑 :
+        그룹 :
         {this.state.groupname}
         </p>
         <p>
@@ -191,6 +217,6 @@ export default class EditEvent extends React.Component {
         <br />
         <br />
       </div>
-    )
+    );
   }
 }

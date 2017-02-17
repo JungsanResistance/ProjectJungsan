@@ -26,8 +26,11 @@ export default class RenderMembers extends React.Component {
 
 
   render() {
+    console.log(this.state.groupmemberList);
     const members = this.state.groupmemberList.map((member) => {
-      return <li>{member.username} ({member.email})</li>
+      if (member.active) {
+        return <li>{member.username} ({member.email})</li>
+      }
     });
     return (
       <div>

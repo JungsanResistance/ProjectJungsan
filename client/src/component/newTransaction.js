@@ -165,6 +165,7 @@ export default class NewTransaction extends React.Component {
         member.selected = !member.selected;
       }
     });
+    console.log('nextSelectedGroupMember', nextSelectedGroupMember)
 
     // 2. filter selected member and store in selecteduser list to send post later
     const nextSelectedUserListToBeSent = nextSelectedGroupMember.filter((member) => {
@@ -331,7 +332,8 @@ export default class NewTransaction extends React.Component {
         count = 1;
       }
 
-      const indivCost = event.target.value / count;
+      // roundup 100 KRW 
+      const indivCost = 100 * Math.ceil((event.target.value / (count * 100)));
 
       nextSelectedUserListToBeSent.forEach((member) => {
         member.cost = indivCost;
@@ -370,7 +372,8 @@ export default class NewTransaction extends React.Component {
     // retrieve group members for specific group
     const selectedGroupMember = this.state.myAllGroupUserData[this.state.selectedGroup];
     // render both selected and unselected member and apply style together
-    if (Object.keys(this.state.myAllGroupUserData).length > 0 && this.state.selectedGroup.length > 0 ) {
+    if (Object.keys(this.state.myAllGroupUserData).length > 0
+    && this.state.selectedGroup.length > 0) {
       userTable = selectedGroupMember.map((member, index) => {
         if (selectedGroupMember[index].selected) {
           return (
