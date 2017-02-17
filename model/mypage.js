@@ -1,5 +1,6 @@
 const mypage = require('../db/mypage');
 const auth = require('../db/auth');
+const misc = require('../db/misc');
 
 module.exports = {
   get: (req) => {
@@ -22,11 +23,15 @@ module.exports = {
           return group;
         })
       );
-      return Promise.all(mapGroupPromise)
-      .then((data) => {
-        result.groupList = data;
-        return result;
-      });
+      return Promise.all(mapGroupPromise);
+    })
+    .then((groupListwithAdmin) => {
+      result.groupList = groupListwithAdmin;
+      return misc.checkAllPending(currentUser);
+    })
+    .then((pendingUserList) => {
+      result.pendingUserList = pendingUserList;
+      return result;
     })
     .catch(err => Promise.reject(err));
   },
