@@ -24,6 +24,8 @@ export default class Mypage extends React.Component {
       const groupStorage = [];
       const getData = JSON.parse(res[1].data);
 
+      console.log('getData!!!!!:', getData);
+
       getData.groupList.forEach((group) => {
         groupStorage.push(group.groupname);
       });
