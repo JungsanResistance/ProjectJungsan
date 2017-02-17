@@ -23,14 +23,50 @@ module.exports = {
       });
     });
   },
-  checkPending: (body, userid) => {
-    let checkPendingquery = `
+  checkAllPending: (userid) => {
+    const checkPendingquery = `
     SELECT (SELECT username
             FROM   user u
             WHERE  idx = pendinguser.applicant_idx) AS applicant,
+           (SELECT email
+            FROM   user u
+            WHERE  idx = pendinguser.applicant_idx) AS applicantemail,
            (SELECT username
             FROM   user u
             WHERE  idx = pendinguser.acceptor_idx)  AS acceptor,
+           (SELECT email
+            FROM   user u
+            WHERE  idx = pendinguser.acceptor_idx)  AS acceptoremail,
+           status
+    FROM   pendinguser
+    WHERE  applicant_idx = (SELECT idx
+                            FROM   user
+                            WHERE  userid = '${userid}')
+           OR acceptor_idx = (SELECT idx
+                                   FROM   user
+                                   WHERE  userid = '${userid}')
+    ; `;
+    return new Promise((resolve, reject) => {
+      connection.query(checkPendingquery, (err, res) => {
+        if (err) return reject(err);
+        resolve(res);
+      });
+    });
+  },
+  checkStatus: (body, userid) => {
+    let checkStatusQuery = `
+    SELECT (SELECT username
+            FROM   user u
+            WHERE  idx = pendinguser.applicant_idx) AS applicant,
+           (SELECT email
+            FROM   user u
+            WHERE  idx = pendinguser.applicant_idx) AS applicantemail,
+           (SELECT username
+            FROM   user u
+            WHERE  idx = pendinguser.acceptor_idx)  AS acceptor,
+           (SELECT email
+            FROM   user u
+            WHERE  idx = pendinguser.acceptor_idx)  AS acceptoremail,
            status
     FROM   pendinguser
     WHERE  applicant_idx = (SELECT idx
@@ -40,24 +76,30 @@ module.exports = {
                                FROM   user
                                WHERE  email = '${body.recipientemail}')
     ; `;
+    console.log(checkStatusQuery)
     return new Promise((resolve, reject) => {
-      connection.query(checkPendingquery, (err, res) => {
+      connection.query(checkStatusQuery, (err, res) => {
         if (err) return reject(err);
         resolve(res);
       });
     })
     .then((result) => {
-      console.log('hi', result)
       if (result.length) {
         return result;
       } else {
-        checkPendingquery = `
+        checkStatusQuery = `
         SELECT (SELECT username
                 FROM   user u
                 WHERE  idx = pendinguser.applicant_idx) AS applicant,
-               (SELECT username
-                FROM   user u
-                WHERE  idx = pendinguser.acceptor_idx)  AS acceptor,
+                (SELECT username
+                 FROM   user u
+                 WHERE  idx = pendinguser.applicant_idx) AS applicantemail,
+                (SELECT username
+                 FROM   user u
+                 WHERE  idx = pendinguser.acceptor_idx)  AS acceptor,
+                (SELECT username
+                 FROM   user u
+                 WHERE  idx = pendinguser.acceptor_idx)  AS acceptoremail,
                status
         FROM   pendinguser
         WHERE  applicant_idx = (SELECT idx
@@ -68,7 +110,7 @@ module.exports = {
                                    WHERE  userid = '${userid}')
         ; `;
         return new Promise((resolve, reject) => {
-          connection.query(checkPendingquery, (err, res) => {
+          connection.query(checkStatusQuery, (err, res) => {
             if (err) return reject(err);
             resolve(res);
           });
@@ -93,7 +135,7 @@ module.exports = {
         if (err) return reject(err);
         resolve(res);
       });
-    })
+    });
   },
   rejectPending: (body, userid) => {
     const insertPendingquery = `
@@ -110,7 +152,24 @@ module.exports = {
         if (err) return reject(err);
         resolve(res);
       });
-    })
+    });
+  },
+  updatePending: (body, userid) => {
+    const insertPendingquery = `
+    UPDATE pendinguser set status = 1
+    WHERE  applicant_idx = (SELECT idx
+                            FROM   user
+                            WHERE  userid = '${userid}')
+           AND acceptor_idx = (SELECT idx
+                               FROM   user
+                               WHERE  email = '${body.recipientemail}')
+    ; `;
+    return new Promise((resolve, reject) => {
+      connection.query(insertPendingquery, (err, res) => {
+        if (err) return reject(err);
+        resolve(res);
+      });
+    });
   },
   resolveAllPayments: (body, userid) => {
     return new Promise((resolve, reject) => {
@@ -207,6 +266,24 @@ module.exports = {
           });
         });
       }
+    })
+    .then((res) => {
+      console.log('delete')
+      const deleteAcceptedPendingQuery = `
+      DELETE FROM pendinguser
+      WHERE  applicant_idx = (SELECT idx
+                              FROM   user
+                              WHERE  email = '${body.recipientemail}')
+             AND acceptor_idx = (SELECT idx
+                                 FROM   user
+                                 WHERE  userid = '${userid}')
+      ;  `;
+      return new Promise((resolve, reject) => {
+        connection.query(deleteAcceptedPendingQuery, (err, res) => {
+          if (err) return reject(err);
+          resolve(res);
+        });
+      })
     })
     .then((res) => {
       return new Promise((resolve, reject) => {

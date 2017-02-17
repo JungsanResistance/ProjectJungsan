@@ -125,8 +125,12 @@ module.exports = {
       res.sendStatus(200);
     })
     .catch((err) => {
-      console.log('error', err)
-      res.sendStatus(406);
+      if (err === 'Bad request') {
+        res.sendStatus(400);
+      } else {
+        console.log('error', err.stack);
+        res.sendStatus(406);
+      }
     }),
   },
 };
