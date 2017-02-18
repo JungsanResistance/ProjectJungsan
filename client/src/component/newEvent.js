@@ -182,6 +182,8 @@ export default class NewEvent extends React.Component {
     }
 
     // 1. get members for specific group
+    console.log(this.state.myAllGroupUserData)
+    console.log(this.state.selectedGroup)
     const nextSelectedGroupMember = this.state.myAllGroupUserData[this.state.selectedGroup].map((member) => {
       return member;
     });
@@ -189,6 +191,7 @@ export default class NewEvent extends React.Component {
     // toggle selected flag when selecting member
     nextSelectedGroupMember.forEach((member) => {
       if (member.email === selectedMember.email) {
+        console.log('toggle')
         member.selected = !member.selected;
       }
     });
@@ -247,6 +250,8 @@ export default class NewEvent extends React.Component {
 
   selectHandleChange(event) {
 
+    console.log(this.state.myAllGroupUserData)
+
     if (this.state.errorMesseage.length) {
       this.setState({
         errorMesseage: '',
@@ -277,17 +282,17 @@ export default class NewEvent extends React.Component {
         });
       }
 
-      let nextNewRecipient, nextMyAllGroupUserData;
+      let nextNewRecipient;
+      console.log(this.state.myAllGroupUserData)
+      const nextMyAllGroupUserData =  Object.assign({}, this.state.myAllGroupUserData);
+
       this.state.myAllGroupUserData[this.state.selectedGroup].forEach((member, index) => {
         if (member.username === event.target.value) {
            nextNewRecipient = Object.assign({}, this.state.myAllGroupUserData[this.state.selectedGroup][index]);
            nextNewRecipient.ispaid = true;
         }
         else if (member.email === this.state.newrecipient.email) {
-          nextMyAllGroupUserData = this.state.myAllGroupUserData[this.state.selectedGroup].map(member => {
-            return member;
-          })
-          nextMyAllGroupUserData[index].ispaid = false;
+          nextMyAllGroupUserData[this.state.selectedGroup][index].ispaid = false;
         }
       });
       this.setState({
@@ -409,6 +414,7 @@ export default class NewEvent extends React.Component {
   }
 
   render() {
+    console.log(this.state.myAllGroupUserData)
     const getGroupKeyArray = Object.keys(this.state.myAllGroupUserData);
     const groupSelection = getGroupKeyArray.map((item) => {
       return <option>{item}</option>;
