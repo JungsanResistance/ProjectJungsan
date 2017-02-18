@@ -114,7 +114,6 @@ export default class HistoryTable extends React.Component {
       }
     })
   };
-
     return (
       <div>
         <h1>
