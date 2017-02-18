@@ -9,10 +9,33 @@ module.exports = {
   },
   put: (req) => {
     const currentUser = req.session.passport.user;
+    const type = req.body.type;
     return new Promise((resolve, reject) => {
-      resolve(misc.resolveAllPayments(req.body, currentUser))
+      resolve(misc.checkStatus(req.body, currentUser));
     })
-    .then(res => console.log('res?', res))
-    .catch(err => Promise.reject(err));
+    .then((pendingDetail) => {
+      let JSONpendingDetail = JSON.stringify(pendingDetail);
+      JSONpendingDetail = JSON.parse(JSONpendingDetail);
+      console.log('pending',JSONpendingDetail);
+      let toBeProcessed;
+      if (JSONpendingDetail.length) {
+        if (JSONpendingDetail[0].status === 1 && type === 'accept') {
+          toBeProcessed = misc.resolveAllPayments(req.body, currentUser);
+        } else if (JSONpendingDetail[0].status === 1 && type === 'reject') {
+          toBeProcessed = misc.rejectPending(req.body, currentUser);
+        } else if (JSONpendingDetail[0].status === 0 && type === 'pending') {
+          toBeProcessed = misc.updatePending(req.body, currentUser);
+        } else {
+          toBeProcessed = Promise.reject('Bad request');
+        }
+      } else {
+        if (type === 'pending') {
+          toBeProcessed = misc.insertPending(req.body, currentUser);
+        } else {
+          toBeProcessed = Promise.reject('Bad request');
+        }
+      }
+      return toBeProcessed;
+    })
   },
 };

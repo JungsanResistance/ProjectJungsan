@@ -39,8 +39,8 @@ module.exports = {
     const addNewGroupQuery = `
       INSERT INTO groups (groupname) VALUES ('${body.groupname}');
       INSERT INTO groupadmin (group_idx, admin_idx) VALUES (
-        SELECT idx FROM groups where groupname = '${body.groupname}',
-        SELECT idx FROM groups where userid = '${body.userid}'
+        (SELECT idx FROM groups where groupname = '${body.groupname}'),
+        (SELECT idx FROM user where userid = '${body.userid}')
       );
     `;
     let addNewMembersQuery = '';
@@ -58,7 +58,7 @@ module.exports = {
                       WHERE  groupname = '${body.groupname}'),
                       true); `;
     });
-    console.log(addNewMembersQuery);
+    console.log(addNewGroupQuery + addNewMembersQuery);
     return new Promise((resolve, reject) => {
       connection.query(addNewGroupQuery + addNewMembersQuery, (err) => {
         if (err) return reject(err);

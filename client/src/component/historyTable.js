@@ -1,5 +1,5 @@
 import React from 'react';
-import Router, { browserHistory } from 'react-router';
+import Router, { browserHistory, Link } from 'react-router';
 import axios from 'axios';
 
 export default class HistoryTable extends React.Component {
@@ -15,26 +15,21 @@ export default class HistoryTable extends React.Component {
   }
 
   // handling event transaction finished
-
-
-
-
   handleDone(event,index) {
 
     let historyType, type;
 
-    if(this.props.debtHistory){
+    if (this.props.debtHistory){
       historyType = this.props.debtHistory;
       type = 'debt';
     } else {
       historyType = this.props.loanedHistory
       type = 'loan';
     }
-    console.log("historyTypehistoryType:::",historyType)
-    console.log(index)
+
     const nextHistory = [...historyType];
-    console.log("Historydata::",nextHistory[index])
     nextHistory[index].ispaid = !nextHistory[index].ispaid;
+    console.log(historyType)
     const historyData = {
       date : nextHistory[index].date,
       recipientemail: nextHistory[index].email,
@@ -43,8 +38,11 @@ export default class HistoryTable extends React.Component {
       ispaid: nextHistory[index].ispaid,
     };
 
+
+
     axios.put(`http://localhost:3000/api/history?type=${type}`, historyData)
     .then(res => {
+      console.log(res)
       if(res.status === 200) {
         if(this.props.debtHistory){
           this.setState({
@@ -61,9 +59,6 @@ export default class HistoryTable extends React.Component {
   }
 
   render() {
-
-    console.log('this.props', this.props)
-    console.log(this.state.eventList)
     const eventList = [];
     let editButton = '';
     let history, tableName, tableType;
@@ -77,23 +72,26 @@ export default class HistoryTable extends React.Component {
       tableName = '받아야함';
     }
 
-    console.log('history?', history, 'this.state.eventList', this.state.eventList)
-    history.forEach((eventItem, index) => {
+    if (history) {
+      history.forEach((eventItem, index) => {
       if (eventItem.email !== this.props.myEmail) { // to hide me as a recipient in the history
-        let imgUrl = '';
+        let editButton;
+        let paidCheck = '';
+        if (eventItem.isadmin) {
+          editButton = <input type="button" value="eventEdit" />;
+        }
+        else {
+          editButton = '';
+        }
 
-        // if (eventItem.isadmin) {
-        //   editButton = <input type="button" value="eventEdit" onClick={this.handleEditEvent} />;
-        // }
-        // else {
-        //   editButton = '';
-        // }
+        let actionButton = '요청';
+        let declineButton = '';
 
         if (eventItem.ispaid) {
-            imgUrl = 'http://findicons.com/files/icons/808/on_stage/128/symbol_check.png';
+            paidCheck = <button value="정산완료" onClick={(event) => this.handleDone(event,index)}>"정산완료"</button>;
           }
         else {
-          imgUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/X_mark.svg/896px-X_mark.svg.png';
+          paidCheck = <button value={actionButton} onClick={(event) => this.handleDone(event,index)}>{actionButton}</button>;
         }
         eventList.push(
         <tr>
@@ -101,13 +99,21 @@ export default class HistoryTable extends React.Component {
           <td>{eventItem.eventname}</td>
           <td>{eventItem.date}</td>
           <td>{eventItem.username} ({eventItem.email})</td>
-          <td>{eventItem.cost}</td>
-          <td>{editButton}</td>
-          <td ><img src={imgUrl} onClick={(event) => this.handleDone(event,index)}
-            className="toggleImg" /></td>
+          <td>{Math.abs(eventItem.cost)}</td>
+          <td><Link to={"history/"+JSON.stringify({
+              groupname : eventItem.groupname,
+              eventname : eventItem.eventname,
+              date : eventItem.date,
+            })}>
+            {editButton}</Link>
+          </td>
+          <td >
+            {paidCheck}
+          </td>
         </tr>);
       }
-    });
+    })
+  };
 
     return (
       <div>

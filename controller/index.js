@@ -14,7 +14,7 @@ module.exports = {
     get: (req, res) => (mypage.get(req))
     .then((result) => {
       const body = JSON.stringify(result);
-      console.log(body);
+      console.log('result', body);
       res.json(body);
     })
     .catch((err) => {
@@ -33,9 +33,18 @@ module.exports = {
         res.sendStatus(201);
       })
       .catch((err) => {
-        res.sendStatus(406);
-        throw err;
-      }),
+        if (err === 'Is a duplicate') {
+          res.sendStatus(400);
+          throw err;
+        } else if (err === 'Not a group member') {
+          res.sendStatus(401);
+          throw err;
+        } else {
+          res.sendStatus(406);
+          throw err;
+        }
+      }
+    ),
     put: (req, res) => (transaction.put(req))
     .then(() => {
       res.sendStatus(200);
@@ -52,6 +61,15 @@ module.exports = {
       const body = JSON.stringify(result);
       console.log(body);
       res.json(body);
+    })
+    .catch((err) => {
+      if (err === 'Not a group member') {
+        res.sendStatus(401);
+        throw err;
+      } else {
+        res.sendStatus(406);
+        throw err;
+      }
     }),
     post: (req, res) => (group.post(req))
     .then(() => {
@@ -66,8 +84,13 @@ module.exports = {
       res.sendStatus(200);
     })
     .catch((err) => {
-      res.sendStatus(406);
-      throw err;
+      if (err === 'Not the admin') {
+        res.sendStatus(401);
+        throw err;
+      } else {
+        res.sendStatus(406);
+        throw err;
+      }
     }),
   },
   history: {
@@ -102,8 +125,12 @@ module.exports = {
       res.sendStatus(200);
     })
     .catch((err) => {
-      console.log('error', err)
-      res.sendStatus(406);
+      if (err === 'Bad request') {
+        res.sendStatus(400);
+      } else {
+        console.log('error', err.stack);
+        res.sendStatus(406);
+      }
     }),
   },
 };

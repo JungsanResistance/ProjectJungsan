@@ -29,7 +29,6 @@ module.exports = {
     });
   },
   getGroupMember: (grouplist) => {
-    console.log(grouplist);
     let groupClause = `groupname = "${grouplist[0].groupname}"`;
     for (let i = 1; i < grouplist.length; i += 1) {
       groupClause += ` OR groupname = "${grouplist[i].groupname}"`;
@@ -138,7 +137,9 @@ module.exports = {
     STR_TO_DATE('${body.date}', '%Y-%m-%d'),
     (SELECT idx FROM user where email='${body.newrecipient.email}'),
     '${body.eventname}'
-    );
+    ); `;
+
+    const addEventCreatorQuery = `
     INSERT INTO eventadmin (event_idx, admin_idx) VALUES (
       (SELECT idx
               FROM   event
@@ -151,19 +152,49 @@ module.exports = {
       (SELECT idx FROM user where userid = ${body.userid})
     );
     `;
+    let addGroupAdmintoEventQuery = '';
+    if (!body.isadmin) {
+      addGroupAdmintoEventQuery = `
+      INSERT INTO eventadmin (event_idx, admin_idx) VALUES (
+        (SELECT idx
+                FROM   event
+                WHERE  eventname = '${body.eventname}'
+                       AND date = '${body.date}'
+                       AND group_idx = (SELECT idx
+                                        FROM   groups
+                                        WHERE
+                           groupname = '${body.groupname}')),
+        (SELECT idx
+                FROM user
+                WHERE idx = (SELECT admin_idx
+                                    FROM groupadmin
+                                    WHERE group_idx = (SELECT idx
+                                                        FROM groups
+                                                        WHERE
+                                      groupname = '${body.groupname}')))
+      );
+      `;
+    }
     let addEventMemberQuery = '';
     const participants = [...body.participants];
     participants.forEach((member) => {
       addEventMemberQuery += `
       INSERT INTO eventmember (user_idx, event_idx, cost, ispaid) VALUES (
       (SELECT idx FROM user where email='${member.email}'),
-      (SELECT idx FROM event where eventname='${body.eventname}'),
+      (SELECT idx
+              FROM   event
+              WHERE  eventname = '${body.eventname}'
+                     AND date = '${body.date}'
+                     AND group_idx = (SELECT idx
+                                      FROM   groups
+                                      WHERE
+                         groupname = '${body.groupname}')),
       ${member.cost},
       ${member.ispaid}
     );`;
     });
     return new Promise((resolve, reject) => {
-      const totalQuery = createEventQuery + addEventMemberQuery;
+      const totalQuery = createEventQuery + addEventCreatorQuery + addGroupAdmintoEventQuery + addEventMemberQuery;
       connection.query(totalQuery, (err) => {
         if (err) return reject(err);
         return resolve();
@@ -290,7 +321,6 @@ module.exports = {
                                      exactEventIndex)
       ; `;
     });
-    console.log(updateEventDropParticipantsQuery);
     return new Promise((resolve, reject) => {
       connection.query(updateEventDropParticipantsQuery, (err) => {
         if (err) return reject(err);

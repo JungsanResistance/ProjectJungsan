@@ -8,6 +8,7 @@ const cors = require('cors');
 const passport = require('passport');
 
 const index = require('./routes/index');
+const auth = require('./db/auth.js');
 
 const app = express();
 
@@ -63,7 +64,6 @@ app.get('/logout', (req, res) => {
     res.redirect('/');
   });
 });
-
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

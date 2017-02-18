@@ -1,8 +1,8 @@
 const transaction = require('../db/transaction');
+const auth = require('../db/auth');
 
 module.exports = {
   get: (req) => {
-    console.log('hi');
     const currentUser = req.session.passport.user;
     const query = req.query;
     console.log(query);
@@ -12,7 +12,7 @@ module.exports = {
         transaction.getGroupList(currentUser)
       ))
       .then((groupList) => {
-        console.log(groupList);
+        console.log('grouplist',groupList);
         const body = JSON.stringify(groupList);
         const jsonBody = JSON.parse(body);
         return transaction.getGroupMember(jsonBody);
@@ -65,11 +65,38 @@ module.exports = {
     }
   },
   post: (req) => {
+    console.log(req.body);
     req.body.userid = req.session.passport.user;
-    return transaction.postTransaction(req.body);
+    return transaction.getEventDetail(req.body.groupname, req.body.eventname, req.body.date)
+    .then((isDuplicate) => {
+      console.log('isnotduplicate');
+      if (isDuplicate.length) return Promise.reject('Is a duplicate');
+      else return auth.checkGroupMember(req.body.userid, req.body.groupname)
+    })
+    .then((isMember) => {
+      console.log('ismember');
+      if (!isMember.length) return Promise.reject('Not a group member');
+      else return auth.checkGroupAdmin(req.body.userid, req.body.groupname);
+    })
+    // prevent adding duplicate admin if post creator === group admin
+    .then((isAdmin) => {
+            console.log('isadmin', isAdmin);
+      if (isAdmin.length) {
+        req.body.isadmin = true;
+      } else {
+        req.body.isadmin = false;
+      }
+      return transaction.postTransaction(req.body);
+    })
+    .catch(err => Promise.reject(err));
   },
   put: (req) => {
-    return new Promise((resolve, reject) => (resolve()))
+    req.body.userid = req.session.passport.user;
+    return auth.checkEventAdmin(req.body.userid, req.body.groupname,
+      req.body.oldeventname, req.body.olddate)
+    .then((isAdmin) => {
+      if (!isAdmin.length) return Promise.reject('Not the admin');
+    })
     .then(() => (
       transaction.updateEventDetail(req.body)
     ))
