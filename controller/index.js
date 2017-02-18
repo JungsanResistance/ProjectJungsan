@@ -135,7 +135,7 @@ module.exports = {
     .then((currentUser) => {
       console.log(currentUser);
       const action = req.body.action;
-      email(currentUser[0], req.body.recipientemail, action);
+      // email(currentUser[0], req.body.recipientemail, action);
       res.sendStatus(200);
     })
     .catch((err) => {

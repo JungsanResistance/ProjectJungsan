@@ -15,6 +15,7 @@ module.exports = {
       resolve(misc.checkStatus(req.body, currentUser));
     })
     .then((pendingDetail) => {
+      console.log(pendingDetail);
       let JSONpendingDetail = JSON.stringify(pendingDetail);
       JSONpendingDetail = JSON.parse(JSONpendingDetail);
       console.log('pending',JSONpendingDetail);
