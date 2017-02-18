@@ -280,12 +280,14 @@ export default class NewEvent extends React.Component {
           selectedGroup: '',
           selectedUserListToBeSent: [],
           groupStyle: '',
+          newrecipient: {},
         });
       }
       else if (event.target.value) {
         this.setState({
           selectedGroup: event.target.value,
           groupStyle: '',
+          newrecipient: {},
         });
       }
     }
