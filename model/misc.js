@@ -23,9 +23,9 @@ module.exports = {
         if (JSONpendingDetail[0].status === 1 && action === 'accept') {
           toBeProcessed = misc.resolveAllPayments(req.body, currentUser);
         } else if (JSONpendingDetail[0].status === 1 && action === 'reject') {
-          toBeProcessed = misc.rejectPending(req.body, currentUser);
-        } else if (JSONpendingDetail[0].status === 0 && action === 'pending') {
-          toBeProcessed = misc.updatePending(req.body, currentUser);
+          toBeProcessed = misc.rejectPending(JSONpendingDetail[0], currentUser);
+        } else if (JSONpendingDetail[0].status === 3 && action === 'pending') {
+          toBeProcessed = misc.updatePending(JSONpendingDetail[0], currentUser);
         } else {
           toBeProcessed = Promise.reject('Bad request');
         }
