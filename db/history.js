@@ -154,8 +154,8 @@ module.exports = {
       });
     });
   },
-  insertPendingLoanEvent: (body) => {
-    const insertPendingLoanEventQuery = `
+  insertResolvedLoanEvent: (body) => {
+    const insertResolvedLoanEventQuery = `
     INSERT INTO pendingevent
                 (user_idx,
                  event_idx,
@@ -171,18 +171,18 @@ module.exports = {
                          AND group_idx = (SELECT idx
                                           FROM   groups
                                           WHERE  groupname = '${body.groupname}')),
-                 1,
+                 2,
                  1);
                   `;
     return new Promise((resolve, reject) => {
-      connection.query(insertPendingLoanEventQuery, (err) => {
+      connection.query(insertResolvedLoanEventQuery, (err) => {
         if (err) return reject(err);
         return resolve();
       });
     });
   },
   rejectPendingLoanEvent: (body) => {
-    const insertPendingLoanEventQuery = `
+    const rejectPendingLoanEventQuery = `
     UPDATE pendingevent
     SET status = 3
     WHERE user_idx = (SELECT idx
@@ -199,14 +199,14 @@ module.exports = {
     ;
                   `;
     return new Promise((resolve, reject) => {
-      connection.query(insertPendingLoanEventQuery, (err) => {
+      connection.query(rejectPendingLoanEventQuery, (err) => {
         if (err) return reject(err);
         return resolve();
       });
     });
   },
   acceptPendingLoanEvent: (body) => {
-    const insertPendingLoanEventQuery = `
+    const accpetPendingLoanEventQuery = `
     UPDATE pendingevent
     SET status = 2
     WHERE user_idx = (SELECT idx
@@ -223,7 +223,7 @@ module.exports = {
     ;
                   `;
     return new Promise((resolve, reject) => {
-      connection.query(insertPendingLoanEventQuery, (err) => {
+      connection.query(accpetPendingLoanEventQuery, (err) => {
         if (err) return reject(err);
         return resolve();
       });
@@ -231,7 +231,7 @@ module.exports = {
   },
 
   insertPendingDebtEvent: (body) => {
-    const insertPendingLoanEventQuery = `
+    const insertPendingDebtEventQuery = `
     INSERT INTO pendingevent
                 (user_idx,
                  event_idx,
@@ -251,7 +251,7 @@ module.exports = {
                  1);
                   `;
     return new Promise((resolve, reject) => {
-      connection.query(insertPendingLoanEventQuery, (err) => {
+      connection.query(insertPendingDebtEventQuery, (err) => {
         if (err) return reject(err);
         return resolve();
       });

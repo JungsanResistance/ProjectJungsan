@@ -1,5 +1,6 @@
 const misc = require('../db/misc');
 
+
 module.exports = {
   get: (req) => {
     const currentUser = req.session.passport.user;
@@ -37,5 +38,12 @@ module.exports = {
       }
       return toBeProcessed;
     })
+    // get email address of current user to send emails
+    .then(res => misc.getSelf(currentUser))
+    .then((selfDetail) => {
+      let JSONselfDetail = JSON.stringify(selfDetail);
+      JSONselfDetail = JSON.parse(JSONselfDetail);
+      return JSONselfDetail;
+    });
   },
 };

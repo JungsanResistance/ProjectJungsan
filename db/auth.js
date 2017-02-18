@@ -26,7 +26,6 @@ module.exports = {
                             FROM   user
                             WHERE  userid = '${userid}')
                             `;
-    console.log('ad',checkEventAdminQuery)
     return new Promise((resolve, reject) => {
       connection.query(checkEventAdminQuery, (err, res) => {
         if (err) return reject(err);
@@ -50,7 +49,6 @@ module.exports = {
                             WHERE
                             WHERE  userid = '${userid}')
                             `;
-    console.log('ad',checkEventMemberQuery)
     return new Promise((resolve, reject) => {
       connection.query(checkEventMemberQuery, (err, res) => {
         if (err) return reject(err);
