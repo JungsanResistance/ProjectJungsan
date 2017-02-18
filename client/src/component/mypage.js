@@ -43,7 +43,7 @@ export default class Mypage extends React.Component {
     // })
   }
 
-  reset (){
+  reset () {
     const myData = axios.get('http://localhost:3000/api/misc');
     const groupData = axios.get('http://localhost:3000/api/mypage');
     Promise.all([myData, groupData]).then(res => {
@@ -132,8 +132,10 @@ export default class Mypage extends React.Component {
       groupList,
       sumList,
     } = this.state;
-    let actionButton = '정산요청';
     let declineButton = '';
+    let actionButton = '정산요청';
+
+    console.log('pendingUserList', this.state.pendingUserList)
 
     if (sumList && this.state.myEmail) {
       sumList.forEach((data, index) => {
@@ -141,6 +143,7 @@ export default class Mypage extends React.Component {
         if (data.email !== this.state.myEmail) {
           this.state.pendingUserList.forEach((member) => {
             if(data.email === member.applicantemail || data.email === member.acceptoremail) {
+              actionButton = '정산요청';
               if (member.applicantemail === this.state.myEmail && member.status === 1) {
                 actionButton = '정산중';
               }
@@ -161,6 +164,7 @@ export default class Mypage extends React.Component {
               <td>{data.cost}</td>
               <td>
                 <button value={actionButton} onClick={(event) => this.handleDone(event, index)}>{actionButton}</button>
+                {declineButton}
                 </td>
             </tr>,
           )
@@ -182,7 +186,7 @@ export default class Mypage extends React.Component {
         <br />
           <div className="myPage">
           <h1>my Page</h1>
-          <h2>{this.state.myEmail}</h2>
+          {this.state.testtest}
           <table className="sumListTable">
             <tr>
               <th>name</th>

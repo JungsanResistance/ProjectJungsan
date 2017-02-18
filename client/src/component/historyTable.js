@@ -26,8 +26,10 @@ export default class HistoryTable extends React.Component {
       historyType = this.props.loanedHistory
       type = 'loan';
     }
+
     const nextHistory = [...historyType];
     nextHistory[index].ispaid = !nextHistory[index].ispaid;
+    console.log(historyType)
     const historyData = {
       date : nextHistory[index].date,
       recipientemail: nextHistory[index].email,
@@ -36,8 +38,11 @@ export default class HistoryTable extends React.Component {
       ispaid: nextHistory[index].ispaid,
     };
 
+
+
     axios.put(`http://localhost:3000/api/history?type=${type}`, historyData)
     .then(res => {
+      console.log(res)
       if(res.status === 200) {
         if(this.props.debtHistory){
           this.setState({
@@ -66,11 +71,12 @@ export default class HistoryTable extends React.Component {
       history = this.props.loanedHistory;
       tableName = '받아야함';
     }
+
     if (history) {
       history.forEach((eventItem, index) => {
       if (eventItem.email !== this.props.myEmail) { // to hide me as a recipient in the history
         let editButton;
-        let imgUrl = '';
+        let paidCheck = '';
         if (eventItem.isadmin) {
           editButton = <input type="button" value="eventEdit" />;
         }
@@ -78,11 +84,14 @@ export default class HistoryTable extends React.Component {
           editButton = '';
         }
 
+        let actionButton = '요청';
+        let declineButton = '';
+
         if (eventItem.ispaid) {
-            imgUrl = 'http://findicons.com/files/icons/808/on_stage/128/symbol_check.png';
+            paidCheck = <button value="정산완료" onClick={(event) => this.handleDone(event,index)}>"정산완료"</button>;
           }
         else {
-          imgUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/X_mark.svg/896px-X_mark.svg.png';
+          paidCheck = <button value={actionButton} onClick={(event) => this.handleDone(event,index)}>{actionButton}</button>;
         }
         eventList.push(
         <tr>
@@ -98,8 +107,9 @@ export default class HistoryTable extends React.Component {
             })}>
             {editButton}</Link>
           </td>
-          <td ><img src={imgUrl} onClick={(event) => this.handleDone(event,index)}
-            className="toggleImg" /></td>
+          <td >
+            {paidCheck}
+          </td>
         </tr>);
       }
     })

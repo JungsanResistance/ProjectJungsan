@@ -34,6 +34,7 @@ export default class NewEvent extends React.Component {
     this.eventDuplicateCheck = this.eventDuplicateCheck.bind(this);
   }
   componentWillMount() {
+    console.log('newEvent!!!!!!!!!!!!!!')
     const getGroupData = axios.get('http://localhost:3000/api/transaction?type=post');
     const getAllEvents = axios.get('http://localhost:3000/api/history');
     Promise.all([getGroupData, getAllEvents]).then((res) => {
@@ -290,6 +291,7 @@ export default class NewEvent extends React.Component {
         if (member.username === event.target.value) {
            nextNewRecipient = Object.assign({}, this.state.myAllGroupUserData[this.state.selectedGroup][index]);
            nextNewRecipient.ispaid = true;
+           nextNewRecipient.selected = true;
         }
         else if (member.email === this.state.newrecipient.email) {
           nextMyAllGroupUserData[this.state.selectedGroup][index].ispaid = false;
