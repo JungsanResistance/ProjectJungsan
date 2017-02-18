@@ -301,19 +301,21 @@ export default class NewEvent extends React.Component {
       console.log(this.state.myAllGroupUserData)
       const nextMyAllGroupUserData =  Object.assign({}, this.state.myAllGroupUserData);
 
-      this.state.myAllGroupUserData[this.state.selectedGroup].forEach((member, index) => {
-        if (member.username === event.target.value) {
-           nextNewRecipient = Object.assign({}, this.state.myAllGroupUserData[this.state.selectedGroup][index]);
-           nextNewRecipient.ispaid = true;
-           nextNewRecipient.selected = true;
-           nextMyAllGroupUserData[this.state.selectedGroup][index].ispaid = true;
-          //  console.log(nextMyAllGroupUserData[this.state.selectedGroup][index])
-          //  console.log(nextNewRecipient)
-        }
-        else if (member.email === this.state.newrecipient.email) {
-          nextMyAllGroupUserData[this.state.selectedGroup][index].ispaid = false;
-        }
-      });
+      if (Object.keys(this.state.newrecipient).length) {
+        this.state.myAllGroupUserData[this.state.selectedGroup].forEach((member, index) => {
+          if (member.username === event.target.value) {
+             nextNewRecipient = Object.assign({}, this.state.myAllGroupUserData[this.state.selectedGroup][index]);
+             nextNewRecipient.ispaid = true;
+             nextNewRecipient.selected = true;
+             nextMyAllGroupUserData[this.state.selectedGroup][index].ispaid = true;
+            //  console.log(nextMyAllGroupUserData[this.state.selectedGroup][index])
+            //  console.log(nextNewRecipient)
+          }
+          else if (member.email === this.state.newrecipient.email) {
+            nextMyAllGroupUserData[this.state.selectedGroup][index].ispaid = false;
+          }
+        });
+    }
 
 
 
