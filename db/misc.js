@@ -139,7 +139,7 @@ module.exports = {
   },
   rejectPending: (body, userid) => {
     const insertPendingquery = `
-    UPDATE pendinguser set status = 0
+    UPDATE pendinguser set status = 3
     WHERE  applicant_idx = (SELECT idx
                             FROM   user
                             WHERE  email = '${body.recipientemail}')
