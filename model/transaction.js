@@ -65,28 +65,27 @@ module.exports = {
     }
   },
   post: (req) => {
-    const body = body;
+    const body = req.body;
     body.userid = req.session.passport.user;
     const stringifiedParticipants = JSON.stringify(body.participants);
     const stringifiedRecipient = JSON.stringify(body.newrecipient);
     const checkRecipientInParticipant = stringifiedParticipants.includes(stringifiedRecipient);
+    console.log(stringifiedRecipient, stringifiedParticipants);
+    console.log(req.body.newrecipient, checkRecipientInParticipant);
     if (!checkRecipientInParticipant) {
       return Promise.reject('Recipient is not a participant');
     }
     return transaction.getEventDetail(body.groupname, body.eventname, body.date)
     .then((isDuplicate) => {
-      console.log('isnotduplicate');
       if (isDuplicate.length) return Promise.reject('Is a duplicate');
       else return auth.checkGroupMember(body.userid, body.groupname)
     })
     .then((isMember) => {
-      console.log('ismember');
       if (!isMember.length) return Promise.reject('Not a group member');
       else return auth.checkGroupAdmin(body.userid, body.groupname);
     })
     // prevent adding duplicate admin if post creator === group admin
     .then((isAdmin) => {
-            console.log('isadmin', isAdmin);
       if (isAdmin.length) {
         body.isadmin = true;
       } else {
