@@ -138,34 +138,34 @@ module.exports = {
     });
   },
   rejectPending: (body, userid) => {
-    const insertPendingquery = `
+    const rejectPendingquery = `
     UPDATE pendinguser set status = 3
     WHERE  applicant_idx = (SELECT idx
                             FROM   user
-                            WHERE  email = '${body.recipientemail}')
+                            WHERE  email = '${body.applicantemail}')
            AND acceptor_idx = (SELECT idx
                                FROM   user
-                               WHERE  userid = '${userid}')
+                               WHERE  email = '${body.acceptoremail}')
     ; `;
     return new Promise((resolve, reject) => {
-      connection.query(insertPendingquery, (err, res) => {
+      connection.query(rejectPendingquery, (err, res) => {
         if (err) return reject(err);
         resolve(res);
       });
     });
   },
   updatePending: (body, userid) => {
-    const insertPendingquery = `
+    const updatePendingquery = `
     UPDATE pendinguser set status = 1
     WHERE  applicant_idx = (SELECT idx
                             FROM   user
-                            WHERE  userid = '${userid}')
+                            WHERE  email = '${body.applicantemail}')
            AND acceptor_idx = (SELECT idx
                                FROM   user
-                               WHERE  email = '${body.recipientemail}')
+                               WHERE  email = '${body.acceptoremail}')
     ; `;
     return new Promise((resolve, reject) => {
-      connection.query(insertPendingquery, (err, res) => {
+      connection.query(updatePendingquery, (err, res) => {
         if (err) return reject(err);
         resolve(res);
       });
