@@ -225,6 +225,7 @@ export default class EditEvent extends React.Component {
     nextParticipants.forEach((member, index) => {
       if(member.username === event.target.value) {
         member.ispaid = true;
+        member.selected = true;
         nextNewRecipient = nextParticipants[index]
       }
       else if(member.email === this.state.newrecipient.email) {

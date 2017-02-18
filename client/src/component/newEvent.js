@@ -34,6 +34,7 @@ export default class NewEvent extends React.Component {
     this.eventDuplicateCheck = this.eventDuplicateCheck.bind(this);
   }
   componentWillMount() {
+    console.log('newEvent!!!!!!!!!!!!!!')
     const getGroupData = axios.get('http://localhost:3000/api/transaction?type=post');
     const getAllEvents = axios.get('http://localhost:3000/api/history');
     Promise.all([getGroupData, getAllEvents]).then((res) => {
@@ -150,6 +151,7 @@ export default class NewEvent extends React.Component {
   // post new transaction record
   handleSubmit() {
     console.log(this.state.selectedUserListToBeSent)
+    console.log(this.state.newrecipient)
     axios.post('http://localhost:3000/api/transaction', {
       date: this.state.date,
       newrecipient: this.state.newrecipient,
@@ -202,6 +204,10 @@ export default class NewEvent extends React.Component {
       return member.selected === true;
     });
 
+
+
+
+
     // const newSelectedUserList = Object.assign({}, nextSelectedUserListToBeSent) // don't think we need this deep copy....
 
 
@@ -228,7 +234,16 @@ export default class NewEvent extends React.Component {
       member.cost = indivCost
     });
 
-    //
+    //newrecipient value에 ispaid, cost 값 추가//
+    nextSelectedUserListToBeSent.forEach((member) => {
+      if(member.email === this.state.newrecipient.email) {
+        member.ispaid = true;
+      }
+    })
+
+    this.state.newrecipient.cost = indivCost;
+
+
 
     if (this.state.groupMemberErrorMesseage.length) {
       console.log("error message exist")
@@ -290,11 +305,18 @@ export default class NewEvent extends React.Component {
         if (member.username === event.target.value) {
            nextNewRecipient = Object.assign({}, this.state.myAllGroupUserData[this.state.selectedGroup][index]);
            nextNewRecipient.ispaid = true;
+           nextNewRecipient.selected = true;
+           nextMyAllGroupUserData[this.state.selectedGroup][index].ispaid = true;
+          //  console.log(nextMyAllGroupUserData[this.state.selectedGroup][index])
+          //  console.log(nextNewRecipient)
         }
         else if (member.email === this.state.newrecipient.email) {
           nextMyAllGroupUserData[this.state.selectedGroup][index].ispaid = false;
         }
       });
+
+
+
       this.setState({
         newrecipient: nextNewRecipient,
         myAllGroupUserData: nextMyAllGroupUserData,
