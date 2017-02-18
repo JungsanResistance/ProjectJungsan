@@ -46,6 +46,7 @@ module.exports = {
                                    FROM   user
                                    WHERE  userid = '${userid}')
     ; `;
+    console.log(checkPendingquery);
     return new Promise((resolve, reject) => {
       connection.query(checkPendingquery, (err, res) => {
         if (err) return reject(err);
@@ -70,12 +71,12 @@ module.exports = {
            status
     FROM   pendinguser
     WHERE  applicant_idx = (SELECT idx
-                            FROM   user
-                            WHERE  userid = '${userid}')
+                                 FROM   user
+                                 WHERE  email = '${body.recipientemail}')
            AND acceptor_idx = (SELECT idx
-                               FROM   user
-                               WHERE  email = '${body.recipientemail}')
-    ; `;
+                                   FROM   user
+                                   WHERE  userid = '${userid}')
+      ; `;
     console.log(checkStatusQuery)
     return new Promise((resolve, reject) => {
       connection.query(checkStatusQuery, (err, res) => {
@@ -138,8 +139,9 @@ module.exports = {
     });
   },
   rejectPending: (body, userid) => {
+    console.log('hi');
     const rejectPendingquery = `
-    UPDATE pendinguser set status = 3
+    DELETE FROM pendinguser
     WHERE  applicant_idx = (SELECT idx
                             FROM   user
                             WHERE  email = '${body.applicantemail}')
