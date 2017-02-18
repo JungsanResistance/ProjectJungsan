@@ -1,6 +1,6 @@
 const ses = require('node-ses');
 
-const client = ses.createClient({ key: 'AKIAIN7F6SVREX76CHJA', secret: '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' });
+const client = ses.createClient({  });
 
 module.exports = (from, to, type) => {
   console.log('email working?', to);
