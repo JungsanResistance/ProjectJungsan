@@ -65,69 +65,82 @@ module.exports = {
     }
   },
   post: (req) => {
-    console.log(req.body);
-    req.body.userid = req.session.passport.user;
-    return transaction.getEventDetail(req.body.groupname, req.body.eventname, req.body.date)
+    const body = body;
+    body.userid = req.session.passport.user;
+    const stringifiedParticipants = JSON.stringify(body.participants);
+    const stringifiedRecipient = JSON.stringify(body.newrecipient);
+    const checkRecipientInParticipant = stringifiedParticipants.includes(stringifiedRecipient);
+    if (!checkRecipientInParticipant) {
+      return Promise.reject('Recipient is not a participant');
+    }
+    return transaction.getEventDetail(body.groupname, body.eventname, body.date)
     .then((isDuplicate) => {
       console.log('isnotduplicate');
       if (isDuplicate.length) return Promise.reject('Is a duplicate');
-      else return auth.checkGroupMember(req.body.userid, req.body.groupname)
+      else return auth.checkGroupMember(body.userid, body.groupname)
     })
     .then((isMember) => {
       console.log('ismember');
       if (!isMember.length) return Promise.reject('Not a group member');
-      else return auth.checkGroupAdmin(req.body.userid, req.body.groupname);
+      else return auth.checkGroupAdmin(body.userid, body.groupname);
     })
     // prevent adding duplicate admin if post creator === group admin
     .then((isAdmin) => {
             console.log('isadmin', isAdmin);
       if (isAdmin.length) {
-        req.body.isadmin = true;
+        body.isadmin = true;
       } else {
-        req.body.isadmin = false;
+        body.isadmin = false;
       }
-      return transaction.postTransaction(req.body);
+      return transaction.postTransaction(body);
     })
     .catch(err => Promise.reject(err));
   },
   put: (req) => {
-    req.body.userid = req.session.passport.user;
-    return auth.checkEventAdmin(req.body.userid, req.body.groupname,
-      req.body.oldeventname, req.body.olddate)
+    const body = req.body;
+    body.userid = req.session.passport.user;
+    const stringifiedParticipants = JSON.stringify(body.participants);
+    const stringifiedRecipient = JSON.stringify(body.newrecipient);
+    const checkRecipientInParticipant = stringifiedParticipants.includes(stringifiedRecipient);
+    if (!checkRecipientInParticipant) {
+      return Promise.reject('Recipient is not a participant');
+    }
+    return auth.checkEventAdmin(body.userid, body.groupname,
+      body.oldeventname, body.olddate)
     .then((isAdmin) => {
       if (!isAdmin.length) return Promise.reject('Not the admin');
     })
     .then(() => (
-      transaction.updateEventDetail(req.body)
+      transaction.updateEventDetail(body)
     ))
     .then(() => {
       console.log('updateEventDetail');
       return new Promise((resolve, reject) => {
-        resolve(transaction.updateEventAddParticipants(req.body));
+        resolve(transaction.updateEventAddParticipants(body));
       });
     })
     .then(() => {
             console.log('updateEventAddParticipants');
       return new Promise((resolve, reject) => {
-        resolve(transaction.getParticipantsDetail(req.body.groupname, req.body.neweventname, req.body.newdate));
+        resolve(transaction.getParticipantsDetail(body.groupname, body.neweventname, body.newdate));
       });
     })
     .then((participantsDetail) => {
             console.log('updateDrop');
       let JSONparticipantsDetail = JSON.stringify(participantsDetail);
       JSONparticipantsDetail = JSON.parse(JSONparticipantsDetail);
-      req.body.dropped = [];
+      body.dropped = [];
       JSONparticipantsDetail.forEach((oldparticipant) => {
-        req.body.dropped.push(oldparticipant.email);
+        body.dropped.push(oldparticipant.email);
       });
-      req.body.participants.forEach((newparticipant) => {
-        req.body.dropped.splice((req.body.dropped.indexOf(newparticipant.email)), 1);
+      body.participants.forEach((newparticipant) => {
+        body.dropped.splice((body.dropped.indexOf(newparticipant.email)), 1);
       });
       console.log(JSONparticipantsDetail);
-            console.log(req.body.participants);
-      if (req.body.dropped.length) {
+            console.log(body.participants);
+      if (body.dropped.length) {
         return new Promise((resolve, reject) => {
-          resolve(transaction.updateEventDropParticipants(req.body));
+          resolve(transaction.updateEventDropParticipants(body));
         });
       }
     })

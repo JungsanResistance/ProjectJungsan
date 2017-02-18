@@ -36,6 +36,9 @@ module.exports = {
         if (err === 'Is a duplicate') {
           res.sendStatus(400);
           throw err;
+        } else if (err === 'Recipient is not a participant') {
+          res.sendStatus(400);
+          throw err;
         } else if (err === 'Not a group member') {
           res.sendStatus(401);
           throw err;
@@ -51,6 +54,10 @@ module.exports = {
     })
     .catch((err) => {
       console.log('error', err)
+      if (err === 'Recipient is not a participant') {
+        res.sendStatus(400);
+        throw err;
+      }
       res.sendStatus(406);
     }),
   },
