@@ -6,7 +6,6 @@ import Router, { browserHistory } from 'react-router';
 // http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/
 // http://localhost:3000/
 
-
 export default class NewEvent extends React.Component {
   constructor() {
     super();
@@ -39,11 +38,15 @@ export default class NewEvent extends React.Component {
     this.selectHandleMember = this.selectHandleMember.bind(this);
     this.blankCheck = this.blankCheck.bind(this);
     this.eventDuplicateCheck = this.eventDuplicateCheck.bind(this);
-    // this.handleCustomInputCost = this.handleCustomInputCost.bind(this);
+    this.handleCustomInputCost = this.handleCustomInputCost.bind(this);
+    this.evaluateAll = this.evaluateAll.bind(this);
+    this.countSelectedMember = this.countSelectedMember.bind(this);
+    this.getIndivCost = this.getIndivCost.bind(this);
   }
+
   componentWillMount() {
-    const getGroupData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction?type=post');
-    const getAllEvents = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/history');
+    const getGroupData = axios.get('http://localhost:3000/api/transaction?type=post');
+    const getAllEvents = axios.get('http://localhost:3000/api/history');
     Promise.all([getGroupData, getAllEvents]).then((res) => {
       const getData = JSON.parse(res[0].data);
       const getHistory = JSON.parse(res[1].data);
@@ -58,6 +61,7 @@ export default class NewEvent extends React.Component {
           cost: 0,
           ispaid: false,
           selected: false,
+          isManualCost: false,
         });
       });
 
@@ -147,15 +151,16 @@ export default class NewEvent extends React.Component {
   // post new transaction record
   handleSubmit() {
 
-      console.log({
-        date: this.state.date,
-        oldrecipient: this.state.oldrecipient,
-        newrecipient: this.state.newrecipient,
-        groupname: this.state.selectedGroup,
-        eventname: this.state.eventName,
-        participants: this.state.selectedUserListToBeSent,
-      })
-    axios.post('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction', {
+    console.log({
+      date: this.state.date,
+      oldrecipient: this.state.oldrecipient,
+      newrecipient: this.state.newrecipient,
+      groupname: this.state.selectedGroup,
+      eventname: this.state.eventName,
+      participants: this.state.selectedUserListToBeSent,
+    })
+
+    axios.post('http://localhost:3000/api/transaction', {
       date: this.state.date,
       oldrecipient: this.state.oldrecipient,
       newrecipient: this.state.newrecipient,
@@ -180,7 +185,6 @@ export default class NewEvent extends React.Component {
       1. nextSelectedGroupMember: this is for RENDERING
       2. nextSelectedUserListToBeSent: this is for axios posting
     */
-
     // 멤버 추가시 에러 메세지를 삭제//
     if (this.state.errorMesseage.length) {
       this.setState({
@@ -197,8 +201,13 @@ export default class NewEvent extends React.Component {
     nextSelectedGroupMember.forEach((member) => {
       if (member.email === selectedMember.email) {
         member.selected = !member.selected;
-        if (member.email === this.state.newrecipient.email)
+        // toggle ispaid flag for the recipient
+        if (member.email === this.state.newrecipient.email) {
           member.ispaid = !member.ispaid;
+        }
+        if (!member.selected) {
+          member.isManualCost = false;
+        }
       }
     });
 
@@ -208,30 +217,55 @@ export default class NewEvent extends React.Component {
       return member.selected === true;
     });
 
-    // to evaluate the number of selected members
-    let count = 0;
-    if (this.state.selectedGroupMember) {
-      this.state.selectedGroupMember.forEach((member) => {
-        if (member.selected) {
-          count += 1;
-        }
-      });
-    } else {
-      count = 1;
-    }
-    const indivCost = 100 * Math.ceil(this.state.totalCost / (count * 100));
 
-    nextSelectedUserListToBeSent.forEach((member) => {
-      member.cost = indivCost;
-    });
+    // console.log('count', count)
+    // const indivCost = this.getIndivCost(0, count);
+
+      // const indivCost = 100 * Math.ceil(this.state.totalCost / (count * 100));
+      // const count = this.countSelectedMember();
+      // const indivCost = this.state.totalCost / count;
+    const indivCost = this.getIndivCost();
+
+
+    // nextMyAllGroupUserData[this.state.selectedGroup].forEach((member) => {
+    //   if (!member.isManualCost) {
+    //     member.cost = indivCost;
+    //   }
+    // });
 
     const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
-    nextMyAllGroupUserData[this.state.selectedGroup].forEach((member) => {
-      if (member.selected) {
-        member.cost = indivCost
-      }
-    });
 
+    console.log(this.countSelectedMember())
+    if (this.countSelectedMember() > 1) {
+      nextSelectedUserListToBeSent.forEach((member) => {
+        if (!member.isManualCost) {
+          member.cost = indivCost;
+        }
+      });
+
+      nextMyAllGroupUserData[this.state.selectedGroup].forEach((member) => {
+        if (member.selected && !member.isManualCost) {
+          member.cost = indivCost;
+          console.log('reamining!', member, indivCost)
+        }
+      });
+    }
+    else {
+      console.log('only one selected')
+      nextSelectedUserListToBeSent.forEach((member) => {
+        if (member.email === selectedMember.email) {
+          member.cost = this.state.totalCost;
+          console.log(member, this.state.totalCost)
+        }
+      });
+
+      nextMyAllGroupUserData[this.state.selectedGroup].forEach((member) => {
+        if (member.selected) {
+          member.cost = this.state.totalCost;
+          member.isManualCost = false;
+        }
+      });
+    }
 
     // added isspaid, cost in newrecipient
     let nextNewRecipient;
@@ -260,6 +294,98 @@ export default class NewEvent extends React.Component {
       });
     }
   }
+
+  countSelectedMember() {
+    // to evaluate the number of selected members
+    let count = 0;
+    if (this.state.selectedGroupMember) {
+      this.state.selectedGroupMember.forEach((member) => {
+        if (member.selected) {
+          count += 1;
+        }
+      });
+    } else {
+      count = 1;
+    }
+    return count;
+  }
+
+  getIndivCost() {
+    let sumAllManualCost = 0;
+    let isManualCostCount = 0;
+
+    this.state.myAllGroupUserData[this.state.selectedGroup].forEach((member, index) => {
+      if (member.isManualCost) {
+        sumAllManualCost += member.cost;
+        console.log(member, sumAllManualCost)
+        isManualCostCount += 1;
+      }
+    });
+
+    // this calculation is unsure
+    // const indivCost = 100 * Math.ceil(((this.state.totalCost - sumAllManualCost) / ((length - isManualCostCount) * 100)));
+    const count = this.countSelectedMember();
+    console.log('count', count)
+    const indivCost = (this.state.totalCost - sumAllManualCost) / (count - isManualCostCount);
+    return indivCost;
+  }
+
+  evaluateAll() {
+
+    const nextSelectedUserListToBeSent = this.state.selectedUserListToBeSent.map((member) => {
+      return member;
+    });
+    const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
+    // let sumAllManualCost = 0;
+    // let isManualCostCount = 0;
+    //
+    // this.state.myAllGroupUserData[this.state.selectedGroup].forEach((member, index) => {
+    //   if (member.isManualCost) {
+    //     sumAllManualCost += member.cost;
+    //     console.log(member, sumAllManualCost)
+    //     isManualCostCount += 1;
+    //   }
+    // });
+    //
+    // // this calculation is unsure
+    // // const indivCost = 100 * Math.ceil(((this.state.totalCost - sumAllManualCost) / ((length - isManualCostCount) * 100)));
+    // const count = this.countSelectedMember();
+    // const indivCost = (this.state.totalCost - sumAllManualCost) / (count - isManualCostCount);
+    const indivCost = this.getIndivCost();
+
+    if (this.countSelectedMember() === 0) {
+      nextMyAllGroupUserData[this.state.selectedGroup].forEach((member) => {
+          member.cost = indivCost;
+      });
+    }
+    else if (this.countSelectedMember() === 1) {
+      console.log('only one member')
+      nextMyAllGroupUserData[this.state.selectedGroup].forEach((member) => {
+        if (member.selected) {
+          member.cost = this.state.totalCost;
+          member.isManualCost = false;
+        }
+      });
+      console.log(nextMyAllGroupUserData[this.state.selectedGroup])
+    }
+    else {
+      nextMyAllGroupUserData[this.state.selectedGroup].forEach((member) => {
+        if (!member.isManualCost) {
+          member.cost = indivCost;
+        }
+      });
+    }
+
+    // nextSelectedUserListToBeSent.forEach((member) => {
+    //   if ()
+    // })
+
+    this.setState({
+      myAllGroupUserData: nextMyAllGroupUserData,
+    })
+
+  }
+
 
   // select group & recipient
   selectHandleChange(event) {
@@ -331,7 +457,7 @@ export default class NewEvent extends React.Component {
     })
     .then((eventTarget) => {
       if (eventTarget.name === 'eventGroup') {
-        return axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
+        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
         .then((res) => {
           if (res.data.length-2) {
             return true;
@@ -339,7 +465,7 @@ export default class NewEvent extends React.Component {
         })
       }
       else if (eventTarget.name === 'eventDate') {
-        return axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
+        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
         .then((res) => {
           if (res.data.length-2) {
             return true;
@@ -347,7 +473,7 @@ export default class NewEvent extends React.Component {
         })
       }
       else if (eventTarget.type === 'text') {
-        return axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
+        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
         .then((res) => {
           if (res.data.length-2) {
             return true;
@@ -442,62 +568,58 @@ export default class NewEvent extends React.Component {
     const manualInputCost = parseInt(event.target.value);
 
     const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
-    // const thisGroupMembers = nextMyAllGroupUserData[this.state.selectedGroup];
-
     const nextSelectedUserListToBeSent = this.state.selectedUserListToBeSent.map((member) => {
       return member;
     });
 
-    let sumAllManualCost = 0;
-    let isManualCostCount = 0;
-
-    nextMyAllGroupUserData[this.state.selectedGroup].forEach((member) => {
-      if (member.isManualCost) {
-        sumAllManualCost += member.cost;
-        isManualCostCount += 1;
-      }
-    })
-    sumAllManualCost = manualInputCost + sumAllManualCost;
-    console.log('sumAllManualCost', sumAllManualCost, 'manualInputCost', manualInputCost)
-
-    nextMyAllGroupUserData[this.state.selectedGroup][costIndex].isManualCost = true;
-    nextMyAllGroupUserData[this.state.selectedGroup][costIndex].cost = manualInputCost;
-    const length = nextSelectedUserListToBeSent.length;
-
-    //this calculation is wrong
+    // const count = this.countSelectedMember();
     // const indivCost = 100 * Math.ceil(((this.state.totalCost - sumAllManualCost) / ((length - isManualCostCount) * 100)));
-    const indivCost = (this.state.totalCost - sumAllManualCost) / (length - isManualCostCount);
-    nextMyAllGroupUserData[this.state.selectedGroup].forEach((member, index) => {
-      if (index !== costIndex && member.selected) {
-        nextMyAllGroupUserData[this.state.selectedGroup][index].cost = indivCost;
-      }
-      else {
-        // console.log(member, index)
-      }
-    });
 
-    const lowEndCost = this.state.totalCost - 100;
-    const highEndCost = this.state.totalCost + 100;
-    const checkTotal = lowEndCost < sumAllManualCost && sumAllManualCost < highEndCost;
-
-    console.log('checkTotal', checkTotal, 'totalcost', this.state.totalCost, 'sumAllManualCost', sumAllManualCost, 'lowEndCost', lowEndCost,
-     'highEndCost', highEndCost, 'selected member length', length, 'isManualCostCount', isManualCostCount)
-
-    let errorTotalMessage = '';
-    if (!checkTotal) {
-      console.log('total cost is wrong')
-      errorTotalMessage = '총 금액을 확인해 주세요';
+    if (event.target.value.length) {
+      nextMyAllGroupUserData[this.state.selectedGroup][costIndex].isManualCost = true;
+      nextMyAllGroupUserData[this.state.selectedGroup][costIndex].cost = manualInputCost;
     }
+    else {
+      const indivCost = this.getIndivCost();
+      nextMyAllGroupUserData[this.state.selectedGroup][costIndex].isManualCost = false;
+      nextMyAllGroupUserData[this.state.selectedGroup][costIndex].cost = 0;
+      nextMyAllGroupUserData[this.state.selectedGroup][costIndex].selected = false;
+    }
+
+
+    // nextMyAllGroupUserData[this.state.selectedGroup].forEach((member, index) => {
+    //   if (index !== costIndex && member.selected) {
+    //     nextMyAllGroupUserData[this.state.selectedGroup][index].cost = indivCost;
+    //   }
+    //   else {
+    //     // console.log(member, index)
+    //   }
+    // });
+
+    // sumAllManualCost = manualInputCost + sumAllManualCost;
+    // // console.log('event.target.value', event.target.value, 'sumAllManualCost', sumAllManualCost, 'manualInputCost', manualInputCost)
+    // const lowEndCost = this.state.totalCost - 100;
+    // const highEndCost = this.state.totalCost + 100;
+    // const checkTotal = lowEndCost < sumAllManualCost && sumAllManualCost < highEndCost;
+
+    // let errorTotalMessage = '';
+    // if (!checkTotal) {
+    //   console.log('total cost is wrong')
+    //   errorTotalMessage = '총 금액을 확인해 주세요';
+    // }
+
     this.setState({
       myAllGroupUserData: nextMyAllGroupUserData,
-      errorTotalMessage: errorTotalMessage,
-      indivCost: indivCost,
+      // errorTotalMessage: errorTotalMessage,
+      // indivCost: indivCost,
     });
+
+
   }
 
 
   render() {
-    console.log(this.state.myAllGroupUserData);
+    console.log('render the group member!!', this.state.myAllGroupUserData[this.state.selectedGroup]);
     console.log('the current indivCost', this.state.indivCost)
     // get all group Key as array
     const getGroupKeyArray = Object.keys(this.state.myAllGroupUserData);
@@ -524,12 +646,12 @@ export default class NewEvent extends React.Component {
               </td>
                 <input
                type='number' placeholder={this.state.myAllGroupUserData[this.state.selectedGroup][index].cost}
-                  onChange={() => this.handleCustomInputCost(event, index)}/>
+                    onChange={(event) => this.handleCustomInputCost(event, index)}/>
               </tr>);
           } else {
             return (
               <tr>
-                <td onClick={() => this.selectHandleMember(event, member)} className="unselected">
+                <td onClick={(event) => this.selectHandleMember(event, member)} className="unselected">
                   {member.username} ({member.email})
              </td>
            </tr>);
@@ -571,7 +693,7 @@ export default class NewEvent extends React.Component {
           <p>
             어디서 :
             <input
-              type="text" className={this.state.eventNameStyle} placeholder="where did you eat?"
+              type="text" className={this.state.eventNameStyle} placeholder="어디서?"
               onChange={this.inputHandleChange} />
               {this.state.eventErrorMesseage}
           </p>
@@ -594,6 +716,9 @@ export default class NewEvent extends React.Component {
           <table>
             {userTable}
           </table>
+          <br />
+          <br />
+          <input type="button" className="Bang" value="계산 쾅!" onClick={this.evaluateAll} />
           <br />
           <br />
           {this.state.groupMemberErrorMesseage}
