@@ -40,7 +40,7 @@ export default class HistoryTable extends React.Component {
 
 
 
-    axios.put(`http://localhost:3000/api/history?type=${type}`, historyData)
+    axios.put(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/history?type=${type}`, historyData)
     .then(res => {
       console.log(res)
       if(res.status === 200) {

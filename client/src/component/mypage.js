@@ -20,8 +20,8 @@ export default class Mypage extends React.Component {
 
   componentWillMount() {
     this.reset();
-    // const myData = axios.get('http://localhost:3000/api/misc');
-    // const groupData = axios.get('http://localhost:3000/api/mypage');
+    // const myData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/misc');
+    // const groupData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/mypage');
     // Promise.all([myData, groupData]).then(res => {
     //   const myEmailData = JSON.parse(res[0].data)[0].email
     //   const groupStorage = [];
@@ -44,15 +44,14 @@ export default class Mypage extends React.Component {
   }
 
   reset () {
-    const myData = axios.get('http://localhost:3000/api/misc');
-    const groupData = axios.get('http://localhost:3000/api/mypage');
+    const myData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/misc');
+    const groupData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/mypage');
     Promise.all([myData, groupData]).then(res => {
       const myEmailData = JSON.parse(res[0].data)[0].email
       const groupStorage = [];
       const getData = JSON.parse(res[1].data);
       // console.log()
       console.log('getData!!!!!:', getData);
-
       getData.groupList.forEach((group) => {
         groupStorage.push(group.groupname);
       });
@@ -99,7 +98,7 @@ export default class Mypage extends React.Component {
 
 
     if(answer) {
-      axios.put(`http://localhost:3000/api/misc`, individualTransacionDone)
+      axios.put(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/misc`, individualTransacionDone)
       .then((res) => {
         console.log(res);
         if(res.status === 200) {
@@ -153,7 +152,7 @@ export default class Mypage extends React.Component {
                 actionButton = '정산요청';
               }
             } else {
-              actionButton = '정산요청';
+              actionButton = '정산요'
             }
           })
 
