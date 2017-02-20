@@ -35,11 +35,11 @@ export default class NewEvent extends React.Component {
     this.selectHandleMember = this.selectHandleMember.bind(this);
     this.blankCheck = this.blankCheck.bind(this);
     this.eventDuplicateCheck = this.eventDuplicateCheck.bind(this);
-    this.handleCustomInputCost = this.handleCustomInputCost.bind(this);
+    // this.handleCustomInputCost = this.handleCustomInputCost.bind(this);
   }
   componentWillMount() {
-    const getGroupData = axios.get('http://localhost:3000/api/transaction?type=post');
-    const getAllEvents = axios.get('http://localhost:3000/api/history');
+    const getGroupData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction?type=post');
+    const getAllEvents = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/history');
     Promise.all([getGroupData, getAllEvents]).then((res) => {
       const getData = JSON.parse(res[0].data);
       const getHistory = JSON.parse(res[1].data);
@@ -86,7 +86,6 @@ export default class NewEvent extends React.Component {
       nextEventNameStyle = 'inputStyle';
       blankCount += 1;
     }
-    console.log('what is the current newrecipient?', this.state.newrecipient)
     if (!Object.keys(this.state.newrecipient).length) {
       nextNewRecipientStyle = 'inputStyle';
       blankCount += 1;
@@ -152,7 +151,7 @@ export default class NewEvent extends React.Component {
         eventname: this.state.eventName,
         participants: this.state.selectedUserListToBeSent,
       })
-    axios.post('http://localhost:3000/api/transaction', {
+    axios.post('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction', {
       date: this.state.date,
       oldrecipient: this.state.oldrecipient,
       newrecipient: this.state.newrecipient,
@@ -193,8 +192,8 @@ export default class NewEvent extends React.Component {
     // toggle selected flag when selecting member
     nextSelectedGroupMember.forEach((member) => {
       if (member.email === selectedMember.email) {
-        console.log('member toggle')
         member.selected = !member.selected;
+        member.ispaid = !member.ispaid;
       }
     });
 
@@ -203,7 +202,6 @@ export default class NewEvent extends React.Component {
     const nextSelectedUserListToBeSent = nextSelectedGroupMember.filter((member) => {
       return member.selected === true;
     });
-    console.log('nextSelectedGroupMember', nextSelectedGroupMember, nextSelectedGroupMember.length)
 
     // to evaluate the number of selected members
     let count = 0;
@@ -216,14 +214,11 @@ export default class NewEvent extends React.Component {
     } else {
       count = 1;
     }
-    console.log('slected members are ', count);
     const indivCost = 100 * Math.ceil(this.state.totalCost / (count * 100));
-    console.log('indivdual cost is calculated as', indivCost)
 
     nextSelectedUserListToBeSent.forEach((member) => {
       member.cost = indivCost;
     });
-    console.log('let us see how member cost is updated for nextSelectedUserListToBeSent', nextSelectedUserListToBeSent)
 
     const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
     nextMyAllGroupUserData[this.state.selectedGroup].forEach((member) => {
@@ -232,25 +227,16 @@ export default class NewEvent extends React.Component {
       }
     });
 
-    console.log('update selected member, cost', nextMyAllGroupUserData[this.state.selectedGroup])
 
-
-    // newrecipient value에 ispaid, cost 값 추가
+    // added isspaid, cost in newrecipient
     let nextNewRecipient;
     if (this.state.newrecipient) {
-      // nextSelectedUserListToBeSent.forEach((member) => {
-      //   if (member.email === this.state.newrecipient.email) {
-      //     member.ispaid = true;
-      //   }
-      // })
-      console.log(this.state.newrecipient)
       nextNewRecipient = Object.assign({}, this.state.newrecipient);
       nextNewRecipient.cost = indivCost;
       nextNewRecipient.ispaid = true;
     }
 
     if (this.state.groupMemberErrorMesseage.length) {
-      console.log("error groupmember message exist")
       this.setState({
         selectedGroupMember: nextSelectedGroupMember,
         selectedUserListToBeSent: nextSelectedUserListToBeSent,
@@ -260,7 +246,6 @@ export default class NewEvent extends React.Component {
         newrecipient: nextNewRecipient,
       });
     } else {
-      console.log("no groupmember error message")
       this.setState({
         selectedGroupMember: nextSelectedGroupMember,
         selectedUserListToBeSent: nextSelectedUserListToBeSent,
@@ -271,12 +256,8 @@ export default class NewEvent extends React.Component {
     }
   }
 
-  // select group
-  // select recipient
+  // select group & recipient
   selectHandleChange(event) {
-
-    console.log(this.state.myAllGroupUserData)
-
     if (this.state.errorMesseage.length) {
       this.setState({
         errorMesseage: '',
@@ -302,14 +283,9 @@ export default class NewEvent extends React.Component {
       }
     }
 
-
-
-
     else if (event.target.name === 'recipientList') {
-      console.log(event.target)
       const selectedRecipientName = event.target.value;
       if (event.target.value === "select the recipient") {
-        console.log('select the recipient', event.target.value)
         this.setState({
           newrecipient: {},
           groupMemberErrorMesseage: '',
@@ -317,22 +293,15 @@ export default class NewEvent extends React.Component {
       }
 
       let nextNewRecipient;
-      console.log(this.state.myAllGroupUserData)
-      const nextMyAllGroupUserData =  Object.assign({}, this.state.myAllGroupUserData);
+      const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
 
       // if (Object.keys(this.state.newrecipient).length) {
       nextMyAllGroupUserData[this.state.selectedGroup].forEach((member, index) => {
-        console.log('member.email', member.email, 'this.state.newrecipient', this.state.newrecipient)
-
         if (member.username === selectedRecipientName) {
          nextNewRecipient = Object.assign({}, this.state.myAllGroupUserData[this.state.selectedGroup][index]);
-         console.log(nextNewRecipient)
          nextNewRecipient.ispaid = true;
          nextNewRecipient.selected = true;
-         console.log(this.state.indivCost)
          nextNewRecipient.cost = this.state.indivCost;
-         member.ispaid = true;
-         console.log(nextNewRecipient)
         }
         // if the member is the previous selected recipient, set ispaid flag down
         else if (member.email === this.state.newrecipient.email) {
@@ -340,7 +309,6 @@ export default class NewEvent extends React.Component {
         }
       });
       // }
-      console.log(nextNewRecipient)
       this.setState({
         oldrecipient: nextNewRecipient,
         newrecipient: nextNewRecipient,
@@ -357,10 +325,8 @@ export default class NewEvent extends React.Component {
       resolve(event.target)
     })
     .then((eventTarget) => {
-      // console.log('event:::::', event.value)
       if (eventTarget.name === 'eventGroup') {
-        console.log(eventTarget.value, this.state.eventName, this.state.date);
-        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
+        return axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
         .then((res) => {
           if (res.data.length-2) {
             return true;
@@ -368,30 +334,24 @@ export default class NewEvent extends React.Component {
         })
       }
       else if (eventTarget.name === 'eventDate') {
-        console.log(this.state.selectedGroup, this.state.eventName, eventTarget.value);
-        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
-        .then(res => {
-          console.log(res.data)
-          if(res.data.length-2) {
+        return axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
+        .then((res) => {
+          if (res.data.length-2) {
             return true;
           }
         })
       }
       else if (eventTarget.type === 'text') {
-        console.log(this.state.selectedGroup, eventTarget.value, this.state.date);
-        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
-        .then(res => {
-          console.log(res.data)
-          if(res.data.length-2) {
+        return axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
+        .then((res) => {
+          if (res.data.length-2) {
             return true;
           }
         })
       }
     })
     .then((eventDuplicateExist) => {
-      console.log("eventDuplicateExist::::::", eventDuplicateExist)
       if (eventDuplicateExist) {
-        console.log('come here????')
         this.setState({
           eventErrorMesseage: '중복된 이벤트가 있습니다',
         });
@@ -435,10 +395,8 @@ export default class NewEvent extends React.Component {
         count = 1;
       }
 
-      console.log('count:', count)
       // roundup 100 KRW
       const indivCost = 100 * Math.ceil((event.target.value / (count * 100)));
-      console.log(indivCost);
 
       nextSelectedUserListToBeSent.forEach((member) => {
           member.cost = indivCost;
@@ -454,7 +412,6 @@ export default class NewEvent extends React.Component {
           console.log('member not selected')
         }
       })
-      console.log('nextMyAllGroupUserData', nextMyAllGroupUserData)
 
       this.setState({
         totalCost: parseInt(event.target.value),
@@ -473,7 +430,7 @@ export default class NewEvent extends React.Component {
       });
     }
   }
-
+  /*
   handleCustomInputCost(event, costIndex) {
     const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
     const thisGroupMembers = nextMyAllGroupUserData[this.state.selectedGroup];
@@ -525,6 +482,7 @@ export default class NewEvent extends React.Component {
       errorTotalMessage: errorTotalMessage,
     });
   }
+  */
 
   render() {
     console.log(this.state.myAllGroupUserData);

@@ -12,7 +12,7 @@ export default class RenderMembers extends React.Component {
 
   componentWillMount() {
     console.log("groupname:", this.props.groupname)
-    axios.get(`http://localhost:3000/api/group?target=groupmembers&groupname=${this.props.groupname}`)
+    axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/group?target=groupmembers&groupname=${this.props.groupname}`)
     .then((res) => {
       if (res.status === 200) {
       const groupData = JSON.parse(res.data);
