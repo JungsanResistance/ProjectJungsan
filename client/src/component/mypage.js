@@ -149,9 +149,11 @@ export default class Mypage extends React.Component {
                 actionButton = '수락';
                 declineButton = <button value='거절' onClick={(event) => this.handleDone(event, index)}>거절</button>
               }
-              else if (member.status === null && member.status === 3) {
+              else if (member.status === null) {
                 actionButton = '정산요청';
               }
+            } else {
+              actionButton = '정산요청';
             }
           })
 
