@@ -3,6 +3,10 @@ import moment from 'moment';
 import axios from 'axios';
 import Router, { browserHistory } from 'react-router';
 
+// http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/
+// http://localhost:3000/
+
+
 export default class NewEvent extends React.Component {
   constructor() {
     super();
@@ -193,7 +197,8 @@ export default class NewEvent extends React.Component {
     nextSelectedGroupMember.forEach((member) => {
       if (member.email === selectedMember.email) {
         member.selected = !member.selected;
-        member.ispaid = !member.ispaid;
+        if (member.email === this.state.newrecipient.email)
+          member.ispaid = !member.ispaid;
       }
     });
 
@@ -396,7 +401,8 @@ export default class NewEvent extends React.Component {
       }
 
       // roundup 100 KRW
-      const indivCost = 100 * Math.ceil((event.target.value / (count * 100)));
+      // const indivCost = 100 * Math.ceil((event.target.value / (count * 100)));
+      const indivCost = event.target.value / count;
 
       nextSelectedUserListToBeSent.forEach((member) => {
           member.cost = indivCost;
@@ -430,32 +436,37 @@ export default class NewEvent extends React.Component {
       });
     }
   }
-  /*
+
+
   handleCustomInputCost(event, costIndex) {
+    const manualInputCost = parseInt(event.target.value);
+
     const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
-    const thisGroupMembers = nextMyAllGroupUserData[this.state.selectedGroup];
-    const customCost = parseInt(event.target.value);
+    // const thisGroupMembers = nextMyAllGroupUserData[this.state.selectedGroup];
+
     const nextSelectedUserListToBeSent = this.state.selectedUserListToBeSent.map((member) => {
       return member;
     });
 
-    let otherSumCost = 0;
-    let userCostCount = 0;
-    console.log('thisGroupMembers', thisGroupMembers)
-    thisGroupMembers.forEach((member) => {
-      if (member.usercost) {
-        otherSumCost += member.cost;
-        userCostCount += 1;
+    let sumAllManualCost = 0;
+    let isManualCostCount = 0;
+
+    nextMyAllGroupUserData[this.state.selectedGroup].forEach((member) => {
+      if (member.isManualCost) {
+        sumAllManualCost += member.cost;
+        isManualCostCount += 1;
       }
     })
-    const sumCustomCost = customCost + otherSumCost;
-    console.log('otherSumCost', otherSumCost, 'customCost', customCost)
-    thisGroupMembers[costIndex].usercost = true;
-    thisGroupMembers[costIndex].cost = customCost;
+    sumAllManualCost = manualInputCost + sumAllManualCost;
+    console.log('sumAllManualCost', sumAllManualCost, 'manualInputCost', manualInputCost)
+
+    nextMyAllGroupUserData[this.state.selectedGroup][costIndex].isManualCost = true;
+    nextMyAllGroupUserData[this.state.selectedGroup][costIndex].cost = manualInputCost;
     const length = nextSelectedUserListToBeSent.length;
 
     //this calculation is wrong
-    const indivCost = 100 * Math.ceil(((this.state.totalCost - sumCustomCost) / ((length - userCostCount) * 100)));
+    // const indivCost = 100 * Math.ceil(((this.state.totalCost - sumAllManualCost) / ((length - isManualCostCount) * 100)));
+    const indivCost = (this.state.totalCost - sumAllManualCost) / (length - isManualCostCount);
     nextMyAllGroupUserData[this.state.selectedGroup].forEach((member, index) => {
       if (index !== costIndex && member.selected) {
         nextMyAllGroupUserData[this.state.selectedGroup][index].cost = indivCost;
@@ -465,12 +476,12 @@ export default class NewEvent extends React.Component {
       }
     });
 
-    const lowEndCost = this.state.totalCost - 1000;
-    const highEndCost = this.state.totalCost + 1000;
-    const checkTotal = lowEndCost < sumCustomCost && sumCustomCost < highEndCost;
+    const lowEndCost = this.state.totalCost - 100;
+    const highEndCost = this.state.totalCost + 100;
+    const checkTotal = lowEndCost < sumAllManualCost && sumAllManualCost < highEndCost;
 
-    console.log('checkTotal', checkTotal, 'totalcost', this.state.totalCost, 'sumCustomCost', sumCustomCost, 'lowEndCost', lowEndCost,
-     'highEndCost', highEndCost, 'selected member length', length, 'userCostCount', userCostCount)
+    console.log('checkTotal', checkTotal, 'totalcost', this.state.totalCost, 'sumAllManualCost', sumAllManualCost, 'lowEndCost', lowEndCost,
+     'highEndCost', highEndCost, 'selected member length', length, 'isManualCostCount', isManualCostCount)
 
     let errorTotalMessage = '';
     if (!checkTotal) {
@@ -480,9 +491,10 @@ export default class NewEvent extends React.Component {
     this.setState({
       myAllGroupUserData: nextMyAllGroupUserData,
       errorTotalMessage: errorTotalMessage,
+      indivCost: indivCost,
     });
   }
-  */
+
 
   render() {
     console.log(this.state.myAllGroupUserData);
