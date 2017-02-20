@@ -75,14 +75,12 @@ export default class Mypage extends React.Component {
 
     console.log(eventValue)
 
-
     if(event.target.value === '수락') {
       actionType = 'accept';
     }
     else if (event.target.value === '거절') {
       actionType = 'reject';
       this.setState({
-
       })
     }
 
@@ -91,16 +89,16 @@ export default class Mypage extends React.Component {
       action: actionType,
     }
 
-    console.log(individualTransacionDone)
-
     let answer = true;
 
     if (event.target.value === '수락') {
       answer = confirm('정말로 정산을 완료하시겠습니다?');
     }
 
-    if(answer) {
+    console.log(individualTransacionDone)
 
+
+    if(answer) {
       axios.put(`http://localhost:3000/api/misc`, individualTransacionDone)
       .then((res) => {
         console.log(res);
@@ -143,7 +141,7 @@ export default class Mypage extends React.Component {
         if (data.email !== this.state.myEmail) {
           this.state.pendingUserList.forEach((member) => {
             if(data.email === member.applicantemail || data.email === member.acceptoremail) {
-              actionButton = '정산요청';
+              // actionButton = '정산요청';
               if (member.applicantemail === this.state.myEmail && member.status === 1) {
                 actionButton = '정산중';
               }
@@ -151,9 +149,11 @@ export default class Mypage extends React.Component {
                 actionButton = '수락';
                 declineButton = <button value='거절' onClick={(event) => this.handleDone(event, index)}>거절</button>
               }
-              else if (member.status === 0) {
+              else if (member.status === null) {
                 actionButton = '정산요청';
               }
+            } else {
+              actionButton = '정산요청';
             }
           })
 

@@ -61,22 +61,26 @@ export default class HistoryTable extends React.Component {
   render() {
     const eventList = [];
     let editButton = '';
+    let actionButton = '';
+    let declineButton = '';
     let history, tableName, tableType;
 
-    if (this.props.debtHistory) {
+    console.log("debtHistory",this.props.debtHistory)
+    console.log("loanedHistory",this.props.loanedHistory)
+
+    if(this.props.debtHistory) {
       history = this.props.debtHistory;
-      tableName = '줘야함';
     }
     else {
       history = this.props.loanedHistory;
-      tableName = '받아야함';
     }
 
-    if (history) {
-      history.forEach((eventItem, index) => {
-      if (eventItem.email !== this.props.myEmail) { // to hide me as a recipient in the history
-        let editButton;
-        let paidCheck = '';
+//debt와 loaned 구분//
+
+  if (history) {
+    history.forEach((eventItem, index) => {
+      if (eventItem.email !== this.props.myEmail) {
+        //이벤트 수정권한 추가//
         if (eventItem.isadmin) {
           editButton = <input type="button" value="eventEdit" />;
         }
@@ -84,14 +88,31 @@ export default class HistoryTable extends React.Component {
           editButton = '';
         }
 
-        let actionButton = '요청';
-        let declineButton = '';
-
-        if (eventItem.ispaid) {
-            paidCheck = <button value="정산완료" onClick={(event) => this.handleDone(event,index)}>"정산완료"</button>;
+        if(history === this.props.debtHistory) {
+          tableName = '줘야함';
+          if(eventItem.status === null || eventItem.status === 3) {
+            actionButton = '정산요청';
           }
+          else if (eventItem.status === 1) {
+            actionButton = '정산중';
+          }
+          else {
+            actionButton = '정산완료';
+          }
+        }
         else {
-          paidCheck = <button value={actionButton} onClick={(event) => this.handleDone(event,index)}>{actionButton}</button>;
+          tableName = '받아야함';
+          if(eventItem.status === null || eventItem.status === 3) {
+            actionButton = '정산하기';
+            declineButton = '';
+          }
+          else if (eventItem.status === 1) {
+            actionButton = '수락';
+            declineButton = <button value='거절' onClick={(event) => this.handleDone(event, index)}>거절</button>;
+          }
+          else {
+            actionButton = '정산완료';
+          }
         }
         eventList.push(
         <tr>
@@ -108,12 +129,58 @@ export default class HistoryTable extends React.Component {
             {editButton}</Link>
           </td>
           <td >
-            {paidCheck}
+            <button value={actionButton} onClick={(event) => this.handleDone(event, index)}>{actionButton}</button>
+            {declineButton}
           </td>
         </tr>);
       }
     })
-  };
+  }
+
+    //
+    // if (this.props.debtHistory) {
+    //
+    //   this.props.debtHistory.forEach((eventItem, index) => {
+    //
+    //     //to hide me as a recipient in the history
+    //
+    //   })
+    // }
+    // else {
+    //   tableName = '받아야함';
+    //
+    //   this.props.loanedHistory.forEach()
+    // }
+
+
+
+  //   if (history) {
+  //     history.forEach((eventItem, index) => {
+  //     if (eventItem.email !== this.props.myEmail) { // to hide me as a recipient in the history
+  //       let editButton;
+  //       let paidCheck = '';
+  //       if (eventItem.isadmin) {
+  //         editButton = <input type="button" value="eventEdit" />;
+  //       }
+  //       else {
+  //         editButton = '';
+  //       }
+  //
+  //       let actionButton = '요청';
+  //       let declineButton = '';
+  //
+  //       if (eventItem.ispaid) {
+  //           paidCheck = <button value="정산완료" onClick={(event) => this.handleDone(event,index)}>"정산완료"</button>;
+  //         }
+  //       else {
+  //         paidCheck = <button value={actionButton} onClick={(event) => this.handleDone(event,index)}>{actionButton}</button>;
+  //       }
+
+  //     }
+  //   })
+  // };
+
+
 
     return (
       <div>
