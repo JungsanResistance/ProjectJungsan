@@ -44,7 +44,7 @@ export default class HistoryTable extends React.Component {
       action: action,
     };
 
-    axios.put(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/history?type=${type}`, historyData)
+    axios.put(`http://localhost:3000/api/history?type=${type}`, historyData)
     .then(res => {
       if(res.status === 200) {
         if (eventValue === '정산하기' || eventValue === '수락') {
@@ -55,7 +55,7 @@ export default class HistoryTable extends React.Component {
       }
     })
     .then(() => {
-      return axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/history');
+      return axios.get('http://localhost:3000/api/history');
     })
     .then((res) => {
       const getData = JSON.parse(res.data);
@@ -100,7 +100,7 @@ export default class HistoryTable extends React.Component {
       if (eventItem.email !== this.props.myEmail) {
         //이벤트 수정권한 추가//
         if (eventItem.isadmin) {
-          editButton = <input type="button" value="eventEdit" />;
+          editButton = <input type="button" value="이벤트 정보" />;
         }
         else {
           editButton = '';
@@ -139,7 +139,7 @@ export default class HistoryTable extends React.Component {
           <td>{eventItem.date}</td>
           <td>{eventItem.username} ({eventItem.email})</td>
           <td>{Math.abs(eventItem.cost)}</td>
-          <td><Link to={"history/"+JSON.stringify({
+          <td><Link to={"eventinfo/"+JSON.stringify({
               groupname : eventItem.groupname,
               eventname : eventItem.eventname,
               date : eventItem.date,

@@ -3,6 +3,9 @@ import Router, { browserHistory } from 'react-router';
 import moment from 'moment';
 import axios from 'axios';
 
+//정산자가 선택되지 않았을 시 에러 메세지가 필요//
+
+
 export default class EditEvent extends React.Component {
   constructor() {
     super();
@@ -31,10 +34,10 @@ export default class EditEvent extends React.Component {
     const selectedEventData = JSON.parse(this.props.params.eventInfo);
 
     // all groups I belong info
-    const getGroupData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction?type=post');
+    const getGroupData = axios.get('http://localhost:3000/api/transaction?type=post');
 
     // Event info
-    const getEventData = axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`);
+    const getEventData = axios.get(`http://localhost:3000/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`);
 
     Promise.all([getGroupData, getEventData])
     .then((res) => {
@@ -128,11 +131,12 @@ export default class EditEvent extends React.Component {
       nothingChangedCount += 1;
     }
 
+
     if (!nothingChangedCount) {
       alert('변경된 이벤트 정보가 없습니다');
       browserHistory.push('/history')
     } else {
-    axios.put(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/api/transaction`,
+    axios.put(`http://localhost:3000/api/transaction`,
       {
         olddate: this.state.olddate,
         newdate: this.state.newdate,
