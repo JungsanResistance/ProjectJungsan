@@ -19,8 +19,8 @@ export default class History extends React.Component {
   }
   componentWillMount() {
 
-    const myData = axios.get('http://http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/misc');
-    const historyData = axios.get('http://http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/history');
+    const myData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/misc');
+    const historyData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/history');
 
     console.log("myData:::", myData)
 

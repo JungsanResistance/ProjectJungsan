@@ -12,7 +12,7 @@ export default class GroupPage extends React.Component {
   }
 
   componentWillMount() {
-    axios.get(`http://http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/mypage`)
+    axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/mypage`)
     .then((res) => {
       const allData = JSON.parse(res.data).groupList;
       this.setState({

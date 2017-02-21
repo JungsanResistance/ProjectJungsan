@@ -11,7 +11,7 @@ export default class Landing extends React.Component {
             <h1>일통령의 정산나라!</h1>
             <br />
             <br />
-            <p>This page will grow as we add more and more components from Bootstrap...</p>
+            <p>This page will grow as we add more and more components from Bootstr...</p>
           </div>
             <br />
           <center><SignIn /></center>

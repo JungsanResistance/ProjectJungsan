@@ -34,10 +34,10 @@ export default class EditEvent extends React.Component {
     const selectedEventData = JSON.parse(this.props.params.eventInfo);
 
     // all groups I belong info
-    const getGroupData = axios.get('http://http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/transaction?type=post');
+    const getGroupData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/transaction?type=post');
 
     // Event info
-    const getEventData = axios.get(`http://http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`);
+    const getEventData = axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`);
 
     Promise.all([getGroupData, getEventData])
     .then((res) => {
@@ -136,7 +136,7 @@ export default class EditEvent extends React.Component {
       alert('변경된 이벤트 정보가 없습니다');
       browserHistory.push('/history')
     } else {
-    axios.put(`http://http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/transaction`,
+    axios.put(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/transaction`,
       {
         olddate: this.state.olddate,
         newdate: this.state.newdate,

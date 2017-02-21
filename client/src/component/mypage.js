@@ -20,8 +20,8 @@ export default class Mypage extends React.Component {
 
   componentWillMount() {
     this.reset();
-    // const myData = axios.get('http://http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/misc');
-    // const groupData = axios.get('http://http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/mypage');
+    // const myData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/misc');
+    // const groupData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/mypage');
     // Promise.all([myData, groupData]).then(res => {
     //   const myEmailData = JSON.parse(res[0].data)[0].email
     //   const groupStorage = [];
@@ -44,8 +44,8 @@ export default class Mypage extends React.Component {
   }
 
   reset() {
-    const myData = axios.get('http://http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/misc');
-    const groupData = axios.get('http://http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/mypage');
+    const myData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/misc');
+    const groupData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/mypage');
     Promise.all([myData, groupData]).then((res) => {
       const myEmailData = JSON.parse(res[0].data)[0].email;
       const groupStorage = [];
@@ -86,7 +86,7 @@ export default class Mypage extends React.Component {
     }
 
     if (answer) {
-      axios.put(`http://http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/misc`, individualTransacionDone)
+      axios.put(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/misc`, individualTransacionDone)
       .then((res) => {
         if (res.status === 200) {
           if (eventValue === '정산요청') {
@@ -179,7 +179,7 @@ export default class Mypage extends React.Component {
                   </li>
                   <li className="routing"><Link to="group"><b>내 그룹</b></Link></li>
                   <li className="routing"><Link to="history"><b>정산내역</b></Link></li>
-                  <li className="routing"><a className="logout" href="http://http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/logout"><b>로그아웃</b></a></li>
+                  <li className="routing"><a className="logout" href="http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/logout"><b>로그아웃</b></a></li>
                 </ul>
               </div>
             </div>
