@@ -47,7 +47,11 @@ app.get('*', (req, res, next) => {
 });
 
 app.get('/failed', (req, res, next) => {
-  res.sendfile(path.join(__dirname, 'client/dist/index.html'));
+  if (req.session.passport) {
+    res.redirect('/');
+  } else {
+    res.sendfile(path.join(__dirname, 'client/dist/index.html'));
+  }
 })
 // google authorization
 app.get('/auth/google',
