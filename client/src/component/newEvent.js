@@ -3,7 +3,7 @@ import moment from 'moment';
 import axios from 'axios';
 import Router, { browserHistory } from 'react-router';
 
-// http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com:3000/
+// http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/
 // http://localhost:3000/
 
 export default class NewEvent extends React.Component {
@@ -46,6 +46,7 @@ export default class NewEvent extends React.Component {
   componentWillMount() {
     const getGroupData = axios.get('http://localhost:3000/api/transaction?type=post');
     const getAllEvents = axios.get('http://localhost:3000/api/history');
+
     Promise.all([getGroupData, getAllEvents]).then((res) => {
       const getData = JSON.parse(res[0].data);
       const getHistory = JSON.parse(res[1].data);
@@ -462,6 +463,7 @@ export default class NewEvent extends React.Component {
     .then((eventTarget) => {
       if (eventTarget.name === 'eventGroup') {
         return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
+
         .then((res) => {
           if (res.data.length-2) {
             return true;
@@ -470,6 +472,7 @@ export default class NewEvent extends React.Component {
       }
       else if (eventTarget.name === 'eventDate') {
         return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
+
         .then((res) => {
           if (res.data.length-2) {
             return true;
@@ -478,6 +481,7 @@ export default class NewEvent extends React.Component {
       }
       else if (eventTarget.type === 'text') {
         return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
+
         .then((res) => {
           if (res.data.length-2) {
             return true;
