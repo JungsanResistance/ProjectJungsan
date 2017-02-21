@@ -30,10 +30,12 @@ module.exports = {
       res.json(body);
     }),
     post: (req, res) => (transaction.post(req))
-      .then(() => {
+      .then((eventDetail) => {
+        email.events(eventDetail, 'post');
         res.sendStatus(201);
       })
       .catch((err) => {
+        console.log(err);
         if (err === 'Is a duplicate') {
           res.sendStatus(400);
           throw err;
@@ -50,7 +52,8 @@ module.exports = {
       }
     ),
     put: (req, res) => (transaction.put(req))
-    .then(() => {
+    .then((eventDetail) => {
+      email.events(eventDetail, 'put');
       res.sendStatus(200);
     })
     .catch((err) => {
@@ -116,7 +119,7 @@ module.exports = {
     .then((currentUser) => {
       console.log(currentUser);
       const action = req.body.action;
-      email(currentUser[0], req.body.recipientemail, action);
+      email.transaction(currentUser[0], req.body.recipientemail, action);
       res.sendStatus(200);
     })
     .catch((err) => {
@@ -135,7 +138,7 @@ module.exports = {
     .then((currentUser) => {
       console.log(currentUser);
       const action = req.body.action;
-      // email(currentUser[0], req.body.recipientemail, action);
+      email.transaction(currentUser[0], req.body.recipientemail, action);
       res.sendStatus(200);
     })
     .catch((err) => {
