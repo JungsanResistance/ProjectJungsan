@@ -34,7 +34,7 @@ export default class NewEvent extends React.Component {
     this.selectHandleChange = this.selectHandleChange.bind(this);
     this.inputHandleChange = this.inputHandleChange.bind(this);
     this.selectHandleMember = this.selectHandleMember.bind(this);
-    this.blankCheck = this.blankCheck.bind(this);
+    this.preCheck = this.preCheck.bind(this);
     this.eventDuplicateCheck = this.eventDuplicateCheck.bind(this);
     this.handleCustomInputCost = this.handleCustomInputCost.bind(this);
     this.evaluateAll = this.evaluateAll.bind(this);
@@ -75,7 +75,7 @@ export default class NewEvent extends React.Component {
   }
 
   // no empty input is allowed
-  blankCheck() {
+  preCheck() {
     let blankCount = 0;
     let anyMemberSelected = true;
     let receipientSelectedFlag = true;
@@ -105,9 +105,10 @@ export default class NewEvent extends React.Component {
     }
 
     const isRecipientSelected = this.state.myAllGroupUserData[this.state.selectedGroup].some((member) => {
-      return member.email === this.state.newrecipient.email
+      if (member.selected)
+        return member.email === this.state.newrecipient.email
     });
-
+    console.log('isRecipientSelected', isRecipientSelected)
     if (!isRecipientSelected) {
       receipientSelectedFlag = false;
     }
@@ -133,12 +134,12 @@ export default class NewEvent extends React.Component {
     else {
       if (!receipientSelectedFlag) {
         this.setState({
-          errorMesseage: '돈 낸 사람을 포함시켜주세요^^;;;',
+          errorMesseage: '정산자를 포함시켜주세요',
         })
       }
       if (blankCount) {
         this.setState({
-          errorMesseage: '빈칸을 모두 채워주세요 ㅠ',
+          errorMesseage: '빈칸을 모두 채워주세요',
         });
       }
       if (!anyMemberSelected) {
@@ -338,9 +339,6 @@ export default class NewEvent extends React.Component {
         if (member.selected) {
           member.cost = this.state.totalCost;
           member.isManualCost = false;
-          nextNewRecipient.email = member.email;
-          nextNewRecipient.name = member.name;
-          nextNewRecipient.cost = member.cost;
           if (!this.checkTotal()) {
             member.selected = false;
           }
@@ -682,7 +680,7 @@ export default class NewEvent extends React.Component {
           <br />
           {this.state.groupMemberErrorMesseage}
           <br />
-          <input type="button" className="inputData" value="이벤트 등록" onClick={this.blankCheck} />
+          <input type="button" className="inputData" value="이벤트 등록" onClick={this.preCheck} />
           <br />
           <br />
           {this.state.errorMesseage}
