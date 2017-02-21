@@ -6,9 +6,9 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const passport = require('passport');
+const flash = require('connect-flash');
 
 const index = require('./routes/index');
-const auth = require('./db/auth.js');
 
 const app = express();
 
@@ -29,6 +29,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
 }));
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/api', index);
@@ -38,7 +39,7 @@ app.use('/api', index);
 app.get('*', (req, res, next) => {
   if (!req.url.includes('auth')) {
     if (req.session.passport) {
-      if (req.url === '/mypage' || req.url === '/history' || req.url.includes('transaction') || req.url.includes('event') || req.url.includes('group')) {
+      if (req.url === '/mypage' || req.url.includes('failed') || req.url === '/history' || req.url.includes('transaction') || req.url.includes('event') || req.url.includes('group')) {
         res.sendfile(path.join(__dirname, 'client/dist/index.html'));
       } else return next();
     } else {
@@ -54,8 +55,17 @@ app.get('/auth/google',
 app.get('/auth/google/callback',
   passport.authenticate('google', {
     successRedirect: '/mypage',
-    failureRedirect: '/',
+    failureRedirect: '/failed',
   }));
+
+app.get('/auth/facebook',
+  passport.authenticate('facebook', { scope: ['email'] }));
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', {
+    successRedirect: '/mypage',
+    failureRedirect: '/failed',
+  }));
+
 
 // logout
 app.get('/logout', (req, res) => {

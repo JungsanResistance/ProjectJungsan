@@ -93,6 +93,8 @@ module.exports = {
       }
       return transaction.postTransaction(body);
     })
+    // return event detail when successful for sending emails
+    .then(() => body)
     .catch(err => Promise.reject(err));
   },
   put: (req) => {
@@ -143,6 +145,8 @@ module.exports = {
         });
       }
     })
+    // return event detail when successful for sending emails
+    .then(() => body)
     .catch(err => Promise.reject(err));
   },
 };
