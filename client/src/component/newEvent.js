@@ -38,7 +38,7 @@ export default class NewEvent extends React.Component {
     this.selectHandleMember = this.selectHandleMember.bind(this);
     this.preCheck = this.preCheck.bind(this);
     this.eventDuplicateCheck = this.eventDuplicateCheck.bind(this);
-    this.handleCustomInputCost = this.handleCustomInputCost.bind(this);
+    this.handleManualInputCost = this.handleManualInputCost.bind(this);
     this.evaluateAll = this.evaluateAll.bind(this);
     this.countSelectedMember = this.countSelectedMember.bind(this);
     this.getCurrentSelectedGroupMembers = this.getCurrentSelectedGroupMembers.bind(this);
@@ -101,8 +101,6 @@ export default class NewEvent extends React.Component {
       errCount += 1;
     }
     if (!this.state.newrecipient.selected) {
-      console.log('this.state.newrecipient', this.state.newrecipient)
-    // if (!Object.keys(this.state.newrecipient).length) {
       nextNewRecipientStyle = 'inputStyle';
       errCount += 1;
     }
@@ -120,7 +118,6 @@ export default class NewEvent extends React.Component {
       if (member.selected)
         return member.email === this.state.newrecipient.email
     });
-    console.log('isRecipientSelected', isRecipientSelected)
     if (!isRecipientSelected) {
       receipientSelectedFlag = false;
     }
@@ -176,12 +173,7 @@ export default class NewEvent extends React.Component {
 
   // post new transaction record
   handleSubmit() {
-    // const nextmyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
     const nextSelectedGroupMember = this.getCurrentSelectedGroupMembers();
-    // const nextParticipants = nextSelectedGroupMember.filter((participant) => {
-    //   return participant.selected === true;
-    // });
-
     console.log('this is the data we are sending', {
       date: this.state.date,
       oldrecipient: this.state.oldrecipient,
@@ -233,8 +225,6 @@ export default class NewEvent extends React.Component {
 
         // toggle ispaid flag for the recipient
         if (this.state.newrecipient && member.email === this.state.newrecipient.email) {
-          console.log('before toggle', member.ispaid)
-          // member.ispaid = !member.ispaid; // fix this as true and toggle false with other code
           if (member.selected) {
             member.ispaid = true;
           }
@@ -253,8 +243,6 @@ export default class NewEvent extends React.Component {
 
       // const indivCost = 100 * Math.ceil(this.state.totalCost / (count * 100));
     const indivCost = this.getIndivCost();
-
-    // const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
 
     if (this.countSelectedMember() > 1) {
       // when there are more than one member selected
@@ -291,7 +279,6 @@ export default class NewEvent extends React.Component {
     if (this.state.groupMemberErrorMesseage.length) {
       this.setState({
         selectedGroupMembers: nextSelectedGroupMembers,
-        // myAllGroupUserData: nextMyAllGroupUserData,
         groupMemberErrorMesseage: '',
         totalCostErrorMessage: '',
         newrecipient: nextNewRecipient,
@@ -299,7 +286,6 @@ export default class NewEvent extends React.Component {
     } else {
       this.setState({
         selectedGroupMembers: nextSelectedGroupMembers,
-        // myAllGroupUserData: nextMyAllGroupUserData,
         totalCostErrorMessage: '',
         newrecipient: nextNewRecipient,
       });
@@ -349,7 +335,6 @@ export default class NewEvent extends React.Component {
   }
 
   evaluateAll() {
-    // const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
     const nextGroupMembers = this.getCurrentSelectedGroupMembers();
     const indivCost = this.getIndivCost();
     const nextNewRecipient = this.getCurrentRecipient();
@@ -392,7 +377,6 @@ export default class NewEvent extends React.Component {
     }
 
     this.setState({
-      // myAllGroupUserData: nextMyAllGroupUserData,
       selectedGroupMembers: nextGroupMembers,
       totalCostErrorMessage: nextTotalCostErrorMessage,
       newrecipient: nextNewRecipient,
@@ -400,7 +384,6 @@ export default class NewEvent extends React.Component {
   }
 
   addAll() {
-    // const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
     const nextSelectedGroupMembers = this.getCurrentSelectedGroupMembers();
     const sum = nextSelectedGroupMembers.reduce((total, member) => {
       return total + member.cost;
@@ -411,7 +394,6 @@ export default class NewEvent extends React.Component {
   }
 
   checkTotal() {
-    // const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
     const total = this.state.totalCost;
     const nextSelectedGroupMembers = this.getCurrentSelectedGroupMembers();
     const sumMemberCost = nextSelectedGroupMembers.reduce((total, member) => {
@@ -469,7 +451,6 @@ export default class NewEvent extends React.Component {
       }
 
       let nextNewRecipient;
-      // const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
       const nextSelectedGroupMembers = this.getCurrentSelectedGroupMembers();
       const indivCost = this.getIndivCost();
       nextSelectedGroupMembers.forEach((member, index) => {
@@ -544,7 +525,6 @@ export default class NewEvent extends React.Component {
   }
 
   inputHandleChange(event) {
-
     // clean error message
     if (this.state.errorMesseage.length) {
       this.setState({
@@ -561,13 +541,10 @@ export default class NewEvent extends React.Component {
     }
 
     else if (event.target.type === 'number') {
-      // roundup 100 KRW
       // const indivCost = 100 * Math.ceil((event.target.value / (count * 100)));
-      // const indivCost = event.target.value / count;
       const indivCost = this.getIndivCost();
-
-      // const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
       const nextSelectedGroupMembers = this.getCurrentSelectedGroupMembers();
+
       nextSelectedGroupMembers.forEach((member) => {
         if (member.selected && !member.isManualCost) {
           member.cost = indivCost;
@@ -579,8 +556,6 @@ export default class NewEvent extends React.Component {
 
       this.setState({
         totalCost: parseInt(event.target.value),
-        // myAllGroupUserData: nextMyAllGroupUserData,
-
         costStyle: '',
         indivCost: indivCost,
       });
@@ -596,32 +571,28 @@ export default class NewEvent extends React.Component {
   }
 
 
-  handleCustomInputCost(event, costIndex) {
+  handleManualInputCost(event, costIndex) {
     const manualInputCost = parseInt(event.target.value);
 
-    const nextMyAllGroupUserData = Object.assign({}, this.state.myAllGroupUserData);
+    const nextSelectedGroupMembers = this.getCurrentSelectedGroupMembers();
     // const indivCost = 100 * Math.ceil(((this.state.totalCost - sumAllManualCost) / ((length - isManualCostCount) * 100)));
 
     if (event.target.value.length) {
-      nextMyAllGroupUserData[this.state.selectedGroup][costIndex].isManualCost = true;
-      nextMyAllGroupUserData[this.state.selectedGroup][costIndex].cost = manualInputCost;
+      nextSelectedGroupMembers[costIndex].isManualCost = true;
+      nextSelectedGroupMembers[costIndex].cost = manualInputCost;
     }
     else {
-      const indivCost = this.getIndivCost();
-      nextMyAllGroupUserData[this.state.selectedGroup][costIndex].isManualCost = false;
-      nextMyAllGroupUserData[this.state.selectedGroup][costIndex].cost = 0;
-      nextMyAllGroupUserData[this.state.selectedGroup][costIndex].selected = false;
+      nextSelectedGroupMembers[costIndex].isManualCost = false;
+      nextSelectedGroupMembers[costIndex].cost = 0;
+      nextSelectedGroupMembers[costIndex].selected = false;
     }
 
     this.setState({
-      myAllGroupUserData: nextMyAllGroupUserData,
+      selectedGroupMembers: nextSelectedGroupMembers,
       // errorTotalMessage: errorTotalMessage,
-      // indivCost: indivCost,
     });
 
-
   }
-
 
   render() {
     console.log('all group data', this.state.myAllGroupUserData);
@@ -637,9 +608,8 @@ export default class NewEvent extends React.Component {
 
     let userTable;
     // retrieve group members for specific group
-    // const selectedGroupMembers = this.state.myAllGroupUserData[this.state.selectedGroup];
     const selectedGroupMembers = this.state.selectedGroupMembers;
-    console.log(selectedGroupMembers)
+
     // render both selected and unselected member and apply style together
     const hasMyAllGroupUserData = Object.keys(this.state.myAllGroupUserData).length > 0;
     const isAnyGroupSelected = this.state.selectedGroup.length > 0;
@@ -654,7 +624,7 @@ export default class NewEvent extends React.Component {
                 </td>
                 <input
                type='number' placeholder={this.state.myAllGroupUserData[this.state.selectedGroup][index].cost}
-                    onChange={(event) => this.handleCustomInputCost(event, index)}/>
+                    onChange={(event) => this.handleManualInputCost(event, index)}/>
               </tr>);
           } else {
             return (
@@ -671,6 +641,7 @@ export default class NewEvent extends React.Component {
     }
 
     let recipientTable;
+
     // render recipient drop down list
     if (selectedGroupMembers.length) {
       recipientTable = selectedGroupMembers.map((member) => {
@@ -730,19 +701,19 @@ export default class NewEvent extends React.Component {
               {this.state.sumIndivCost} KRW
             </tr>
           </table>
-          <br />
-          <br />
-          <input type="button" className="Nbbang" value="자동N빵!" onClick={this.evaluateAll} />
-          <input type="button" className="addAll" value="금액더하기" onClick={this.addAll} />
-          <p>{this.state.totalCostErrorMessage}</p>
-          <br />
-          <br />
-          {this.state.groupMemberErrorMesseage}
-          <br />
-          <input type="button" className="inputData" value="이벤트 등록" onClick={this.preCheck} />
-          <br />
-          <br />
-          {this.state.errorMesseage}
+        <br />
+        <br />
+        <input type="button" className="Nbbang" value="자동N빵!" onClick={this.evaluateAll} />
+        <input type="button" className="addAll" value="금액더하기" onClick={this.addAll} />
+        <p>{this.state.totalCostErrorMessage}</p>
+        <br />
+        <br />
+        {this.state.groupMemberErrorMesseage}
+        <br />
+        <input type="button" className="inputData" value="이벤트 등록" onClick={this.preCheck} />
+        <br />
+        <br />
+        {this.state.errorMesseage}
       </div>
     );
   }
