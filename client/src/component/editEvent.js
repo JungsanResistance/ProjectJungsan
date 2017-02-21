@@ -3,6 +3,9 @@ import Router, { browserHistory } from 'react-router';
 import moment from 'moment';
 import axios from 'axios';
 
+//정산자가 선택되지 않았을 시 에러 메세지가 필요//
+
+
 export default class EditEvent extends React.Component {
   constructor() {
     super();
@@ -127,6 +130,7 @@ export default class EditEvent extends React.Component {
     if (JSON.stringify(this.state.participants) !== JSON.stringify(this.state.oldparticipants)) {
       nothingChangedCount += 1;
     }
+
 
     if (!nothingChangedCount) {
       alert('변경된 이벤트 정보가 없습니다');

@@ -6,12 +6,11 @@ export default class RenderMembers extends React.Component {
   constructor(){
     super();
     this.state = {
-      groupmemberList : [],
-    }
+      groupmemberList: [],
+    };
   }
 
   componentWillMount() {
-    console.log("groupname:", this.props.groupname)
     axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/group?target=groupmembers&groupname=${this.props.groupname}`)
     .then((res) => {
       if (res.status === 200) {
@@ -21,12 +20,10 @@ export default class RenderMembers extends React.Component {
         groupmemberList: groupData,
       });
       }
-    })
+    });
   }
 
-
   render() {
-    console.log(this.state.groupmemberList);
     const members = this.state.groupmemberList.map((member) => {
       if (member.active) {
         return <li>{member.username} ({member.email})</li>

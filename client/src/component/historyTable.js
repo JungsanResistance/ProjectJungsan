@@ -100,7 +100,7 @@ export default class HistoryTable extends React.Component {
       if (eventItem.email !== this.props.myEmail) {
         //이벤트 수정권한 추가//
         if (eventItem.isadmin) {
-          editButton = <input type="button" value="eventEdit" />;
+          editButton = <input type="button" value="이벤트 정보" />;
         }
         else {
           editButton = '';
@@ -139,7 +139,7 @@ export default class HistoryTable extends React.Component {
           <td>{eventItem.date}</td>
           <td>{eventItem.username} ({eventItem.email})</td>
           <td>{Math.abs(eventItem.cost)}</td>
-          <td><Link to={"history/"+JSON.stringify({
+          <td><Link to={"eventinfo/"+JSON.stringify({
               groupname : eventItem.groupname,
               eventname : eventItem.eventname,
               date : eventItem.date,
