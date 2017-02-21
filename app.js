@@ -35,9 +35,9 @@ app.use('/api', index);
 
 // index.html sender for solving mismatch between react-router and express router (make sure to add when adding new urls)
 app.get('*', (req, res, next) => {
-  if (!req.url.includes('auth')) {
+  if (!req.url.includes('auth') && !req.url.includes('failed')) {
     if (req.session.passport) {
-      if (req.url === '/mypage' || req.url.includes('failed') || req.url === '/history' || req.url.includes('transaction') || req.url.includes('event') || req.url.includes('group')) {
+      if (req.url === '/mypage' || req.url === '/history' || req.url.includes('transaction') || req.url.includes('event') || req.url.includes('group')) {
         res.sendfile(path.join(__dirname, 'client/dist/index.html'));
       } else return next();
     } else {
@@ -46,7 +46,13 @@ app.get('*', (req, res, next) => {
   } else return next();
 });
 
-
+app.get('/failed', (req, res, next) => {
+  if (req.session.passport) {
+    res.redirect('/');
+  } else {
+    res.sendfile(path.join(__dirname, 'client/dist/index.html'));
+  }
+})
 // google authorization
 app.get('/auth/google',
   passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile', 'email'] }));
