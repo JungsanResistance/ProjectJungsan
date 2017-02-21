@@ -28,7 +28,6 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
 }));
-app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/api', index);
