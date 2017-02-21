@@ -6,7 +6,6 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const passport = require('passport');
-const flash = require('connect-flash');
 
 const index = require('./routes/index');
 
