@@ -159,31 +159,56 @@ export default class Mypage extends React.Component {
 
     return (
       <div>
-        <ul>
-          <li className="routing"><Link to="history">History</Link></li>
-          <li className="routing"><Link to="transaction">New event</Link></li>
-          <li className="routing"><Link to="group">New group</Link></li>
-        </ul>
-        <br />
-          <div className="myPage">
+
+        <nav className="navbar navbar-default">
+          <div className="container">
+            <div className="row">
+              <div className= "col-md-4">
+                <div className="navbar-header">
+                  <a className="navbar-brand" href="#"><b>Jungsan Resistance</b></a>
+                </div>
+              </div>
+              <div className= "col-md-8">
+                <ul className="nav navbar-nav navbar-right">
+                  <li className="dropdown">
+                    <a className="dropdown-toggle routing" data-toggle="dropdown" href="#"><b>내 이벤트
+                    </b><span className="caret"></span></a>
+                    <ul className="dropdown-menu">
+                      <li className="newevent"><Link to="transaction">이벤트 생성</Link></li>
+                    </ul>
+                  </li>
+                  <li className="routing"><Link to="group"><b>내 그룹</b></Link></li>
+                  <li className="routing"><Link to="history"><b>정산내역</b></Link></li>
+                  <li className="routing"><a className="logout" href="http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/logout"><b>로그아웃</b></a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </nav>
+          <div className="container mypage">
           <h1>my Page</h1>
-          {this.state.testtest}
-          <table className="sumListTable">
-            <tr>
-              <th>name</th>
-              <th>email</th>
-              <th>cost</th>
-              <th></th>
-            </tr>
+          <br />
+          <br />
+          <table className="table table-striped">
+            <thead className="thead-inverse">
+                <tr className="mypageTableRow">
+                  <th>name</th>
+                  <th>email</th>
+                  <th>cost</th>
+                  <th></th>
+                </tr>
+            </thead>
+            <tbody>
             {List}
+            </tbody>
           </table>
           <h1>Group List</h1>
           <ul>
             {groups}
           </ul>
           <br />
-          <SignOut />
         </div>
+
       </div>
     );
   }
