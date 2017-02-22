@@ -18,14 +18,10 @@ export default class History extends React.Component {
     this.handleEditEvent = this.handleEditEvent.bind(this);
   }
   componentWillMount() {
-
     const myData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/misc');
     const historyData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/history');
 
-    console.log("myData:::", myData)
-
     Promise.all([myData, historyData]).then(res => {
-      console.log(res)
       const myEmailData = JSON.parse(res[0].data)[0].email;
       const getData = JSON.parse(res[1].data);
       console.log('getData', getData);
@@ -34,13 +30,12 @@ export default class History extends React.Component {
         loanedHistory: getData.loaned,
         myEmail: myEmailData,
       });
-    })
+    });
   }
   // edit single event // under the consturction
   handleEditEvent() {
     browserHistory.push('/editEvent');
   }
-
 
   render() {
     return (
