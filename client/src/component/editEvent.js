@@ -51,9 +51,9 @@ export default class EditEvent extends React.Component {
 
   componentWillMount() {
     const selectedEventData = JSON.parse(this.props.params.eventInfo);
-    const getGroupData = axios.get('http://oneovern.com/api/transaction?type=post');
+    const getGroupData = axios.get('https://oneovern.com/api/transaction?type=post');
     const getEventData = axios.get(
-      `http://oneovern.com/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`);
+      `https://oneovern.com/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`);
 
     Promise.all([getGroupData, getEventData])
     .then((res) => {
@@ -231,7 +231,7 @@ export default class EditEvent extends React.Component {
       participants: storage,
     });
 
-    axios.put('http://oneovern.com/api/transaction', {
+    axios.put('https://oneovern.com/api/transaction', {
       olddate: this.state.oldDate,
       newdate: this.state.newDate,
       oldrecipient: this.state.oldRecipient,
@@ -531,7 +531,7 @@ export default class EditEvent extends React.Component {
     })
     .then((eventTarget) => {
       if (eventTarget.name === 'eventGroup') {
-        return axios.get(`http://oneovern.com/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
+        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -540,7 +540,7 @@ export default class EditEvent extends React.Component {
         })
       }
       else if (eventTarget.name === 'eventDate') {
-        return axios.get(`http://oneovern.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
+        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -549,7 +549,7 @@ export default class EditEvent extends React.Component {
         })
       }
       else if (eventTarget.type === 'text') {
-        return axios.get(`http://oneovern.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
+        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
 
         .then((res) => {
           if (res.data.length-2) {
