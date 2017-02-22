@@ -74,7 +74,7 @@ export default class HistoryTable extends React.Component {
 
   render() {
     const eventList = [];
-    let editButton = '';
+    let editButton = <input type="button" value="이벤트 정보" />;
     let actionButton = '';
     let declineButton = '';
     let history, tableName, tableType;
@@ -93,42 +93,44 @@ export default class HistoryTable extends React.Component {
         history = this.props.loanedHistory;
       }
     }
-
+    console.log(history)
 //debt와 loaned 구분//
   if (history) {
     history.forEach((eventItem, index) => {
       if (eventItem.email !== this.props.myEmail) {
         //이벤트 수정권한 추가//
-        if (eventItem.isadmin) {
-          editButton = <input type="button" value="이벤트 정보" />;
-        }
-        else {
-          editButton = '';
-        }
 
         if (history === this.props.debtHistory || history === this.state.debtHistory) {
           tableName = '줘야함';
-          if (eventItem.status === null || eventItem.status === 3) {
-            actionButton = '정산요청';
-          }
-          else if (eventItem.status === 1) {
-            actionButton = '정산중';
-          }
-          else {
+          if (!eventItem.ispaid) {
+            if (eventItem.status === null || eventItem.status === 3) {
+              actionButton = '정산요청';
+            }
+            else if (eventItem.status === 1) {
+              actionButton = '정산중';
+            }
+            else {
+              actionButton = '정산완료';
+            }
+          } else {
             actionButton = '정산완료';
           }
         }
         else {
           tableName = '받아야함';
-          if(eventItem.status === null || eventItem.status === 3) {
-            actionButton = '정산하기';
-            declineButton = '';
-          }
-          else if (eventItem.status === 1) {
-            actionButton = '수락';
-            declineButton = <button value='거절' onClick={(event) => this.handleDone(event, index)}>거절</button>;
-          }
-          else {
+          if (!eventItem.ispaid) {
+            if(eventItem.status === null || eventItem.status === 3) {
+              actionButton = '정산하기';
+              declineButton = '';
+            }
+            else if (eventItem.status === 1) {
+              actionButton = '수락';
+              declineButton = <button value='거절' onClick={(event) => this.handleDone(event, index)}>거절</button>;
+            }
+            else {
+              actionButton = '정산완료';
+            }
+          } else {
             actionButton = '정산완료';
           }
         }
@@ -140,9 +142,10 @@ export default class HistoryTable extends React.Component {
           <td>{eventItem.username} ({eventItem.email})</td>
           <td>{Math.abs(eventItem.cost)}</td>
           <td><Link to={"eventinfo/"+JSON.stringify({
-              groupname : eventItem.groupname,
-              eventname : eventItem.eventname,
-              date : eventItem.date,
+              groupname: eventItem.groupname,
+              eventname: eventItem.eventname,
+              date: eventItem.date,
+              isadmin: eventItem.isadmin,
             })}>
             {editButton}</Link>
           </td>
@@ -156,22 +159,30 @@ export default class HistoryTable extends React.Component {
   }
 
     return (
-      <div>
-        <h1>
-          {tableName}
-        </h1>
-        <br />
-        <tr>
-          <th>groupname</th>
-          <th>eventname</th>
-          <th>date</th>
-          <th>name(email)</th>
-          <th>cost</th>
-          <th>edit</th>
-          <th>status</th>
-        </tr>
-        {eventList}
-      </div>
+
+        <div className="container history">
+          <h1>
+            {tableName}
+          </h1>
+          <br />
+            <table className="table table-hover" >
+              <thead>
+                <tr>
+                  <th>groupname</th>
+                  <th>eventname</th>
+                  <th>date</th>
+                  <th>name(email)</th>
+                  <th>cost</th>
+                  <th>edit</th>
+                  <th>status</th>
+                </tr>
+              </thead>
+              <tbody>
+              {eventList}
+              </tbody>
+            </table>
+        </div>
+
     );
   }
 }

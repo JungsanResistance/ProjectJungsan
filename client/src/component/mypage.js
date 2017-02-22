@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, browserHistory } from 'react-router';
 import axios from 'axios';
 import SignOut from './signOut';
+import History from './history';
 
 
 export default class Mypage extends React.Component {
@@ -13,9 +14,11 @@ export default class Mypage extends React.Component {
       myEmail: '',
       pendingUserList: [],
       testtest: '',
+      rendingPage: '',
     };
     this.handleDone = this.handleDone.bind(this);
     this.reset = this.reset.bind(this);
+    this.handleHistoryPage = this.handleHistoryPage.bind(this);
   }
 
   componentWillMount() {
@@ -60,6 +63,13 @@ export default class Mypage extends React.Component {
         pendingUserList: getData.pendingUserList,
       });
     });
+  }
+
+  handleHistoryPage (event){
+    console.log(event.target.class)
+    this.setState({
+      rendingPage: 'history',
+    })
   }
 
   handleDone(event, index) {
@@ -116,6 +126,7 @@ export default class Mypage extends React.Component {
     } = this.state;
     let declineButton = '';
     let actionButton = '정산요청';
+    let rendingPage ='';
 
     if (sumList && this.state.myEmail) {
       sumList.forEach((data, index) => {
@@ -154,61 +165,73 @@ export default class Mypage extends React.Component {
     }
 
     const groups = this.state.groupList.map((data) => {
-      return <li className="myPageGroupName"><Link to={"grouppage/"+data}>{data}</Link></li>;
+      return <li className="myPageGroupName"><Link to={"grouppage/"+data}><b>{data}</b></Link></li>;
     });
+
+
+    if (this.state.rendingPage === "history") {
+      rendingPage = <History />
+    }
+    else {
+      rendingPage =
+      <div className="container mypage">
+      <h1>my Page</h1>
+      <br />
+      <br />
+      <table className="table table-striped">
+        <thead>
+            <tr className="mypageTableRow">
+              <th>name</th>
+              <th>email</th>
+              <th>cost</th>
+              <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {List}
+        </tbody>
+      </table>
+      <br />
+    </div>
+    }
+
+    console.log('rendingPage', rendingPage)
 
     return (
       <div>
-
         <nav className="navbar navbar-default">
           <div className="container">
             <div className="row">
               <div className= "col-md-4">
                 <div className="navbar-header">
-                  <a className="navbar-brand" href="#"><b>Jungsan Resistance</b></a>
+                  <div className="navbar-brand" ><Link to="mypage"><b className="navbarMenu">이모 계산좀</b></Link></div>
                 </div>
               </div>
               <div className= "col-md-8">
                 <ul className="nav navbar-nav navbar-right">
                   <li className="dropdown">
-                    <a className="dropdown-toggle routing" data-toggle="dropdown" href="#"><b>내 이벤트
+                    <a className="dropdown-toggle navbarMenu" data-toggle="dropdown" href="#"><b className="navbarMenu">내 이벤트
                     </b><span className="caret"></span></a>
                     <ul className="dropdown-menu">
-                      <li className="newevent"><Link to="transaction">이벤트 생성</Link></li>
+                      <li className="newevent" onClick={this.handleEventPage}><Link to="transaction"><b>이벤트 생성</b></Link></li>
+                      <li className="eventHistory" onClick={this.handleHistoryPage}><a href="#"><b>정산내역</b></a></li>
                     </ul>
                   </li>
-                  <li className="routing"><Link to="group"><b>내 그룹</b></Link></li>
-                  <li className="routing"><Link to="history"><b>정산내역</b></Link></li>
-                  <li className="routing"><a className="logout" href="http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/logout"><b>로그아웃</b></a></li>
+                  <li className="dropdown">
+                    <a className="dropdown-toggle navbarMenu" data-toggle="dropdown" href="#"><b className="navbarMenu">내 그룹
+                    </b><span className="caret"></span></a>
+                    <ul className="dropdown-menu">
+                      {groups}
+                      <li className="newgroup" onClick={this.handleGroupPage}><Link to="group"><b>+그룹 생성</b></Link></li>
+                    </ul>
+                  </li>
+                  <li className="navbarMenu"><a className="logout" href="http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/logout"><b className="navbarMenu">로그아웃</b></a></li>
                 </ul>
               </div>
             </div>
           </div>
         </nav>
-          <div className="container mypage">
-          <h1>my Page</h1>
-          <br />
-          <br />
-          <table className="table table-striped">
-            <thead className="thead-inverse">
-                <tr className="mypageTableRow">
-                  <th>name</th>
-                  <th>email</th>
-                  <th>cost</th>
-                  <th></th>
-                </tr>
-            </thead>
-            <tbody>
-            {List}
-            </tbody>
-          </table>
-          <h1>Group List</h1>
-          <ul>
-            {groups}
-          </ul>
-          <br />
-        </div>
-
+        {rendingPage}
       </div>
     );
   }

@@ -7,8 +7,8 @@ export default class Eventinfo extends React.Component {
   constructor() {
     super();
     this.state = {
-      eventInfo : {},
-    }
+      eventInfo: {},
+    };
   }
 
   componentWillMount() {
@@ -24,9 +24,19 @@ export default class Eventinfo extends React.Component {
 
   render() {
     const memberList = [];
-    let newrecipientUsername, newrecipientEmail;
+    const eventEditAuth = JSON.parse(this.props.params.eventInfo).isadmin;
+    let newrecipientUsername, newrecipientEmail, editButton;
     const eventContents = this.state.eventInfo;
     if (Object.keys(eventContents).length > 0) {
+      //이벤트 권한에 따라 이벤트 버튼 추가//
+      if (eventEditAuth === true) {
+        editButton =
+        <Link to={"eventedit/"+this.props.params.eventInfo}>
+          <input type="button" value='이벤트 수정' />
+        </Link>
+      } else {
+        editButton = '';
+      }
       newrecipientUsername = eventContents.newrecipient.username;
       newrecipientEmail = eventContents.newrecipient.email;
       eventContents.participants.forEach((member) => {
@@ -54,9 +64,7 @@ export default class Eventinfo extends React.Component {
           {memberList}
         </ul>
         <br />
-        <Link to={"eventedit/"+this.props.params.eventInfo}>
-          <input type="button" value='이벤트 수정' />
-        </Link>
+        {editButton}
       </div>
     );
   }
