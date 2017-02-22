@@ -288,6 +288,34 @@ module.exports = {
         });
       })
     })
+    .then(() => {
+      const resolveEventsQuery =
+      `
+      UPDATE pendingevent
+             INNER JOIN (SELECT idx
+                         FROM   event
+                         WHERE  recipient_idx = (SELECT idx
+                                                 FROM   user
+                                                 WHERE  userid = '${userid}')
+                                 OR recipient_idx = (SELECT idx
+                                                     FROM   user
+                                                     WHERE  email = '${body.recipientemail}')) A
+                     ON pendingevent.event_idx = A.idx
+      SET    status = 2
+      WHERE  user_idx = (SELECT idx
+                         FROM   user
+                         WHERE  userid = '${userid}')
+              OR user_idx = (SELECT idx
+                             FROM   user
+                             WHERE  email = '${body.recipientemail}')
+      ; `;
+      return new Promise((resolve, reject) => {
+        connection.query(resolveEventsQuery, (err, res) => {
+          if (err) return reject(err);
+          resolve(res);
+        });
+      });
+    })
     .then((res) => {
       return new Promise((resolve, reject) => {
         connection.commit((err) => {
