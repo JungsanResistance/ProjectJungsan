@@ -10,7 +10,7 @@ export default class FailedRedirect extends React.Component {
   }
   render() {
     return (
-
+      <div></div>
     );
   }
 }
