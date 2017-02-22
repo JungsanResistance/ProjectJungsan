@@ -6,7 +6,7 @@ const client = ses.createClient({ key: keys.AWSAccess.key, secret: keys.AWSAcces
 module.exports = {
   transaction: (from, to, type) => {
     console.log('email working?', to);
-    const admin = 'jungsan.project@gmail.com';
+    const admin = 'oneovern.com@gmail.com';
     const sendData = {
       to,
       from: admin,
@@ -59,7 +59,7 @@ module.exports = {
     });
   },
   duplicate: (profile) => {
-    const admin = 'jungsan.project@gmail.com';
+    const admin = 'oneovern.com@gmail.com';
     const id = profile.userid;
     const name = profile.username;
     const email = profile.email;
@@ -94,7 +94,7 @@ module.exports = {
     });
   },
   events: (eventDetail, type) => {
-    const admin = 'jungsan.project@gmail.com';
+    const admin = 'oneovern.com@gmail.com';
     const participantsemails = [];
     let participants = '';
     let eventtype = '생성';
