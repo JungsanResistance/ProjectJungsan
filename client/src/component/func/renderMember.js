@@ -11,7 +11,7 @@ export default class RenderMembers extends React.Component {
   }
 
   componentWillMount() {
-    axios.get(`http://oneovern.com/api/group?target=groupmembers&groupname=${this.props.groupname}`)
+    axios.get(`https://oneovern.com/api/group?target=groupmembers&groupname=${this.props.groupname}`)
     .then((res) => {
       if (res.status === 200) {
       const groupData = JSON.parse(res.data);

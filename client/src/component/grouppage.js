@@ -12,7 +12,7 @@ export default class GroupPage extends React.Component {
   }
 
   componentWillMount() {
-    axios.get(`http://oneovern.com/api/mypage`)
+    axios.get(`https://oneovern.com/api/mypage`)
     .then((res) => {
       const allData = JSON.parse(res.data).groupList;
       this.setState({
