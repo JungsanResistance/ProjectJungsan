@@ -1,4 +1,7 @@
 const history = require('../db/history');
+const auth = require('../db/auth');
+const misc = require('../db/misc');
+
 
 module.exports = {
   get: (req) => {
@@ -10,27 +13,88 @@ module.exports = {
     .then((debtEventList) => {
       let JSONdebtEventList = JSON.stringify(debtEventList);
       JSONdebtEventList = JSON.parse(JSONdebtEventList);
-      result.debt = JSONdebtEventList;
+      if (JSONdebtEventList.length) {
+        const mapDebtEventwithAdmin = JSONdebtEventList.map(event =>
+          auth.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
+          .then((isAdmin) => {
+            if (isAdmin.length) event.isadmin = true;
+            else event.isadmin = false;
+            return event;
+          })
+        );
+        return Promise.all(mapDebtEventwithAdmin);
+      }
+      return Promise.resolve();
+    })
+    .then((data) => {
+      (!data) ? result.debt = [] : result.debt = data;
       return history.getLoanHistory(currentUser);
     })
     .then((loanedEventList) => {
-      console.log(loanedEventList);
       let JSONloanedEventList = JSON.stringify(loanedEventList);
       JSONloanedEventList = JSON.parse(JSONloanedEventList);
-      result.loaned = JSONloanedEventList;
+      if (JSONloanedEventList.length) {
+        const mapLoanedEventwithAdmin = JSONloanedEventList.map(event =>
+          auth.checkEventAdmin(currentUser, event.groupname, event.eventname, event.date)
+          .then((isAdmin) => {
+            if (isAdmin.length) event.isadmin = true;
+            else event.isadmin = false;
+            return event;
+          })
+        );
+        return Promise.all(mapLoanedEventwithAdmin);
+      }
+      return Promise.resolve()
+    })
+    .then((data) => {
+      !data ? result.loaned = [] : result.loaned = data;
       return result;
     })
     .catch(err => Promise.reject(err));
   },
   put: (req) => {
-    req.body.currentuser = req.session.passport.user;
+    req.body.currentUser = req.session.passport.user;
     if (req.query.type === 'loan') {
-      return new Promise((resolve, reject) => (resolve()))
-      .then(() => (history.toggleLoanPayment(req.body)))
+      return history.checkPendingLoan(req.body)
+      .then((status) => {
+        let JSONstatus = JSON.stringify(status);
+        JSONstatus = JSON.parse(JSONstatus);
+        if (!JSONstatus.length) {
+          history.insertResolvedLoanEvent(req.body);
+          return history.toggleLoanPayment(req.body);
+        } else if (req.body.action === 'accept' || JSONstatus[0].status === 3) {
+          history.acceptPendingLoanEvent(req.body);
+          return history.toggleLoanPayment(req.body);
+        } else if (req.body.action === 'reject'){
+          return history.rejectPendingLoanEvent(req.body);
+        } else {
+          return Promise.reject('Bad request');
+        }
+      })
+      .then(res => misc.getSelf(req.body.currentUser))
+      .then((selfDetail) => {
+        let JSONselfDetail = JSON.stringify(selfDetail);
+        JSONselfDetail = JSON.parse(JSONselfDetail);
+        return JSONselfDetail;
+      })
       .catch(err => Promise.reject(err));
     } else if (req.query.type === 'debt') {
-      return new Promise((resolve, reject) => (resolve()))
-      .then(() => (history.toggleDebtPayment(req.body)))
+      return history.checkPendingDebt(req.body)
+      .then((status) => {
+        let JSONstatus = JSON.stringify(status);
+        JSONstatus = JSON.parse(JSONstatus);
+        if (!JSONstatus.length || JSONstatus[0].status === 3) {
+          return history.insertPendingDebtEvent(req.body);
+        } else {
+          return Promise.reject('Already sent pending');
+        }
+      })
+      .then(res => misc.getSelf(req.body.currentUser))
+      .then((selfDetail) => {
+        let JSONselfDetail = JSON.stringify(selfDetail);
+        JSONselfDetail = JSON.parse(JSONselfDetail);
+        return JSONselfDetail;
+      })
       .catch(err => Promise.reject(err));
     }
   },

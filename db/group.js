@@ -1,11 +1,12 @@
 const mysql = require('mysql');
+const keys = require('../keys/keys');
 
 const connection = mysql.createConnection({
   host: 'projectjungsan.ctkksl4fom4l.ap-northeast-2.rds.amazonaws.com',
   port: 3306,
-  user: 'admin',
-  password: 'MKkm3hx9',
-  database: 'Jungsan_DB',
+  user: keys.AWSdb.user,
+  password: keys.AWSdb.password,
+  database: keys.AWSdb.database,
   multipleStatements: true,
 });
 
@@ -39,8 +40,8 @@ module.exports = {
     const addNewGroupQuery = `
       INSERT INTO groups (groupname) VALUES ('${body.groupname}');
       INSERT INTO groupadmin (group_idx, admin_idx) VALUES (
-        SELECT idx FROM groups where groupname = '${body.groupname}',
-        SELECT idx FROM groups where userid = '${body.userid}'
+        (SELECT idx FROM groups where groupname = '${body.groupname}'),
+        (SELECT idx FROM user where userid = '${body.userid}')
       );
     `;
     let addNewMembersQuery = '';
@@ -58,7 +59,7 @@ module.exports = {
                       WHERE  groupname = '${body.groupname}'),
                       true); `;
     });
-    console.log(addNewMembersQuery);
+    console.log(addNewGroupQuery + addNewMembersQuery);
     return new Promise((resolve, reject) => {
       connection.query(addNewGroupQuery + addNewMembersQuery, (err) => {
         if (err) return reject(err);

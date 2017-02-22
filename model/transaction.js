@@ -1,8 +1,8 @@
 const transaction = require('../db/transaction');
+const auth = require('../db/auth');
 
 module.exports = {
   get: (req) => {
-    console.log('hi');
     const currentUser = req.session.passport.user;
     const query = req.query;
     console.log(query);
@@ -12,7 +12,7 @@ module.exports = {
         transaction.getGroupList(currentUser)
       ))
       .then((groupList) => {
-        console.log(groupList);
+        console.log('grouplist',groupList);
         const body = JSON.stringify(groupList);
         const jsonBody = JSON.parse(body);
         return transaction.getGroupMember(jsonBody);
@@ -65,45 +65,88 @@ module.exports = {
     }
   },
   post: (req) => {
-    req.body.userid = req.session.passport.user;
-    return transaction.postTransaction(req.body);
+    const body = req.body;
+    body.userid = req.session.passport.user;
+    const stringifiedParticipants = JSON.stringify(body.participants);
+    const stringifiedRecipient = JSON.stringify(body.newrecipient);
+    const checkRecipientInParticipant = stringifiedParticipants.includes(stringifiedRecipient);
+    console.log(stringifiedRecipient, stringifiedParticipants);
+    console.log(req.body.newrecipient, checkRecipientInParticipant);
+    if (!checkRecipientInParticipant) {
+      return Promise.reject('Recipient is not a participant');
+    }
+    return transaction.getEventDetail(body.groupname, body.eventname, body.date)
+    .then((isDuplicate) => {
+      if (isDuplicate.length) return Promise.reject('Is a duplicate');
+      else return auth.checkGroupMember(body.userid, body.groupname)
+    })
+    .then((isMember) => {
+      if (!isMember.length) return Promise.reject('Not a group member');
+      else return auth.checkGroupAdmin(body.userid, body.groupname);
+    })
+    // prevent adding duplicate admin if post creator === group admin
+    .then((isAdmin) => {
+      if (isAdmin.length) {
+        body.isadmin = true;
+      } else {
+        body.isadmin = false;
+      }
+      return transaction.postTransaction(body);
+    })
+    // return event detail when successful for sending emails
+    .then(() => body)
+    .catch(err => Promise.reject(err));
   },
   put: (req) => {
-    return new Promise((resolve, reject) => (resolve()))
+    const body = req.body;
+    body.userid = req.session.passport.user;
+    const stringifiedParticipants = JSON.stringify(body.participants);
+    const stringifiedRecipient = JSON.stringify(body.newrecipient);
+    const checkRecipientInParticipant = stringifiedParticipants.includes(stringifiedRecipient);
+    if (!checkRecipientInParticipant) {
+      return Promise.reject('Recipient is not a participant');
+    }
+    return auth.checkEventAdmin(body.userid, body.groupname,
+      body.oldeventname, body.olddate)
+    .then((isAdmin) => {
+      if (!isAdmin.length) return Promise.reject('Not the admin');
+    })
     .then(() => (
-      transaction.updateEventDetail(req.body)
+      transaction.updateEventDetail(body)
     ))
     .then(() => {
       console.log('updateEventDetail');
       return new Promise((resolve, reject) => {
-        resolve(transaction.updateEventAddParticipants(req.body));
+        resolve(transaction.updateEventAddParticipants(body));
       });
     })
     .then(() => {
             console.log('updateEventAddParticipants');
       return new Promise((resolve, reject) => {
-        resolve(transaction.getParticipantsDetail(req.body.groupname, req.body.neweventname, req.body.newdate));
+        resolve(transaction.getParticipantsDetail(body.groupname, body.neweventname, body.newdate));
       });
     })
     .then((participantsDetail) => {
             console.log('updateDrop');
       let JSONparticipantsDetail = JSON.stringify(participantsDetail);
       JSONparticipantsDetail = JSON.parse(JSONparticipantsDetail);
-      req.body.dropped = [];
+      body.dropped = [];
       JSONparticipantsDetail.forEach((oldparticipant) => {
-        req.body.dropped.push(oldparticipant.email);
+        body.dropped.push(oldparticipant.email);
       });
-      req.body.participants.forEach((newparticipant) => {
-        req.body.dropped.splice((req.body.dropped.indexOf(newparticipant.email)), 1);
+      body.participants.forEach((newparticipant) => {
+        body.dropped.splice((body.dropped.indexOf(newparticipant.email)), 1);
       });
       console.log(JSONparticipantsDetail);
-            console.log(req.body.participants);
-      if (req.body.dropped.length) {
+            console.log(body.participants);
+      if (body.dropped.length) {
         return new Promise((resolve, reject) => {
-          resolve(transaction.updateEventDropParticipants(req.body));
+          resolve(transaction.updateEventDropParticipants(body));
         });
       }
     })
+    // return event detail when successful for sending emails
+    .then(() => body)
     .catch(err => Promise.reject(err));
   },
 };

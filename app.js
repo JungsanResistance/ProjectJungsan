@@ -35,7 +35,7 @@ app.use('/api', index);
 
 // index.html sender for solving mismatch between react-router and express router (make sure to add when adding new urls)
 app.get('*', (req, res, next) => {
-  if (!req.url.includes('auth')) {
+  if (!req.url.includes('auth') && !req.url.includes('failed')) {
     if (req.session.passport) {
       if (req.url === '/mypage' || req.url === '/history' || req.url.includes('transaction') || req.url.includes('event') || req.url.includes('group')) {
         res.sendfile(path.join(__dirname, 'client/dist/index.html'));
@@ -46,15 +46,30 @@ app.get('*', (req, res, next) => {
   } else return next();
 });
 
-
+app.get('/failed', (req, res, next) => {
+  if (req.session.passport) {
+    res.redirect('/');
+  } else {
+    res.sendfile(path.join(__dirname, 'client/dist/index.html'));
+  }
+})
 // google authorization
 app.get('/auth/google',
   passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile', 'email'] }));
 app.get('/auth/google/callback',
   passport.authenticate('google', {
     successRedirect: '/mypage',
-    failureRedirect: '/',
+    failureRedirect: '/failed',
   }));
+
+app.get('/auth/facebook',
+  passport.authenticate('facebook', { scope: ['email'] }));
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', {
+    successRedirect: '/mypage',
+    failureRedirect: '/failed',
+  }));
+
 
 // logout
 app.get('/logout', (req, res) => {
@@ -63,7 +78,6 @@ app.get('/logout', (req, res) => {
     res.redirect('/');
   });
 });
-
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
