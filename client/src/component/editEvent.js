@@ -74,18 +74,17 @@ export default class EditEvent extends React.Component {
       // first let us prepare the group member storage with the format we would use
       currentGroupMembers.forEach((member) => {
         storage.push({
-          email: member.email,
           username: member.username,
+          email: member.email,
           selected: false,
           cost: 0,
-          ispaid: false,
+          ispaid: 0,
           isManualCost: false,
         });
       });
 
       // second, let us reflect the past member property to our storage
       const oldParticipants = eventData.participants;
-      console.log(oldParticipants)
       oldParticipants.forEach((participant) => {
         storage.forEach((member) => {
           if (member.email === participant.email) {
@@ -93,7 +92,7 @@ export default class EditEvent extends React.Component {
             member.cost = participant.cost;
           }
           if (member.email === eventData.oldrecipient.email) {
-            member.ispaid = true;
+            member.ispaid = 1;
           }
         });
       });
@@ -277,10 +276,10 @@ export default class EditEvent extends React.Component {
         // toggle ispaid flag for the recipient
         if (this.state.newRecipient && member.email === this.state.newRecipient.email) {
           if (member.selected) {
-            member.ispaid = true;
+            member.ispaid = 1;
           }
           else {
-            member.ispaid = false;
+            member.ispaid = 0;
           }
           console.log('after toggle', member.ispaid)
         }
@@ -306,7 +305,7 @@ export default class EditEvent extends React.Component {
         }
       });
     }
-    else {
+    else if (this.countSelectedMember() === 1){
       // when there is only one member selected
       nextSelectedGroupMembers.forEach((member) => {
         if (member.selected) {
@@ -318,27 +317,35 @@ export default class EditEvent extends React.Component {
         }
       });
     }
+    else {
+      // no member is selected
+      nextSelectedGroupMembers.forEach((member) => {
+        member.cost = 0;
+        member.isManualCost = false;
+      });
+    }
 
     // added ispaid, cost in newrecipient
     let nextNewRecipient;
-    if (this.state.newRecipient) {
+    // if (this.state.newRecipient) {
       nextNewRecipient = this.getCurrentRecipient();
+      console.log(indivCost)
       nextNewRecipient.cost = indivCost;
-      nextNewRecipient.ispaid = true;
-    }
+      nextNewRecipient.ispaid = 1;
+    // }
 
     if (this.state.groupMemberErrorMesseage.length) {
       this.setState({
         currentGroupMembers: nextSelectedGroupMembers,
         groupMemberErrorMesseage: '',
         totalCostErrorMessage: '',
-        newrecipient: nextNewRecipient,
+        newRecipient: nextNewRecipient,
       });
     } else {
       this.setState({
         currentGroupMembers: nextSelectedGroupMembers,
         totalCostErrorMessage: '',
-        newrecipient: nextNewRecipient,
+        newRecipient: nextNewRecipient,
       });
     }
   }
@@ -489,14 +496,17 @@ export default class EditEvent extends React.Component {
       nextSelectedGroupMembers.forEach((member, index) => {
         if (member.username === selectedRecipientName) {
          nextNewRecipient = Object.assign({}, nextSelectedGroupMembers[index]);
-         nextNewRecipient.ispaid = true;
-         nextNewRecipient.selected = true;
+         delete nextNewRecipient.isManualCost;
+         delete nextNewRecipient.selected;
+         console.log(nextNewRecipient)
+         nextNewRecipient.ispaid = 1;
+        //  nextNewRecipient.selected = true;
          nextNewRecipient.cost = indivCost;
-         member.ispaid = true;
+         member.ispaid = 1;
         }
         // set past recipient's ispaid flag down
         else if (member.email === this.state.newRecipient.email && member.name !== selectedRecipientName) {
-          nextSelectedGroupMembers[index].ispaid = false;
+          nextSelectedGroupMembers[index].ispaid = 0;
         }
       });
       console.log('nextNewREcipient', nextNewRecipient);
@@ -559,16 +569,16 @@ export default class EditEvent extends React.Component {
 
   inputHandleChange(event) {
     // clean error message
-    // if (this.state.errorMesseage.length) {
-    //   this.setState({
-    //     errorMesseage: '',
-    //   });
-    // }
+    if (this.state.errorMesseage.length) {
+      this.setState({
+        errorMesseage: '',
+      });
+    }
 
     if (event.target.type === 'date') {
       this.eventDuplicateCheck(event);
       this.setState({
-        date: event.target.value,
+        newdate: event.target.value,
         dateStyle: '',
       });
     }

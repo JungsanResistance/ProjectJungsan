@@ -64,7 +64,7 @@ export default class NewEvent extends React.Component {
           username: item.username,
           email: item.email,
           cost: 0,
-          ispaid: false,
+          ispaid: 0,
           selected: false,
           isManualCost: false,
         });
@@ -226,10 +226,10 @@ export default class NewEvent extends React.Component {
         // toggle ispaid flag for the recipient
         if (this.state.newrecipient && member.email === this.state.newrecipient.email) {
           if (member.selected) {
-            member.ispaid = true;
+            member.ispaid = 1;
           }
           else {
-            member.ispaid = false;
+            member.ispaid = 0;
           }
           console.log('after toggle', member.ispaid)
         }
@@ -273,7 +273,7 @@ export default class NewEvent extends React.Component {
     if (this.state.newrecipient) {
       nextNewRecipient = this.getCurrentRecipient();
       nextNewRecipient.cost = indivCost;
-      nextNewRecipient.ispaid = true;
+      nextNewRecipient.ispaid = 1;
     }
 
     if (this.state.groupMemberErrorMesseage.length) {
@@ -456,14 +456,14 @@ export default class NewEvent extends React.Component {
       nextSelectedGroupMembers.forEach((member, index) => {
         if (member.username === selectedRecipientName) {
          nextNewRecipient = Object.assign({}, nextSelectedGroupMembers[index]);
-         nextNewRecipient.ispaid = true;
+         nextNewRecipient.ispaid = 1;
          nextNewRecipient.selected = true;
          nextNewRecipient.cost = indivCost;
-         member.ispaid = true;
+         member.ispaid = 1;
         }
         // set past recipient's ispaid flag down
         else if (member.email === this.state.newrecipient.email) {
-          nextSelectedGroupMembers[index].ispaid = false;
+          nextSelectedGroupMembers[index].ispaid = 0;
         }
       });
       this.setState({
