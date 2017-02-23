@@ -41,6 +41,7 @@ app.get('*', (req, res, next) => {
         res.sendfile(path.join(__dirname, 'client/dist/index.html'));
       } else return next();
     } else {
+      console.log('why???');
       res.redirect('/');
     }
   } else return next();
@@ -62,6 +63,7 @@ app.get('/auth/google/callback',
     failureRedirect: '/failed',
   }));
 
+// facebook authorization
 app.get('/auth/facebook',
   passport.authenticate('facebook', { scope: ['email'] }));
 app.get('/auth/facebook/callback',
