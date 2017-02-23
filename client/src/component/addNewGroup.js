@@ -178,33 +178,62 @@ export default class AddNewGroup extends React.Component {
 
     return (
       <div>
-        New Group Name:
-        <input
-          type="text" className="inputGroupName"
-          onChange={this.handleInput} onKeyPress={this.handleKeyPress} />
-        <input type="submit" value="중복확인" onClick={this.handleGroupName} />
-        <p className={this.state.groupDuplicateFlag}>{this.state.errorGroupnameDuplicate} </p>
         <br />
         <br />
-        Add Members:
-        <input
-          type="text" className="addGroupMembers" placeholder="ex) wnghee91@gmail.com"
-          onChange={this.handleInput} onKeyPress={this.handleKeyPress} />
-        <input type="submit" onClick={this.handleAddMember} value="add" />
-        <p className="errorMemberDuplicateFalse">{this.state.errorMemberDuplicate} </p>
-        <br />
-        <br />
-        Following Members will be added to your group: {this.state.groupname}
-        <br />
-          <ul>
-            {groupMembers}
-          </ul>
-        <br />
-        <br />
-        <input type="submit" onClick={this.handleSubmit} className="submitNewGroup" />
-        <br />
-        <br />
-        {this.state.submitMessage}
+          <div className="container-fluid">
+            <div className="row">
+              <div className="col-md-3"></div>
+              <div className="col-md-6">
+                <div className="newGroupFormBox">
+                  <div className="newGroupFormTop">
+                    <div className="form-top-left">
+                      <h3>새로운 그룹을 만들어보세요!</h3>
+                      <p>그룹원들과의 정산을 쉽고 편리하게 할 수 있습니다.</p>
+                    </div>
+                    <div className="form-top-right">
+                      <div className="icon-user">
+                        <b><span className="glyphicon glyphicon-user">
+                        </span></b>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div className="newEventFormBottom">
+                    <form className="newEventForm">
+                      <div className="form-group">
+                        <input
+                          type="text" className="form-control inputGroupName"
+                          onChange={this.handleInput} onKeyPress={this.handleKeyPress} />
+                        <button type="button" className="btn duplicateGroupnameCheck" onClick={this.handleGroupName}>중복확인</button>
+                        <p className={this.state.groupDuplicateFlag}>{this.state.errorGroupnameDuplicate} </p>
+                      </div>
+
+                      <div className="form-group">
+                        <input
+                          type="text" className="form-control addGroupMembers" placeholder="ex) wnghee91@gmail.com"
+                          onChange={this.handleInput} onKeyPress={this.handleKeyPress} />
+                        <input type="submit" onClick={this.handleAddMember} value="add" />
+                        <p className="errorMemberDuplicateFalse">{this.state.errorMemberDuplicate} </p>
+                      </div>
+                      <div className="form-group">
+                        Following Members will be added to your group: {this.state.groupname}
+                        <br />
+                          <ul>
+                            {groupMembers}
+                          </ul>
+                      </div>
+                    </form>
+                    <div className="form-footer">
+                      <button type="button" className="btn submitNewGroup" value="이벤트 등록" onClick={this.handleSubmit}><b>이벤트 등록</b></button>
+                    </div>
+                  </div>
+                  {this.state.submitMessage}
+                </div>
+                </div>
+                <div className="col-sm-3"></div>
+              </div>
+          </div>
       </div>
     );
   }

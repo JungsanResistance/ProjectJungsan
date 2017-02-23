@@ -27,6 +27,7 @@ export default class Eventinfo extends React.Component {
     const eventEditAuth = JSON.parse(this.props.params.eventInfo).isadmin;
     let newrecipientUsername, newrecipientEmail, editButton;
     const eventContents = this.state.eventInfo;
+    console.log('eventContents', eventContents);
     if (Object.keys(eventContents).length > 0) {
       //이벤트 권한에 따라 이벤트 버튼 추가//
       if (eventEditAuth === true) {
@@ -43,6 +44,8 @@ export default class Eventinfo extends React.Component {
         memberList.push(<li>{member.username} ({member.email})</li>);
       });
     }
+
+
 
     return(
       <div>

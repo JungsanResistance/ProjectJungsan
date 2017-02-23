@@ -6,15 +6,27 @@ export default class Landing extends React.Component {
     return (
       <div>
 
-        <div className="container">
+        <div className="container-fluid">
+          <div className="col-sm-2"></div>
+          <div className="col-sm-8">
           <div className="jumbotron">
-            <h1>일통령의 정산나라!</h1>
-            <br />
-            <br />
-            <p>This page will grow as we add more and more components from Bootstr...</p>
+            <header>
+              <h1 className="mainPageHeader">
+              n분의 일
+              </h1>
+              <br />
+              <br />
+              <p className="mainPageParagraph">This page will grow as we add more and more components from Bootstr...</p>
+              <ul>
+
+              </ul>
+            </header>
           </div>
-            <br />
+          <br/>
           <center><SignIn /></center>
+          </div>
+        <div className="col-sm-2"></div>
+
         </div>
       </div>
     );

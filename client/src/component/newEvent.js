@@ -3,9 +3,6 @@ import moment from 'moment';
 import axios from 'axios';
 import Router, { browserHistory } from 'react-router';
 
-// https://oneovern.com/
-// https://oneovern.com
-
 export default class NewEvent extends React.Component {
   constructor() {
     super();
@@ -504,7 +501,7 @@ export default class NewEvent extends React.Component {
 
     if (event.target.name === 'eventGroup') {
       this.eventDuplicateCheck(event);
-      if (event.target.value === 'select the group') {
+      if (event.target.value === '어느 그룹이랑?') {
         this.setState({
           selectedGroup: '',
           groupStyle: '',
@@ -756,62 +753,90 @@ export default class NewEvent extends React.Component {
 
     return (
       <div>
-          그룹을 선택해주세요 :
-          <select
-            name="eventGroup" className={this.state.groupStyle}
-            onChange={this.selectHandleChange}>
-            <option>select the group</option>
-            {groupSelection}
-          </select>
-          <br />
-          <br />
-          <p>
-          언제 :
-          <input
-            name="eventDate" className={this.state.dateStyle} type="date"
-            placeholder={moment().format('YYYY-MM-DD')}
-            onChange={this.inputHandleChange} />
-        </p>
-          <p>
-            어디서 :
-            <input
-              type="text" className={this.state.eventNameStyle} placeholder="어디서?"
-              onChange={this.inputHandleChange} />
-              {this.state.eventErrorMesseage}
-          </p>
-
-          돈 낸 사람 :
-          <select
-            name="recipientList" className={this.state.recipientStyle}
-            onChange={this.selectHandleChange}>
-            <option>select the recipient</option>
-            {recipientTable}
-          </select>
-          <p>
-            총액 :
-            <input
-              name="eventCost" className={this.state.costStyle} type="number"
-              onChange={this.inputHandleChange} />
-          </p>
-          <br />
-          누구랑 :
-          <table>
-            {userTable}
-            <tr>
-              <td className="showTotalCost">
-               모두 더하면
-              </td>
-              {this.state.sumIndivCost} KRW
-            </tr>
-          </table>
         <br />
         <br />
-        <p>{this.state.totalCostErrorMessage}</p>
-        <br />
-        <br />
-        {this.state.groupMemberErrorMesseage}
-        <br />
-        <input type="button" className="inputData" value="이벤트 등록" onClick={this.preCheck} />
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-md-3"></div>
+            <div className="col-md-6">
+              <div className="newEventFormBox">
+                <div className="newEventFormTop">
+                  <div className="form-top-left">
+                    <h3>새로운 이벤트를 만들어보세요!</h3>
+                    <p>그룹원간의 채무관계를 쉽게 파악할 수 있습니다.</p>
+                  </div>
+                  <div className="form-top-right">
+                    <div className="icon-pencil">
+                      <b><span className="glyphicon glyphicon-pencil">
+                      </span></b>
+                    </div>
+                  </div>
+                </div>
+                <div className="newEventFormBottom">
+                  <form className="newEventForm">
+                    <div className="form-group">
+                      <select
+                        name="eventGroup" className="form-control groupSelect"
+                        onChange={this.selectHandleChange}>
+                        <option>어느 그룹이랑?</option>
+                        {groupSelection}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <input
+                        name="eventDate" className="form-control dateSelect" type="date"
+                        placeholder={moment().format('YYYY-MM-DD')}
+                        onChange={this.inputHandleChange} />
+                    </div>
+                    <div className="form-group">
+                      <input
+                        type="text" className="form-control spaceSelect" placeholder="어디서?"
+                        onChange={this.inputHandleChange} />
+                        {this.state.eventErrorMesseage}
+                    </div>
+                    <div className="form-group">
+                      <select
+                        name="recipientList" className="form-control recipientSelect"
+                        onChange={this.selectHandleChange}>
+                        <option>돈 낸 사람은 누구?</option>
+                        {recipientTable}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <input
+                          name="eventCost" className="form-control costSelect" type="number"
+                          placeholder="총액은?" onChange={this.inputHandleChange} />
+                    </div>
+                    <div className="form-group">
+                      * 멤버의 이름을 클릭하면 금액을 추가할 수 있습니다.
+                      <br />
+                      <table className="table table-hover memberSelect">
+                        <thead>
+                          <tr>
+                            <th>이름</th>
+                            <th>금액</th>
+                          </tr>
+                        </thead>
+                        {userTable}
+                      </table>
+                    </div>
+                  </form>
+                  <div className="form-footer">
+                    <button type="button" className="btn addEventButton" value="이벤트 등록" onClick={this.preCheck}><b>이벤트 등록</b></button>
+                  </div>
+                </div>
+                <input type="button" className="Bang" value="계산 쾅!" onClick={this.evaluateAll} />
+                <p>{this.state.totalCostErrorMessage}</p>
+                <br />
+                <br />
+                {this.state.groupMemberErrorMesseage}
+                <br />
+                <input type="button" className="inputData" value="이벤트 등록" onClick={this.preCheck} />
+              </div>
+              </div>
+              <div className="col-sm-3"></div>
+            </div>
+        </div>
         <br />
         <br />
         {this.state.errorMesseage}

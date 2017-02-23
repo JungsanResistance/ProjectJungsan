@@ -74,7 +74,7 @@ export default class HistoryTable extends React.Component {
 
   render() {
     const eventList = [];
-    let editButton = <input type="button" value="이벤트 정보" />;
+    let editButton = <button className="btn btn-outline-primary">이벤트 정보</button>
     let actionButton = '';
     let declineButton = '';
     let history, tableName, tableType;
@@ -104,34 +104,44 @@ export default class HistoryTable extends React.Component {
           tableName = '줘야함';
           if (!eventItem.ispaid) {
             if (eventItem.status === null || eventItem.status === 3) {
-              actionButton = '정산요청';
+              actionButton =
+              <button className="btn btn-outline-success" value='정산요청' onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
             }
             else if (eventItem.status === 1) {
-              actionButton = '정산중';
+              actionButton =
+              <button className="btn btn-outline-info" value='정산중' onClick={(event) => this.handleDone(event, index)}>정산중</button>;
             }
             else {
-              actionButton = '정산완료';
+              actionButton =
+              <button className="btn btn-outline-primary" value='정산완료' onClick={(event) => this.handleDone(event, index)}>정산완료</button>;
             }
           } else {
-            actionButton = '정산완료';
+            actionButton =
+            <button className="btn btn-outline-primary" value='정산완료' onClick={(event) => this.handleDone(event, index)}>정산완료</button>;
           }
         }
         else {
           tableName = '받아야함';
           if (!eventItem.ispaid) {
             if(eventItem.status === null || eventItem.status === 3) {
-              actionButton = '정산하기';
+              actionButton =
+              <button className="btn btn-outline-success" value='정산하기' onClick={(event) => this.handleDone(event, index)}>정산하기</button>;
               declineButton = '';
             }
             else if (eventItem.status === 1) {
-              actionButton = '수락';
-              declineButton = <button value='거절' onClick={(event) => this.handleDone(event, index)}>거절</button>;
+              actionButton =
+              <button className="btn btn-outline-info" value='수락' onClick={(event) => this.handleDone(event, index)}>수락</button>;
+              declineButton =
+              <button className="btn btn-outline-info" value='거절' onClick={(event) => this.handleDone(event, index)}>거절</button>;
+
             }
             else {
-              actionButton = '정산완료';
+              actionButton =
+              <button className="btn btn-outline-primary" value='정산완료' onClick={(event) => this.handleDone(event, index)}>정산완료</button>;
             }
           } else {
-            actionButton = '정산완료';
+            actionButton =
+            <button className="btn btn-outline-primary" value='정산완료' onClick={(event) => this.handleDone(event, index)}>정산완료</button>;
           }
         }
         eventList.push(
@@ -141,16 +151,19 @@ export default class HistoryTable extends React.Component {
           <td>{eventItem.date}</td>
           <td>{eventItem.username} ({eventItem.email})</td>
           <td>{Math.abs(eventItem.cost)}</td>
-          <td><Link to={"eventinfo/"+JSON.stringify({
+          <td>
+
+            <Link to={"eventinfo/"+JSON.stringify({
               groupname: eventItem.groupname,
               eventname: eventItem.eventname,
               date: eventItem.date,
               isadmin: eventItem.isadmin,
             })}>
             {editButton}</Link>
+
           </td>
           <td >
-            <button value={actionButton} onClick={(event) => this.handleDone(event, index)}>{actionButton}</button>
+            {actionButton}
             {declineButton}
           </td>
         </tr>);
@@ -159,12 +172,13 @@ export default class HistoryTable extends React.Component {
   }
 
     return (
-
         <div className="container history">
           <h1>
             {tableName}
           </h1>
           <br />
+          <div className="col-sm-0"></div>
+            <div className="col-sm-12">
             <table className="table table-hover" >
               <thead>
                 <tr>
@@ -181,6 +195,8 @@ export default class HistoryTable extends React.Component {
               {eventList}
               </tbody>
             </table>
+          </div>
+          <div className="col-sm-0"></div>
         </div>
 
     );

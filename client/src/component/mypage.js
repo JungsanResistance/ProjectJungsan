@@ -3,6 +3,7 @@ import { Link, browserHistory } from 'react-router';
 import axios from 'axios';
 import SignOut from './signOut';
 import History from './history';
+import NewEvent from './newEvent';
 
 
 export default class Mypage extends React.Component {
@@ -19,6 +20,8 @@ export default class Mypage extends React.Component {
     this.handleDone = this.handleDone.bind(this);
     this.reset = this.reset.bind(this);
     this.handleHistoryPage = this.handleHistoryPage.bind(this);
+    this.handleEventPage = this.handleEventPage.bind(this);
+
   }
 
   componentWillMount() {
@@ -65,10 +68,15 @@ export default class Mypage extends React.Component {
     });
   }
 
-  handleHistoryPage (event){
-    console.log(event.target.class)
+  handleHistoryPage(event) {
     this.setState({
       rendingPage: 'history',
+    })
+  }
+
+  handleEventPage() {
+    this.setState({
+      rendingPage: 'newEvent',
     })
   }
 
@@ -172,9 +180,14 @@ export default class Mypage extends React.Component {
     if (this.state.rendingPage === "history") {
       rendingPage = <History />
     }
+    else if (this.state.rendingPage === 'newEvent') {
+      rendingPage = <NewEvent />
+    }
     else {
       rendingPage =
       <div className="container mypage">
+      <div className="col-md-1"></div>
+      <div className="col-md-10">
       <h1>my Page</h1>
       <br />
       <br />
@@ -192,6 +205,8 @@ export default class Mypage extends React.Component {
         </tbody>
       </table>
       <br />
+      </div>
+      <div className="col-md-1"></div>
     </div>
     }
 
@@ -204,7 +219,7 @@ export default class Mypage extends React.Component {
             <div className="row">
               <div className= "col-md-4">
                 <div className="navbar-header">
-                  <div className="navbar-brand" ><Link to="mypage"><b className="navbarMenu">이모 계산좀</b></Link></div>
+                  <div className="navbar-brand" ><Link to="mypage"><b className="navbarMenu">n분의 일</b></Link></div>
                 </div>
               </div>
               <div className= "col-md-8">
@@ -213,7 +228,7 @@ export default class Mypage extends React.Component {
                     <a className="dropdown-toggle navbarMenu" data-toggle="dropdown" href="#"><b className="navbarMenu">내 이벤트
                     </b><span className="caret"></span></a>
                     <ul className="dropdown-menu">
-                      <li className="newevent" onClick={this.handleEventPage}><Link to="transaction"><b>이벤트 생성</b></Link></li>
+                      <li className="newevent" onClick={this.handleEventPage}><a href="#"><b>이벤트 생성</b></a></li>
                       <li className="eventHistory" onClick={this.handleHistoryPage}><a href="#"><b>정산내역</b></a></li>
                     </ul>
                   </li>
