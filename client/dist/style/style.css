@@ -3,12 +3,20 @@ table {
 }
 
 tr,td,th {
-  border:0.5px solid black;
+  border: 3px solid #ddd;
   text-align: center;
 }
 
 th {
   font-size: 19px;
+}
+
+.mainPageHeader:after {
+  margin: 0.45em auto 0;
+  content: '';
+  display:block;
+  border-top: 1px solid white;
+  width:2em;
 }
 
 .menu {
@@ -17,13 +25,14 @@ th {
 }
 
 .navbar-default {
-  background-color:#5FCEC0;
+  background-color: rgba(39, 133, 194, 0.9);
+  /*#5FCEC0;*/
   /*color: white;*/
 }
 
 .navbarMenu {
   color: rgba(255, 255, 255, 0.90);
-  font-size: 34px;
+  font-size: 24px;
 }
 
 .caret {
@@ -44,16 +53,32 @@ th {
 
 
 .jumbotron {
-  background-color:#5FCEC0;
+  background-color: rgba(39, 133, 194, 0.9);
+  /*#5FCEC0;*/
   color:white;
-  width:700px;
+  width:100%;
   text-align:center;
   margin: auto;
   margin-top: 20px;
+  font-weight: 300;
 }
 
 .inputStyle {
   background-color:rgba(255, 209, 209, 0.5);
+}
+
+.addEventButton, .editEventButton, .submitNewGroup {
+  background-color: rgba(39, 133, 194, 0.9);
+  color: white;
+  width: 120px;
+  height: 42px;
+  margin:auto;
+  display: inline-block;;
+}
+
+.form-footer {
+  padding-top:20px;
+  text-align:center;
 }
 
 .sumListTable {
@@ -68,7 +93,7 @@ th {
   width: 200px;
 }
 .selected {
-  background-color: #5FCEC0;
+  background-color: rgba(209, 209, 208, 0.8);
 }
 
 
@@ -82,21 +107,50 @@ th {
 
 .mypage {
   background-color: rgba(79, 80, 79, 0.05);
-  border-radius: 10%;
+  border-radius: 3%;
   margin-top: 30px;
   padding-top: 20px;
 }
 
 .history {
   background-color: rgba(79, 80, 79, 0.05);
-  border-radius: 10%;
+  border-radius: 3%;
   margin-top: 30px;
   padding-top: 30px;
   margin-bottom: 30px;
 }
 
-/*.header {
-  background-color:#5FCEC0;
-  height: 250px;
-  /*opacity: 0.5;*/
-}*/
+/*form design*/
+
+.form-top {
+  overflow: hidden;
+  padding: 0 25px 15px 25px;
+  background: #fff;
+  border-radius: 4px 4px 0 0;
+  text-align: left;
+}
+
+
+.newEventFormBox {
+  width:100%;
+}
+
+.newEventFormTop {
+  text-algin: left;
+}
+
+.form-top-right {
+  float: left;
+  width: 20%;
+  padding-top: 20px;
+  padding-right: 27px;
+  font-size: 50px;
+  color: black;
+  line-height: 100px;
+  text-align: center;
+  display:inline-block;
+}
+
+.form-top-left {
+  float: left;
+  width: 70%;

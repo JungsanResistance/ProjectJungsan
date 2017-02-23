@@ -34,10 +34,10 @@ export default class EditEvent extends React.Component {
     const selectedEventData = JSON.parse(this.props.params.eventInfo);
 
     // all groups I belong info
-    const getGroupData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/transaction?type=post');
+    const getGroupData = axios.get('https://oneovern.com/api/transaction?type=post');
 
     // Event info
-    const getEventData = axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`);
+    const getEventData = axios.get(`https://oneovern.com/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`);
 
     Promise.all([getGroupData, getEventData])
     .then((res) => {
@@ -136,7 +136,7 @@ export default class EditEvent extends React.Component {
       alert('변경된 이벤트 정보가 없습니다');
       browserHistory.push('/history')
     } else {
-    axios.put(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/transaction`,
+    axios.put(`https://oneovern.com/api/transaction`,
       {
         olddate: this.state.olddate,
         newdate: this.state.newdate,
@@ -340,47 +340,77 @@ export default class EditEvent extends React.Component {
 
     return (
       <div>
-        <p>
-        그룹 :
-        {this.state.groupname}
-        </p>
-        <p>
-        언제 :
-        <input
-          name="eventDate" className={this.state.dateStyle} type="date"
-          onChange={this.inputHandleChange} />
-        </p>
-        <p>
-        어디서 :
-        <input
-          type="text" className={this.state.eventNameStyle} placeholder={this.state.oldeventname}
-          onChange={this.inputHandleChange} />
-        </p>
-        <p>
-        돈 낸 사람 :
-        <select
-          name="recipientList" className={this.state.recipientStyle}
-          onChange={this.selectHandleChange} >
-          <option>{this.state.newrecipient.username}</option>
-          {recipientList}
-        </select>
-        </p>
-        <p>
-        총액 :
-        <input
-          name="eventCost" className={this.state.costStyle} type="number"
-          placeholder={this.state.totalCost} onChange={this.inputHandleChange} />
-        </p>
-        <p>
-        누구랑 :
-        <table>
-          {userTable}
-        </table>
-        </p>
-        <br />
-        <input type="button" className="inputData" value="이벤트 수정" onClick={this.handleSubmit} />
         <br />
         <br />
+        <div className="container-fluid">
+          <div className="row">
+          <div className="col-md-3"></div>
+          <div className="col-md-6">
+            <div className="editEventFormBox">
+              <div className="newEventFormTop">
+                <div className="form-top-left">
+                  <h3>이벤트 내용이 잘못됐나요?</h3>
+                  <p>잘못된 부분을 고치고 수정버튼 클릭!</p>
+                </div>
+                <div className="form-top-right">
+                  <div className="icon-pencil">
+                    <b><span className="glyphicon glyphicon-pencil">
+                    </span></b>
+                  </div>
+                </div>
+              </div>
+              <div className="newEventFormBottom">
+                <form className="newEventForm">
+                  <div className="form-group">
+                    <b className="editEventGroupname">그룹명 : {this.state.groupname}</b>
+                  </div>
+              <div className="form-group">
+                <input
+                  name="eventDate" className="form-control dateSelect" type="date"
+                  onChange={this.inputHandleChange} />
+              </div>
+              <div className="form-group">
+                <input
+                  type="text" className="form-control spaceSelect" placeholder={this.state.oldeventname}
+                  onChange={this.inputHandleChange} />
+              </div>
+              <div className="form-group">
+                <select
+                  name="recipientList" className="form-control recipientSelect"
+                  onChange={this.selectHandleChange} >
+                  <option>{this.state.newrecipient.username}</option>
+                  {recipientList}
+                </select>
+              </div>
+              <div className="form-group">
+                <input
+                  name="eventCost" className="form-control costSelect" type="number"
+                  placeholder={this.state.totalCost} onChange={this.inputHandleChange} />
+              </div>
+              <div className="form-group">
+                * 멤버의 이름을 클릭하면 금액을 추가할 수 있습니다.
+                <br />
+                <table className="table table-hover memberSelect">
+                  <thead>
+                    <tr>
+                      <th>이름</th>
+                      <th>금액</th>
+                    </tr>
+                  </thead>
+                  {userTable}
+                </table>
+              </div>
+            </form>
+              <div className="form-footer">
+                <button type="button" className="btn editEventButton" value="이벤트 등록" onClick={this.handleSubmit}><b>이벤트 수정</b></button>
+              </div>
+            </div>
+
+            </div>
+          </div>
+          <div className="col-md-3"></div>
+          </div>
+        </div>
       </div>
     );
   }

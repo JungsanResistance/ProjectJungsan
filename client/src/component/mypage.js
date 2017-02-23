@@ -3,6 +3,7 @@ import { Link, browserHistory } from 'react-router';
 import axios from 'axios';
 import SignOut from './signOut';
 import History from './history';
+import NewEvent from './newEvent';
 
 
 export default class Mypage extends React.Component {
@@ -19,12 +20,14 @@ export default class Mypage extends React.Component {
     this.handleDone = this.handleDone.bind(this);
     this.reset = this.reset.bind(this);
     this.handleHistoryPage = this.handleHistoryPage.bind(this);
+    this.handleEventPage = this.handleEventPage.bind(this);
+
   }
 
   componentWillMount() {
     this.reset();
-    // const myData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/misc');
-    // const groupData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/mypage');
+    // const myData = axios.get('https://oneovern.com/api/misc');
+    // const groupData = axios.get('https://oneovern.com/api/mypage');
     // Promise.all([myData, groupData]).then(res => {
     //   const myEmailData = JSON.parse(res[0].data)[0].email
     //   const groupStorage = [];
@@ -47,8 +50,8 @@ export default class Mypage extends React.Component {
   }
 
   reset() {
-    const myData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/misc');
-    const groupData = axios.get('http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/mypage');
+    const myData = axios.get('https://oneovern.com/api/misc');
+    const groupData = axios.get('https://oneovern.com/api/mypage');
     Promise.all([myData, groupData]).then((res) => {
       const myEmailData = JSON.parse(res[0].data)[0].email;
       const groupStorage = [];
@@ -65,10 +68,15 @@ export default class Mypage extends React.Component {
     });
   }
 
-  handleHistoryPage (event){
-    console.log(event.target.class)
+  handleHistoryPage(event) {
     this.setState({
       rendingPage: 'history',
+    })
+  }
+
+  handleEventPage() {
+    this.setState({
+      rendingPage: 'newEvent',
     })
   }
 
@@ -96,7 +104,7 @@ export default class Mypage extends React.Component {
     }
 
     if (answer) {
-      axios.put(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/misc`, individualTransacionDone)
+      axios.put(`https://oneovern.com/api/misc`, individualTransacionDone)
       .then((res) => {
         if (res.status === 200) {
           if (eventValue === '정산요청') {
@@ -172,9 +180,14 @@ export default class Mypage extends React.Component {
     if (this.state.rendingPage === "history") {
       rendingPage = <History />
     }
+    else if (this.state.rendingPage === 'newEvent') {
+      rendingPage = <NewEvent />
+    }
     else {
       rendingPage =
       <div className="container mypage">
+      <div className="col-md-1"></div>
+      <div className="col-md-10">
       <h1>my Page</h1>
       <br />
       <br />
@@ -192,6 +205,8 @@ export default class Mypage extends React.Component {
         </tbody>
       </table>
       <br />
+      </div>
+      <div className="col-md-1"></div>
     </div>
     }
 
@@ -204,7 +219,7 @@ export default class Mypage extends React.Component {
             <div className="row">
               <div className= "col-md-4">
                 <div className="navbar-header">
-                  <div className="navbar-brand" ><Link to="mypage"><b className="navbarMenu">이모 계산좀</b></Link></div>
+                  <div className="navbar-brand" ><Link to="mypage"><b className="navbarMenu">n분의 일</b></Link></div>
                 </div>
               </div>
               <div className= "col-md-8">
@@ -213,7 +228,7 @@ export default class Mypage extends React.Component {
                     <a className="dropdown-toggle navbarMenu" data-toggle="dropdown" href="#"><b className="navbarMenu">내 이벤트
                     </b><span className="caret"></span></a>
                     <ul className="dropdown-menu">
-                      <li className="newevent" onClick={this.handleEventPage}><Link to="transaction"><b>이벤트 생성</b></Link></li>
+                      <li className="newevent" onClick={this.handleEventPage}><a href="#"><b>이벤트 생성</b></a></li>
                       <li className="eventHistory" onClick={this.handleHistoryPage}><a href="#"><b>정산내역</b></a></li>
                     </ul>
                   </li>
@@ -225,7 +240,7 @@ export default class Mypage extends React.Component {
                       <li className="newgroup" onClick={this.handleGroupPage}><Link to="group"><b>+그룹 생성</b></Link></li>
                     </ul>
                   </li>
-                  <li className="navbarMenu"><a className="logout" href="http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/logout"><b className="navbarMenu">로그아웃</b></a></li>
+                  <li className="navbarMenu"><a className="logout" href="https://oneovern.com/logout"><b className="navbarMenu">로그아웃</b></a></li>
                 </ul>
               </div>
             </div>
