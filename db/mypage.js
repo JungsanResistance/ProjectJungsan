@@ -1,15 +1,21 @@
 const mysql = require('mysql');
+const keys = require('../keys/keys');
 
 const connection = mysql.createConnection({
   host: 'projectjungsan.ctkksl4fom4l.ap-northeast-2.rds.amazonaws.com',
   port: 3306,
-  user: 'admin',
-  password: 'MKkm3hx9',
-  database: 'Jungsan_DB',
+  user: keys.AWSdb.user,
+  password: keys.AWSdb.password,
+  database: keys.AWSdb.database,
   multipleStatements: true,
 });
 
 module.exports = {
+  /**
+   * get net amount of outstanding balance between the current user and all others that have debt or loan towards the user
+   * @param {string} userid - the id of the current user.
+   * @return {array} res - the list of object containing the subject's name, email, and the net outstanding amount
+   */
   getTotalSum: (userid) => {
     const getTotalSumQuery = `
     SELECT username,
@@ -51,6 +57,12 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * get the list of groups in which the user is taking part of
+   * @param {string} userid - the id of the current user.
+   * @return {array} res - the list of object containing the groups in which the user is taking part of.
+   */
   getGroupList: (userid) => {
     console.log(userid);
     const getGroupListQuery = `

@@ -8,7 +8,6 @@ const cors = require('cors');
 const passport = require('passport');
 
 const index = require('./routes/index');
-const auth = require('./db/auth.js');
 
 const app = express();
 
@@ -29,14 +28,18 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
 }));
+// initializes passport for express
+
 app.use(passport.initialize());
 app.use(passport.session());
+
+// use controller/index.js for incoming api requests
 app.use('/api', index);
 
 
 // index.html sender for solving mismatch between react-router and express router (make sure to add when adding new urls)
 app.get('*', (req, res, next) => {
-  if (!req.url.includes('auth')) {
+  if (!req.url.includes('auth') && !req.url.includes('failed')) {
     if (req.session.passport) {
       if (req.url === '/mypage' || req.url === '/history' || req.url.includes('transaction') || req.url.includes('event') || req.url.includes('group')) {
         res.sendfile(path.join(__dirname, 'client/dist/index.html'));
@@ -47,15 +50,39 @@ app.get('*', (req, res, next) => {
   } else return next();
 });
 
+// separate for failure of signup
+app.get('/failed', (req, res, next) => {
+  if (req.session.passport) {
+    res.redirect('/');
+  } else {
+    res.sendfile(path.join(__dirname, 'client/dist/index.html'));
+  }
+})
 
-// google authorization
+/**
+ * google authorization
+ * @return {Object} profile
+ */
 app.get('/auth/google',
   passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile', 'email'] }));
 app.get('/auth/google/callback',
   passport.authenticate('google', {
     successRedirect: '/mypage',
-    failureRedirect: '/',
+    failureRedirect: '/failed',
   }));
+
+/**
+ * facebook authorization
+ * @return {Object} profile
+ */
+app.get('/auth/facebook',
+  passport.authenticate('facebook', { scope: ['email'] }));
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', {
+    successRedirect: '/mypage',
+    failureRedirect: '/failed',
+  }));
+
 
 // logout
 app.get('/logout', (req, res) => {

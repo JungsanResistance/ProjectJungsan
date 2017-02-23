@@ -1,15 +1,21 @@
 const mysql = require('mysql');
+const keys = require('../keys/keys');
 
 const connection = mysql.createConnection({
   host: 'projectjungsan.ctkksl4fom4l.ap-northeast-2.rds.amazonaws.com',
   port: 3306,
-  user: 'admin',
-  password: 'MKkm3hx9',
-  database: 'Jungsan_DB',
+  user: keys.AWSdb.user,
+  password: keys.AWSdb.password,
+  database: keys.AWSdb.database,
   multipleStatements: true,
 });
 
 module.exports = {
+  /**
+   * get email and username of the current user
+   * @param {string} userid - the id of the current user.
+   * @return {array} res - a list containing an object which includes details on the current user
+   */
   getSelf: (userid) => {
     const getSelfQuery = `
     SELECT username, email
@@ -23,6 +29,12 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * get all pending events related to the current user
+   * @param {string} userid - the id of the current user.
+   * @return {array} res - a list of pending events
+   */
   checkAllPending: (userid) => {
     const checkPendingquery = `
     SELECT (SELECT username
@@ -46,7 +58,6 @@ module.exports = {
                                    FROM   user
                                    WHERE  userid = '${userid}')
     ; `;
-    console.log(checkPendingquery);
     return new Promise((resolve, reject) => {
       connection.query(checkPendingquery, (err, res) => {
         if (err) return reject(err);
@@ -54,6 +65,13 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * get transaction status between two users
+   * @param {string} body.recipientemail - the email of the recipient.
+   * @param {string} userid - the id of the current user.
+   * @return {array} res - a list containing the transaction status between two users
+   */
   checkStatus: (body, userid) => {
     let checkStatusQuery = `
     SELECT (SELECT username
@@ -77,7 +95,6 @@ module.exports = {
                                    FROM   user
                                    WHERE  userid = '${userid}')
       ; `;
-    console.log(checkStatusQuery)
     return new Promise((resolve, reject) => {
       connection.query(checkStatusQuery, (err, res) => {
         if (err) return reject(err);
@@ -120,6 +137,13 @@ module.exports = {
     })
     .then(result => result);
   },
+
+  /**
+   * create new pending transaction status between two users
+   * @param {string} body.recipientemail - the email of the recipient.
+   * @param {string} userid - the id of the current user.
+   * @return {error} err - return err if error occurs, nothing if successful
+   */
   insertPending: (body, userid) => {
     const insertPendingquery = `
     INSERT INTO pendinguser (applicant_idx, acceptor_idx, status)
@@ -138,8 +162,14 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * rejects current pending transaction status between two users
+   * @param {string} body.applicantemail - the email of the applicant(person who requested transaction).
+   * @param {string} body.acceptoremail - the email of the acceptor(person who received transaction).
+   * @return {error} err - return err if error occurs, nothing if successful
+   */
   rejectPending: (body, userid) => {
-    console.log('hi');
     const rejectPendingquery = `
     DELETE FROM pendinguser
     WHERE  applicant_idx = (SELECT idx
@@ -156,6 +186,13 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * updates rejected transaction to pending status between two users
+   * @param {string} body.applicantemail - the email of the applicant(person who requested transaction).
+   * @param {string} body.acceptoremail - the email of the acceptor(person who received transaction).
+   * @return {error} err - return err if error occurs, nothing if successful
+   */
   updatePending: (body, userid) => {
     const updatePendingquery = `
     UPDATE pendinguser set status = 1
@@ -173,6 +210,13 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * resolves all payments, including current pending transactions, between two users
+   * @param {string} body.recipientemail - the email of the recipient.
+   * @param {string} userid - the id of the current user.
+   * @return {error} err - return err if error occurs, nothing if successful
+   */
   resolveAllPayments: (body, userid) => {
     return new Promise((resolve, reject) => {
       connection.beginTransaction((err) => {
@@ -196,7 +240,6 @@ module.exports = {
                                                     FROM   user
                                                     WHERE  userid = '${userid}')
       ;  `;
-      console.log(inDebtEventListQuery);
       return new Promise((resolve, reject) => {
         connection.query(inDebtEventListQuery, (err, res) => {
           if (err) return reject(err);
@@ -205,7 +248,6 @@ module.exports = {
       })
     })
     .then((inDebtEventList) => {
-      console.log(inDebtEventList);
       let resolvingDebtQuery = '';
       if (inDebtEventList.length) {
         inDebtEventList.forEach((event) => {
@@ -218,7 +260,6 @@ module.exports = {
         });
         return new Promise((resolve, reject) => {
           connection.query(resolvingDebtQuery, (err, res) => {
-            console.log('resolvingDebt')
             if (err) return reject(err);
             resolve(res);
           });
@@ -226,7 +267,6 @@ module.exports = {
       }
     })
     .then((res) => {
-      console.log('loan')
       const loanedEventListQuery = `
       SELECT user_idx,
              event_idx
@@ -251,7 +291,6 @@ module.exports = {
     })
     .then((loanedEventList) => {
       let resolvingLoanedQuery = '';
-      console.log(loanedEventList)
       if (loanedEventList.length) {
         loanedEventList.forEach((event) => {
           resolvingLoanedQuery += `
@@ -270,7 +309,6 @@ module.exports = {
       }
     })
     .then((res) => {
-      console.log('delete')
       const deleteAcceptedPendingQuery = `
       DELETE FROM pendinguser
       WHERE  applicant_idx = (SELECT idx
@@ -287,6 +325,34 @@ module.exports = {
         });
       })
     })
+    .then(() => {
+      const resolveEventsQuery =
+      `
+      UPDATE pendingevent
+             INNER JOIN (SELECT idx
+                         FROM   event
+                         WHERE  recipient_idx = (SELECT idx
+                                                 FROM   user
+                                                 WHERE  userid = '${userid}')
+                                 OR recipient_idx = (SELECT idx
+                                                     FROM   user
+                                                     WHERE  email = '${body.recipientemail}')) A
+                     ON pendingevent.event_idx = A.idx
+      SET    status = 2
+      WHERE  user_idx = (SELECT idx
+                         FROM   user
+                         WHERE  userid = '${userid}')
+              OR user_idx = (SELECT idx
+                             FROM   user
+                             WHERE  email = '${body.recipientemail}')
+      ; `;
+      return new Promise((resolve, reject) => {
+        connection.query(resolveEventsQuery, (err, res) => {
+          if (err) return reject(err);
+          resolve(res);
+        });
+      });
+    })
     .then((res) => {
       return new Promise((resolve, reject) => {
         connection.commit((err) => {
@@ -294,10 +360,8 @@ module.exports = {
           resolve();
         });
       });
-      console.log('transaction complete!');
     })
     .catch((err) => {
-      console.log('Error in Transaction');
       connection.rollback();
       return Promise.reject(err);
     });

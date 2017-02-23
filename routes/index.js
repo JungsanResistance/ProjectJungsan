@@ -1,9 +1,22 @@
 const express = require('express');
 
+
 const router = express.Router();
 const controller = require('../controller/index');
 
-/* GET home page. */
+/**
+ * router to prevent unauthorized access to api (and redirect)
+ * @param {Object} http request
+ * @param {Object} http response
+ */
+router.use((req, res, next) => {
+  if (!req.session.passport) {
+    res.redirect('/');
+  } else {
+    return next();
+  }
+});
+
 router.route('/signin')
 .get(controller.landing.get);
 

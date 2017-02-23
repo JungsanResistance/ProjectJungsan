@@ -12,10 +12,10 @@ module.exports = {
     },
   },
   myPage: {
-    get: (req, res) => (mypage.get(req))
+    get:
+    (req, res) => (mypage.get(req))
     .then((result) => {
       const body = JSON.stringify(result);
-      console.log('result', body);
       res.json(body);
     })
     .catch((err) => {
@@ -23,14 +23,16 @@ module.exports = {
     }),
   },
   transaction: {
-    get: (req, res) => (transaction.get(req))
-    .then((result) => {
-      const body = JSON.stringify(result);
-      console.log(body);
-      res.json(body);
-    }),
-    post: (req, res) => (transaction.post(req))
-      .then(() => {
+    get:
+      (req, res) => (transaction.get(req))
+      .then((result) => {
+        const body = JSON.stringify(result);
+        res.json(body);
+      }),
+    post:
+      (req, res) => (transaction.post(req))
+      .then((eventDetail) => {
+        email.events(eventDetail, 'post');
         res.sendStatus(201);
       })
       .catch((err) => {
@@ -50,11 +52,11 @@ module.exports = {
       }
     ),
     put: (req, res) => (transaction.put(req))
-    .then(() => {
+    .then((eventDetail) => {
+      email.events(eventDetail, 'put');
       res.sendStatus(200);
     })
     .catch((err) => {
-      console.log('error', err)
       if (err === 'Recipient is not a participant') {
         res.sendStatus(400);
         throw err;
@@ -67,7 +69,6 @@ module.exports = {
     get: (req, res) => (group.get(req))
     .then((result) => {
       const body = JSON.stringify(result);
-      console.log(body);
       res.json(body);
     })
     .catch((err) => {
@@ -105,7 +106,6 @@ module.exports = {
     get: (req, res) => (history.get(req))
     .then((result) => {
       const body = JSON.stringify(result);
-      console.log(body);
       res.json(body);
     })
     .catch((err) => {
@@ -114,9 +114,8 @@ module.exports = {
     }),
     put: (req, res) => (history.put(req))
     .then((currentUser) => {
-      console.log(currentUser);
       const action = req.body.action;
-      email(currentUser[0], req.body.recipientemail, action);
+      email.transaction(currentUser[0], req.body.recipientemail, action);
       res.sendStatus(200);
     })
     .catch((err) => {
@@ -128,21 +127,18 @@ module.exports = {
     get: (req, res) => (misc.get(req))
     .then((result) => {
       const body = JSON.stringify(result);
-      console.log(body);
       res.json(body);
     }),
     put: (req, res) => (misc.put(req))
     .then((currentUser) => {
-      console.log(currentUser);
       const action = req.body.action;
-      // email(currentUser[0], req.body.recipientemail, action);
+      email.transaction(currentUser[0], req.body.recipientemail, action);
       res.sendStatus(200);
     })
     .catch((err) => {
       if (err === 'Bad request') {
         res.sendStatus(400);
       } else {
-        console.log('error', err.stack);
         res.sendStatus(406);
       }
     }),

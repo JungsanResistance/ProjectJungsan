@@ -1,15 +1,22 @@
 const mysql = require('mysql');
+const keys = require('../keys/keys');
 
 const connection = mysql.createConnection({
   host: 'projectjungsan.ctkksl4fom4l.ap-northeast-2.rds.amazonaws.com',
   port: 3306,
-  user: 'admin',
-  password: 'MKkm3hx9',
-  database: 'Jungsan_DB',
+  user: keys.AWSdb.user,
+  password: keys.AWSdb.password,
+  database: keys.AWSdb.database,
   multipleStatements: true,
 });
 
 module.exports = {
+
+  /**
+   * gets all the events of where the user is endebted to
+   * @param {string} userid - the id of current user.
+   * @return {array} res - the list of debt events
+   */
   getDebtHistory: (userid) => {
     const getDebtHistoryQuery = `
     SELECT Date_format(eventgrouphistory.date, '%Y-%m-%d')                   AS date
@@ -82,6 +89,12 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * gets all the events of where the user has payed money in
+   * @param {string} userid - the id of current user.
+   * @return {array} res - the list of loaned events (each event entry is separated per participant)
+   */
   getLoanHistory: (userid) => {
     const getLoanHistoryQuery = `
     SELECT Date_format(eventgrouphistory.date, '%Y-%m-%d')    AS date,
@@ -154,6 +167,15 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * inserts done status for a resolved loan event (if transaction occurred at mypage stage) ref. db/misc.js
+   * @param {string} body.recipientemail - the email of the recipient.
+   * @param {string} body.eventname - the name of corresponding event.
+   * @param {string} body.groupname - name of the group in which the corresponding event occurred.
+   * @param {string} body.date - the date of corresponding event.
+   * @return {error} err - return err if error occurs, return nothing if successful
+   */
   insertResolvedLoanEvent: (body) => {
     const insertResolvedLoanEventQuery = `
     INSERT INTO pendingevent
@@ -181,6 +203,15 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * rejects the proposal to resolve loan event
+   * @param {string} body.recipientemail - the email of the recipient.
+   * @param {string} body.eventname - the name of corresponding event.
+   * @param {string} body.groupname - name of the group in which the corresponding event occurred.
+   * @param {string} body.date - the date of corresponding event.
+   * @return {error} err - return err if error occurs, return nothing if successful
+   */
   rejectPendingLoanEvent: (body) => {
     const rejectPendingLoanEventQuery = `
     UPDATE pendingevent
@@ -205,6 +236,15 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * accepts the pending proposal to resolve a loan event
+   * @param {string} body.recipientemail - the email of the recipient.
+   * @param {string} body.eventname - the name of corresponding event.
+   * @param {string} body.groupname - name of the group in which the corresponding event occurred.
+   * @param {string} body.date - the date of corresponding event.
+   * @return {error} err - return err if error occurs, return nothing if successful
+   */
   acceptPendingLoanEvent: (body) => {
     const accpetPendingLoanEventQuery = `
     UPDATE pendingevent
@@ -230,6 +270,14 @@ module.exports = {
     });
   },
 
+  /**
+   * inserts a pending status into event and send request
+   * @param {string} body.currentUser - the id of current user
+   * @param {string} body.eventname - the name of corresponding event.
+   * @param {string} body.groupname - name of the group in which the corresponding event occurred.
+   * @param {string} body.date - the date of corresponding event.
+   * @return {error} err - return err if error occurs, return nothing if successful
+   */
   insertPendingDebtEvent: (body) => {
     const insertPendingDebtEventQuery = `
     INSERT INTO pendingevent
@@ -257,6 +305,15 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * checks whether a pending request received from others exist for a specified loan event
+   * @param {string} body.recipientemail - the email of the recipient.
+   * @param {string} body.eventname - the name of corresponding event.
+   * @param {string} body.groupname - name of the group in which the corresponding event occurred.
+   * @param {string} body.date - the date of corresponding event.
+   * @return {array} res - !length if no pending request, length if exist
+   */
   checkPendingLoan: (body) => {
     const checkPendingLoanQuery = `
     SELECT status
@@ -281,6 +338,15 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * checks whether a pending request received from others exist for a specified debt event
+   * @param {string} body.recipientemail - the email of the recipient.
+   * @param {string} body.eventname - the name of corresponding event.
+   * @param {string} body.groupname - name of the group in which the corresponding event occurred.
+   * @param {string} body.date - the date of corresponding event.
+   * @return {array} res - !length if no pending request, length if exist
+   */
   checkPendingDebt: (body) => {
     const checkPendingDebtQuery = `
     SELECT status
@@ -306,7 +372,15 @@ module.exports = {
     });
   },
 
-
+ /**
+  * mark ispaid = true for accepted loan payment events, revert if opposite
+  * @param {string} body.ispaid - the future status asked to be changed
+  * @param {string} body.currentUser - the id of current user
+  * @param {string} body.eventname - the name of corresponding event.
+  * @param {string} body.groupname - name of the group in which the corresponding event occurred.
+  * @param {string} body.date - the date of corresponding event.
+  * @return {error} err - return err if error occurs, return nothing if successful
+  */
   toggleLoanPayment: (body) => {
     const toggleLoanPaymentQuery = `
     UPDATE eventmember
@@ -329,6 +403,16 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * mark ispaid = true for accepted debt payment events, revert if opposite
+   * @param {string} body.ispaid - the future status asked to be changed
+   * @param {string} body.currentUser - the id of current user
+   * @param {string} body.eventname - the name of corresponding event.
+   * @param {string} body.groupname - name of the group in which the corresponding event occurred.
+   * @param {string} body.date - the date of corresponding event.
+   * @return {error} err - return err if error occurs, return nothing if successful
+   */
   toggleDebtPayment: (body) => {
     const toggleDebtPaymentQuery = `
     UPDATE eventmember

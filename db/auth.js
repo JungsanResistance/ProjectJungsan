@@ -1,15 +1,24 @@
 const mysql = require('mysql');
+const keys = require('../keys/keys');
 
 const connection = mysql.createConnection({
   host: 'projectjungsan.ctkksl4fom4l.ap-northeast-2.rds.amazonaws.com',
   port: 3306,
-  user: 'admin',
-  password: 'MKkm3hx9',
-  database: 'Jungsan_DB',
+  user: keys.AWSdb.user,
+  password: keys.AWSdb.password,
+  database: keys.AWSdb.database,
   multipleStatements: true,
 });
 
 module.exports = {
+   /**
+    * Checks whether the user has an administrative right to edit the event
+    * @param {string} userid - user id of current user.
+    * @param {string} groupname - name of the group where event belongs to.
+    * @param {string} eventname - name of the specified event.
+    * @param {string} date - the date of the occurence of the event.
+    * @return {array} res - !length if not an admin, length if is an admin.
+    */
   checkEventAdmin: (userid, groupname, eventname, date) => {
     const checkEventAdminQuery = `
     SELECT *
@@ -33,6 +42,14 @@ module.exports = {
       });
     });
   },
+  /**
+  * Checks whether the user is a member of an event
+  * @param {string} userid - user id of current user.
+  * @param {string} groupname - name of the group where event belongs to.
+  * @param {string} eventname - name of the specified event.
+  * @param {string} date - the date of the occurence of the event.
+  * @return {array} res - !length if not a member, length if is a member.
+  */
   checkEventMember: (userid, groupname, eventname, date) => {
     const checkEventMemberQuery = `
     SELECT *
@@ -56,6 +73,12 @@ module.exports = {
       });
     });
   },
+  /**
+   * Checks whether the user has an administrative right to edit the group
+   * @param {string} userid - user id of current user.
+   * @param {string} groupname - name of the group asked for edit permission.
+   * @return {array} res - !length if not an admin, length if is an admin.
+   */
   checkGroupAdmin: (userid, groupname) => {
     const checkGroupAdminQuery = `
     SELECT *
@@ -74,6 +97,12 @@ module.exports = {
       });
     });
   },
+  /**
+   * Checks whether the user has an administrative right to edit the group
+   * @param {string} userid - user id of current user.
+   * @param {string} groupname - name of the group asked for edit permission.
+   * @return {array} res - !length if not a member, length if is a member.
+   */
   checkGroupMember: (userid, groupname) => {
     const checkGroupAdminQuery = `
     SELECT *

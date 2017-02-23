@@ -1,15 +1,21 @@
 const mysql = require('mysql');
+const keys = require('../keys/keys');
 
 const connection = mysql.createConnection({
   host: 'projectjungsan.ctkksl4fom4l.ap-northeast-2.rds.amazonaws.com',
   port: 3306,
-  user: 'admin',
-  password: 'MKkm3hx9',
-  database: 'Jungsan_DB',
+  user: keys.AWSdb.user,
+  password: keys.AWSdb.password,
+  database: keys.AWSdb.database,
   multipleStatements: true,
 });
 
 module.exports = {
+  /**
+   * Checks whether a group exists
+   * @param {string} groupname - name of the group asked for edit permission.
+   * @return {array} res - !length if not does not exists, length if exists.
+   */
   checkGroupname: (groupname) => {
     const checkGroupnameQuery = `
     SELECT g.groupname
@@ -22,6 +28,12 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * Checks whether a user using certain email exists (a search function)
+   * @param {string} groupname - name of the group asked for edit permission.
+   * @return {array} res - !length if not does not exists, length if exists.
+   */
   getUser: (email) => {
     const getAllUsersQuery = `
     SELECT username, email
@@ -35,6 +47,14 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * adds new group into the database, with the current user (creator) as the admin
+   * @param {string} body.userid - the id of current user.
+   * @param {string} body.groupname - name of the group asked for creation.
+   * @param {array} body.groupmembers - the list of groupmembers requested.
+   * @return {error} err - returns error if an error occurs, returns nothing if successful
+   */
   addNewGroup: (body) => {
     const addNewGroupQuery = `
       INSERT INTO groups (groupname) VALUES ('${body.groupname}');
@@ -58,7 +78,6 @@ module.exports = {
                       WHERE  groupname = '${body.groupname}'),
                       true); `;
     });
-    console.log(addNewGroupQuery + addNewMembersQuery);
     return new Promise((resolve, reject) => {
       connection.query(addNewGroupQuery + addNewMembersQuery, (err) => {
         if (err) return reject(err);
@@ -66,6 +85,13 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * modifies the groupname
+   * @param {string} body.oldgroupname - name of the group asked for modification.
+   * @param {string} body.newgroupname - the proposed new name of the group.
+   * @return {error} err - returns error if an error occurs, returns nothing if successful
+   */
   modifyGroupName: (body) => {
     const modifyGroupNameQuery = `
     UPDATE groups
@@ -81,6 +107,13 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * modifies the active status of groupmembers
+   * @param {string} body.newgroupname - the proposed new name of the group (same with old if not changed).
+   * @param {array} body.groupmembers - the list of groupmembers requested.
+   * @return {error} err - returns error if an error occurs, returns nothing if successful
+   */
   editActiveMemberStatus: (body) => {
     let editActiveMemberStatusQuery = '';
     // check and insert all unlisted (newly added) members
@@ -102,6 +135,13 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * newly add groupmembers to already existing group
+   * @param {string} body.newgroupname - the proposed new name of the group (same with old if not changed).
+   * @param {array} body.groupmembers - the list of groupmembers requested.
+   * @return {error} err - returns error if an error occurs, returns nothing if successful
+   */
   editAddGroupMembers: (body) => {
     // check and insert all unlisted (newly added) members
     let editNewGroupMembersQuery = '';
@@ -135,6 +175,12 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * gets the groupmembers of all the groups where the user joined to
+   * @param {array} grouplists - the list of all groups where the user joined to.
+   * @return {array} res - returns the list of the groupmembers of all the groups where the user joined to
+   */
   getGroupMember: (grouplist) => {
     let groupClause = `groupname = "${grouplist[0].groupname}"`;
     if (grouplist.length > 1) {
@@ -161,6 +207,12 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * deletes the proposed group (active -> 0)
+   * @param {string} groupname - the name of a group bound to deactivate.
+   * @return {error} err - returns error if an error occurs, returns nothing if successful
+   */
   deleteGroup: (groupname) => {
     const deleteGroupQuery = `
     UPDATE groupmember
