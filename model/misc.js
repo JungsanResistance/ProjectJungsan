@@ -2,12 +2,15 @@ const misc = require('../db/misc');
 
 
 module.exports = {
+  // get profile of self
   get: (req) => {
     const currentUser = req.session.passport.user;
     return new Promise((resolve, reject) => (resolve()))
     .then(() => (misc.getSelf(currentUser)))
     .catch(err => Promise.reject(err));
   },
+  // check the pending status between two users, and if none, create new pending status
+  // if exists, accept and resolve all transactions between them or reject pending request depending on the users' selection
   put: (req) => {
     const currentUser = req.session.passport.user;
     const action = req.body.action;
@@ -39,7 +42,7 @@ module.exports = {
       }
       return toBeProcessed;
     })
-    // get email address of current user to send emails
+    // after successful change, get email address of current user to send notification emails
     .then(res => misc.getSelf(currentUser))
     .then((selfDetail) => {
       let JSONselfDetail = JSON.stringify(selfDetail);
