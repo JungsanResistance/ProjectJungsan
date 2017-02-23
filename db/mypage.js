@@ -11,6 +11,11 @@ const connection = mysql.createConnection({
 });
 
 module.exports = {
+  /**
+   * get net amount of outstanding balance between the current user and all others that have debt or loan towards the user
+   * @param {string} userid - the id of the current user.
+   * @return {array} res - the list of object containing the subject's name, email, and the net outstanding amount
+   */
   getTotalSum: (userid) => {
     const getTotalSumQuery = `
     SELECT username,
@@ -52,6 +57,12 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * get the list of groups in which the user is taking part of
+   * @param {string} userid - the id of the current user.
+   * @return {array} res - the list of object containing the groups in which the user is taking part of.
+   */
   getGroupList: (userid) => {
     console.log(userid);
     const getGroupListQuery = `

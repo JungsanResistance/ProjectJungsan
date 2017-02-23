@@ -4,6 +4,8 @@ const misc = require('../db/misc');
 
 
 module.exports = {
+  // get all debt data,  map isadmin value to all debt events, and
+  // add all loan data, with the same procedure
   get: (req) => {
     const currentUser = req.session.passport.user;
     const result = {};
@@ -52,6 +54,9 @@ module.exports = {
     })
     .catch(err => Promise.reject(err));
   },
+
+  // if the status of event is not pending, add new pending status,
+  // if it is pending, either accept and resolve the event or reject it depending on user selection
   put: (req) => {
     req.body.currentUser = req.session.passport.user;
     if (req.query.type === 'loan') {

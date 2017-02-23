@@ -11,49 +11,13 @@ const connection = mysql.createConnection({
 });
 
 module.exports = {
-  getGroupList: (userid) => {
-    console.log(userid);
-    const getGroupListQuery = `
-    SELECT g.groupname
-          FROM   groups g
-          INNER JOIN  (SELECT gm.group_idx
-                  FROM   groupmember gm
-                  WHERE  (SELECT idx
-                          FROM   user
-                          WHERE  userid = "${userid}") = gm.user_idx and gm.active = true)AS JOINEDGROUP
-                          ON JOINEDGROUP.group_idx = g.idx; `;
-    return new Promise((resolve, reject) => {
-      connection.query(getGroupListQuery, (err, res) => {
-        if (err) return reject(err);
-        return resolve(res);
-      });
-    });
-  },
-  getGroupMember: (grouplist) => {
-    let groupClause = `groupname = "${grouplist[0].groupname}"`;
-    for (let i = 1; i < grouplist.length; i += 1) {
-      groupClause += ` OR groupname = "${grouplist[i].groupname}"`;
-    }
-    const getGroupMemberQuery = `
-    SELECT MemberId.groupname, u.username, u.email, MemberId.active
-    FROM   user u
-          INNER JOIN (SELECT gm.user_idx, GROUPLIST.groupname, gm.active
-                  FROM   groupmember gm
-                  INNER JOIN
-                  (SELECT g.idx, g.groupname
-                                         FROM   groups g
-                                         WHERE  ${groupClause})AS GROUPLIST
-                                         ON GROUPLIST.idx = gm.group_idx
-                                        )AS
-                 MemberId
-          ON u.idx = MemberId.user_idx; `;
-    return new Promise((resolve, reject) => {
-      connection.query(getGroupMemberQuery, (err, res) => {
-        if (err) return reject(err);
-        return resolve(res);
-      });
-    });
-  },
+  /**
+   * get the details of specified existing event
+   * @param {string} groupname - the name of the group under which event took place.
+   * @param {string} eventname - the name of the event.
+   * @param {string} date - the date of the event.
+   * @return {array} res - the list of object containing the detail of the event.
+   */
   getEventDetail: (groupname, eventname, date) => {
     const getEventDetailQuery = `
     SELECT g.groupname,
@@ -77,6 +41,14 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * get the participants of specified existing event
+   * @param {string} groupname - the name of the group under which event took place.
+   * @param {string} eventname - the name of the event.
+   * @param {string} date - the date of the event.
+   * @return {array} res - the list of objects containing the details of the participants.
+   */
   getParticipantsDetail: (groupname, eventname, date) => {
     const getParticipantsDetailQuery = `
     SELECT u.username,
@@ -104,6 +76,14 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * get the recipient of specified existing event
+   * @param {string} groupname - the name of the group under which event took place.
+   * @param {string} eventname - the name of the event.
+   * @param {string} date - the date of the event.
+   * @return {array} res - the list of object containing the detail of the recipient of the event.
+   */
   getRecipientDetail: (groupname, eventname, date) => {
     const getRecipientDetailQuery = `
     SELECT u.username,
@@ -131,6 +111,17 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * create new event
+   * @param {string} body.groupname - the name of the group under which event took place.
+   * @param {string} body.eventname - the name of the event.
+   * @param {string} body.date - the date of the event.
+   * @param {object} body.newrecipient - details of the recipient of the event.
+   * @param {boolean} body.isadmin - whether the current creator is a group admin or not.
+   * @param {array} body.participants - the list of the details about the participants.
+   * @return {error} err - return err if error, nothing if successful
+   */
   postTransaction: (body) => {
     const createEventQuery = `
     INSERT INTO event (group_idx, date, recipient_idx, eventname) VALUES (
@@ -202,6 +193,18 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * modify old event
+   * @param {string} body.groupname - the name of the group under which event took place.
+   * @param {string} body.oldeventname - the name of the event.
+   * @param {string} body.neweventname - the newly proposed name of the event.
+   * @param {string} body.olddate - the date of the event.
+   * @param {string} body.newdate - the newly proposed date of the event.
+   * @param {object} body.oldrecipient - details of the recipient of the event.
+   * @param {object} body.newrecipient - details of the newly proposed recipient of the event.
+   * @return {error} err - return err if error, nothing if successful
+   */
   updateEventDetail: (body) => {
     const updateEventNameQuery = `
     UPDATE event
@@ -256,6 +259,15 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * add new participants to the existing event
+   * @param {string} body.groupname - the name of the group under which event took place.
+   * @param {string} body.neweventname - the name of the event.
+   * @param {string} body.newdate - the date of the event.
+   * @param {array} body.participants - the list of the details about the participants.
+   * @return {error} err - return err if error, nothing if successful
+   */
   updateEventAddParticipants: (body) => {
     let updateEventAddParticipantsQuery = '';
     body.participants.forEach((participant) => {
@@ -302,6 +314,15 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * add new participants to the existing event
+   * @param {string} body.groupname - the name of the group under which event took place.
+   * @param {string} body.neweventname - the name of the event.
+   * @param {string} body.newdate - the date of the event.
+   * @param {array} body.dropped - the list of the details about the participants to be deleted.
+   * @return {error} err - return err if error, nothing if successful
+   */
   updateEventDropParticipants: (body) => {
     let updateEventDropParticipantsQuery = '';
     body.dropped.forEach((emailOfToBeDropped) => {

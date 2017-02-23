@@ -28,8 +28,12 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
 }));
+// initializes passport for express
+
 app.use(passport.initialize());
 app.use(passport.session());
+
+// use controller/index.js for incoming api requests
 app.use('/api', index);
 
 
@@ -46,6 +50,7 @@ app.get('*', (req, res, next) => {
   } else return next();
 });
 
+// separate for failure of signup
 app.get('/failed', (req, res, next) => {
   if (req.session.passport) {
     res.redirect('/');
@@ -53,7 +58,11 @@ app.get('/failed', (req, res, next) => {
     res.sendfile(path.join(__dirname, 'client/dist/index.html'));
   }
 })
-// google authorization
+
+/**
+ * google authorization
+ * @return {Object} profile
+ */
 app.get('/auth/google',
   passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile', 'email'] }));
 app.get('/auth/google/callback',
@@ -62,7 +71,10 @@ app.get('/auth/google/callback',
     failureRedirect: '/failed',
   }));
 
-// facebook authorization
+/**
+ * facebook authorization
+ * @return {Object} profile
+ */
 app.get('/auth/facebook',
   passport.authenticate('facebook', { scope: ['email'] }));
 app.get('/auth/facebook/callback',
