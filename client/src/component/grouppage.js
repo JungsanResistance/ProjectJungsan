@@ -8,34 +8,93 @@ export default class GroupPage extends React.Component {
     super();
     this.state = {
       myGroupList: [],
+      adminData: [],
     };
   }
 
   componentWillMount() {
-    axios.get(`https://oneovern.com/api/mypage`)
+
+
+    // get all group-member pair data
+    const pairGroupMember = axios.get(`https://oneovern.com/api/transaction?type=post`);
+    // get isadmin data for each groupData
+    const adminData = axios.get(`https://oneovern.com/api/mypage`);
+
+    Promise.all([pairGroupMember, adminData])
     .then((res) => {
-      const allData = JSON.parse(res.data).groupList;
+      console.log(res)
+      const getGroupMemberData = JSON.parse(res[0].data);
+      const getGroupAdminInfo = JSON.parse(res[1].data).groupList;
+      console.log('getGroupAdminInfo', getGroupAdminInfo);
+
+      // manipulate and create {groupname: [member1, member2, ...]}
+      const groupStorage = {};
+      getGroupMemberData.forEach((item) => {
+        groupStorage[item.groupname] = [];
+      });
+      getGroupMemberData.forEach((item) => {
+        groupStorage[item.groupname].push({
+          username: item.username,
+          email: item.email,
+        });
+      });
+
+      const groupList = [];
+      for(let key in groupStorage) {
+        groupList.push(key);
+      }
+
+
       this.setState({
-        myGroupList: allData,
+        myGroupList: groupList,
+        adminData: getGroupAdminInfo,
       });
     });
   }
 
   render() {
+
+    // let editButton;
+    // this.state.myGroupList.forEach((myGroup) => {
+    //   if (myGroup.groupname === this.props.params.groupname) {
+    //     if (!myGroup.isadmin) {
+    //       editButton = '';
+    //     } else {
+    //       editButton = <input type="submit" value="edit" />;
+    //     }
+    //   }
+    // });
+
     let editButton;
-    this.state.myGroupList.forEach((myGroup) => {
-      if (myGroup.groupname === this.props.params.groupname) {
-        if (!myGroup.isadmin) {
-          editButton = '';
-        } else {
-          editButton = <input type="submit" value="edit" />;
+    const groupList = this.state.myGroupList.map((groupname) => {
+      this.state.adminData.forEach((group) => {
+        if (group.groupname === groupname) {
+          if (group.isadmin) {
+            editButton = '';
+            return;
+          } else {
+            editButton = <button type="button" value="그룹정보" />;
+            return;
+          }
         }
-      }
+      });
+
+      return (
+        <div>
+          <li>{groupname}</li>
+          <RenderMembers groupname={groupname} />
+          <p>{editButton}</p>
+        </div>
+      )
     });
 
     return (
       <div>
-        <h1>
+        <ul>
+          groupList
+          {groupList}
+        </ul>
+        {/* <h1>
         {this.props.params.groupname}
         </h1>
         <br />
@@ -44,7 +103,7 @@ export default class GroupPage extends React.Component {
         <br />
         <Link to={'groupeditform/'+ this.props.params.groupname}>
         {editButton}
-        </Link>
+        </Link> */}
       </div>
     );
   }
