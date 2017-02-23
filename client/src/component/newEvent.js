@@ -3,7 +3,6 @@ import moment from 'moment';
 import axios from 'axios';
 import Router, { browserHistory } from 'react-router';
 
-
 // https://oneovern.com/
 // https://oneovern.com
 
@@ -40,19 +39,20 @@ export default class NewEvent extends React.Component {
     this.preCheck = this.preCheck.bind(this);
     this.eventDuplicateCheck = this.eventDuplicateCheck.bind(this);
     this.handleManualInputCost = this.handleManualInputCost.bind(this);
-    this.handleManualCostUpdate = this.handleManualCostUpdate.bind(this);
+    // this.handleManualCostUpdate = this.handleManualCostUpdate.bind(this);
     this.evaluateAll = this.evaluateAll.bind(this);
     this.countSelectedMember = this.countSelectedMember.bind(this);
     this.getCurrentSelectedGroupMembers = this.getCurrentSelectedGroupMembers.bind(this);
     this.getCurrentRecipient = this.getCurrentRecipient.bind(this);
     this.getIndivCost = this.getIndivCost.bind(this);
+    this.updateIndivCostDisplay = this.updateIndivCostDisplay.bind(this);
     this.checkTotal = this.checkTotal.bind(this);
     this.addAll = this.addAll.bind(this);
     this.updateRecipientInfo = this.updateRecipientInfo.bind(this);
+    this.updateAll = this.updateAll.bind(this);
   }
 
   componentWillMount() {
-
     const getGroupData = axios.get('https://oneovern.com/api/transaction?type=post');
     const getAllEvents = axios.get('https://oneovern.com/api/history');
 
@@ -286,7 +286,8 @@ export default class NewEvent extends React.Component {
       }, () => {
         this.addAll();
         this.updateRecipientInfo();
-      })
+        this.updateIndivCostDisplay();
+      });
     } else {
       this.setState({
         selectedGroupMembers: nextSelectedGroupMembers,
@@ -294,7 +295,8 @@ export default class NewEvent extends React.Component {
       }, () => {
         this.addAll();
         this.updateRecipientInfo();
-      })
+        this.updateIndivCostDisplay();
+      });
     }
   }
 
@@ -330,6 +332,13 @@ export default class NewEvent extends React.Component {
     })
   }
 
+  // seems this updateAll is not working....
+  // however call each function in the callback works... weird
+  updateAll() {
+    this.addAll();
+    this.updateRecipientInfo();
+    this.updateIndivCostDisplay();
+  }
 
   countSelectedMember() {
     // to evaluate the number of selected members
@@ -357,9 +366,9 @@ export default class NewEvent extends React.Component {
   getIndivCost() {
     let sumAllManualCost = 0;
     let isManualCostCount = 0;
-    const nextSelectedGroupMembers = this.state.selectedGroupMembers;
+    // const nextSelectedGroupMembers = this.state.selectedGroupMembers;
     let memberIndexHasManualCost;
-    nextSelectedGroupMembers.forEach((member, index) => {
+    this.state.selectedGroupMembers.forEach((member, index) => {
       if (member.isManualCost) {
         sumAllManualCost += member.cost;
         isManualCostCount += 1;
@@ -369,7 +378,7 @@ export default class NewEvent extends React.Component {
 
     const count = this.countSelectedMember();
     console.log('selected member count', count, 'is manualCost count', isManualCostCount)
-    const indivCost = count - isManualCostCount ? (this.state.totalCost - sumAllManualCost) / (count - isManualCostCount) : nextSelectedGroupMembers[memberIndexHasManualCost];
+    const indivCost = count - isManualCostCount ? (this.state.totalCost - sumAllManualCost) / (count - isManualCostCount) : this.state.selectedGroupMembers[memberIndexHasManualCost];
     return indivCost;
   }
 
@@ -427,19 +436,44 @@ export default class NewEvent extends React.Component {
     }, () => {
       this.addAll();
       this.updateRecipientInfo();
+      this.updateIndivCostDisplay();
     });
   }
 
   addAll() {
     const nextSelectedGroupMembers = this.getCurrentSelectedGroupMembers();
+    console.log('see the sum', JSON.stringify(nextSelectedGroupMembers))
     const sum = nextSelectedGroupMembers.reduce((total, member) => {
       return total + member.cost;
     }, 0);
+
+    console.log('sum', sum)
 
     this.setState({
       sumIndivCost: sum,
     });
   }
+
+  updateIndivCostDisplay() {
+    // here we update each member cost
+    const indivCost = this.getIndivCost();
+    const nextSelectedGroupMembers = this.getCurrentSelectedGroupMembers();
+
+    nextSelectedGroupMembers.forEach((member) => {
+      if (member.selected && !member.isManualCost) {
+        member.cost = indivCost;
+      }
+      else {
+        console.log('member not selected')
+      }
+    });
+
+    console.log('next members after update', nextSelectedGroupMembers)
+    this.setState({
+      selectedGroupMembers: nextSelectedGroupMembers,
+    });
+  }
+
 
   checkTotal() {
     const total = this.state.totalCost;
@@ -583,7 +617,6 @@ export default class NewEvent extends React.Component {
   }
 
 
-
   inputHandleChange(event) {
     // clean error message
     if (this.state.errorMesseage.length) {
@@ -612,7 +645,7 @@ export default class NewEvent extends React.Component {
         else {
           console.log('member not selected')
         }
-      })
+      });
 
       this.setState({
         selectedGroupMembers: nextSelectedGroupMembers,
@@ -620,7 +653,10 @@ export default class NewEvent extends React.Component {
         costStyle: '',
         // indivCost: indivCost,
       }, () => {
+        // this.updateAll();
+        this.addAll();
         this.updateRecipientInfo();
+        this.updateIndivCostDisplay();
       });
     }
 
@@ -633,63 +669,31 @@ export default class NewEvent extends React.Component {
     }
   }
 
-
-  handleManualCostUpdate(event, costIndex) {
-    console.log('enter pressed')
-    if (event.keyCode === 13) {
-      // alert(e.target.value);
-      // do work here
-      const nextSelectedGroupMembers = this.getCurrentSelectedGroupMembers();
-      const nextNewRecipient = this.getCurrentRecipient();
-      const manualInputCost = parseInt(event.target.value);
-      const indivCost = this.getIndivCost();
-      console.log('eneter manual input cost', manualInputCost)
-
-      if (manualInputCost) {
-        nextSelectedGroupMembers[costIndex].isManualCost = true;
-        nextSelectedGroupMembers[costIndex].cost = manualInputCost;
-      }
-      else {
-        nextSelectedGroupMembers[costIndex].isManualCost = false;
-        nextSelectedGroupMembers[costIndex].cost = 0;
-        nextSelectedGroupMembers[costIndex].selected = false;
-      }
-
-      this.setState({
-        selectedGroupMembers: nextSelectedGroupMembers,
-        newrecipient: nextNewRecipient,
-        // errorTotalMessage: errorTotalMessage,
-      }, () => {
-        this.addAll();
-        this.updateRecipientInfo();
-      });
-
-
-    }
-  }
-
-
   handleManualInputCost(event, costIndex) {
-    // const manualInputCost = parseInt(event.target.value);
-    //
-    // const nextSelectedGroupMembers = this.getCurrentSelectedGroupMembers();
-    // // const indivCost = 100 * Math.ceil(((this.state.totalCost - sumAllManualCost) / ((length - isManualCostCount) * 100)));
-    //
-    // if (event.target.value.length) {
-    //   nextSelectedGroupMembers[costIndex].isManualCost = true;
-    //   nextSelectedGroupMembers[costIndex].cost = manualInputCost;
-    // }
-    // else {
-    //   nextSelectedGroupMembers[costIndex].isManualCost = false;
-    //   nextSelectedGroupMembers[costIndex].cost = 0;
-    //   nextSelectedGroupMembers[costIndex].selected = false;
-    // }
+    const manualInputCost = parseInt(event.target.value);
 
-    // this.setState({
-    //   selectedGroupMembers: nextSelectedGroupMembers,
-    //   // errorTotalMessage: errorTotalMessage,
-    // });
+    const nextSelectedGroupMembers = this.getCurrentSelectedGroupMembers();
+    // const indivCost = 100 * Math.ceil(((this.state.totalCost - sumAllManualCost) / ((length - isManualCostCount) * 100)));
 
+    if (event.target.value.length) {
+      nextSelectedGroupMembers[costIndex].isManualCost = true;
+      nextSelectedGroupMembers[costIndex].cost = manualInputCost;
+    }
+    else {
+      nextSelectedGroupMembers[costIndex].isManualCost = false;
+      nextSelectedGroupMembers[costIndex].cost = 0;
+      nextSelectedGroupMembers[costIndex].selected = false;
+    }
+
+    this.setState({
+      selectedGroupMembers: nextSelectedGroupMembers,
+      // errorTotalMessage: errorTotalMessage,
+    }, () => {
+      // this.updateAll();
+      this.updateIndivCostDisplay();
+      this.addAll();
+      this.updateRecipientInfo();
+    });
   }
 
   render() {
@@ -720,12 +724,10 @@ export default class NewEvent extends React.Component {
                 <td onClick={event => this.selectHandleMember(event, member)} className="selected">
                  {member.username} ({member.email})
                 </td>
-                <td>
-                  {member.cost}
-                </td>
+
                 <input
-               type='number' placeholder="개별 금액 입력"
-                    onChange={(event) => this.handleManualInputCost(event, index)} onKeyDown={(event) => this.handleManualCostUpdate(event, index)}/>
+               type='number' placeholder={selectedGroupMembers[index].cost}
+                  onChange={(event) => this.handleManualInputCost(event, index)} />
               </tr>);
           } else {
             return (
@@ -804,7 +806,6 @@ export default class NewEvent extends React.Component {
           </table>
         <br />
         <br />
-        <input type="button" className="Nbbang" value="자동N빵!" onClick={this.evaluateAll} />
         <p>{this.state.totalCostErrorMessage}</p>
         <br />
         <br />
