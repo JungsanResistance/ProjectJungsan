@@ -6,14 +6,14 @@ const client = ses.createClient({ key: keys.AWSAccess.key, secret: keys.AWSAcces
 module.exports = {
   transaction: (from, to, type) => {
     console.log('email working?', to);
-    const admin = 'jungsan.project@gmail.com';
+    const admin = 'oneovern.com@gmail.com';
     const sendData = {
       to,
       from: admin,
       cc: from.email,
       subject: `${from.username}님으로부터 정산 요청이 도착하였습니다`,
       message: `<p><b>${from.username}</b>님께서 정산 확인을 요청하였습니다!</p>
-              <p><a href="http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/">프로젝트 정산 홈페이지</a>에서 내역을 확인하신 후, 정산 수락 혹은 거절을 선택해주세요.</p>
+              <p><a href="https://oneovern.com/">프로젝트 정산 홈페이지</a>에서 내역을 확인하신 후, 정산 수락 혹은 거절을 선택해주세요.</p>
               <p>저희 서비스를 이용해주셔서 감사합니다.</p>
               <br>
               <br>
@@ -26,7 +26,7 @@ module.exports = {
     if (type === 'accept') {
       sendData.subject = `${from.username}님께서 정산 요청을 수락하였습니다`;
       sendData.message = `<p><b>${from.username}</b>님께서 정산 요청을 수락하였습니다!</p>
-              <p><a href="http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/">프로젝트 정산 홈페이지</a>에서 내역을 확인해주세요.</p>
+              <p><a href="https://oneovern.com/">프로젝트 정산 홈페이지</a>에서 내역을 확인해주세요.</p>
               <p>저희 서비스를 이용해주셔서 감사합니다.</p>
               <br>
               <br>
@@ -39,7 +39,7 @@ module.exports = {
     if (type === 'reject') {
       sendData.subject = `${from.username}님께서 정산 요청을 거절하였습니다`;
       sendData.message = `<p><b>${from.username}</b>님께서 정산 요청을 거절하였습니다.</p>
-              <p><a href="http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/">프로젝트 정산 홈페이지</a>
+              <p><a href="https://oneovern.com/">프로젝트 정산 홈페이지</a>
               에서 내역을 확인하실 수 있으며 추후에 다시 정산을 요청하실 수 있습니다.</p>
               <p>저희 서비스를 이용해주셔서 감사합니다.</p>
               <br>
@@ -59,7 +59,7 @@ module.exports = {
     });
   },
   duplicate: (profile) => {
-    const admin = 'jungsan.project@gmail.com';
+    const admin = 'oneovern.com@gmail.com';
     const id = profile.userid;
     const name = profile.username;
     const email = profile.email;
@@ -74,7 +74,7 @@ module.exports = {
       message: `
               <p>안녕하세요, <b>${name}</b>님!</p>
               <p>고객님의 <b>${source}</b> 계정의 메일 주소로 지정된  <b>${email}</b> 의 이메일로 생성된 계정이 있음이 확인되었습니다.</p>
-              <p><a href="http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/auth/${source}">여기를 클릭</a>하셔서 해당 계정으로 로그인해주세요.</p>
+              <p><a href="https://oneovern.com/auth/${source}">여기를 클릭</a>하셔서 해당 계정으로 로그인해주세요.</p>
               <p>저희 서비스를 이용해주셔서 감사합니다.</p>
               <br>
               <br>
@@ -94,7 +94,7 @@ module.exports = {
     });
   },
   events: (eventDetail, type) => {
-    const admin = 'jungsan.project@gmail.com';
+    const admin = 'oneovern.com@gmail.com';
     const participantsemails = [];
     let participants = '';
     let eventtype = '생성';
@@ -125,7 +125,7 @@ module.exports = {
               <p>정산자: ${eventDetail.newrecipient.username}</p>
               <p>참여자:${participants}</p>
               <br>
-              <p><a href="http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/">프로젝트 정산 홈페이지</a>
+              <p><a href="https://oneovern.com/">프로젝트 정산 홈페이지</a>
               에서 내역을 확인하실 수 있으며</p>
               <p>잘못 기입된 사항이 있을 경우 그룹 관리자 혹은 이벤트 생성자에게 문의하시기 바랍니다.</p>
               <p>저희 서비스를 이용해주셔서 감사합니다.</p>

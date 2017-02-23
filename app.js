@@ -62,6 +62,7 @@ app.get('/auth/google/callback',
     failureRedirect: '/failed',
   }));
 
+// facebook authorization
 app.get('/auth/facebook',
   passport.authenticate('facebook', { scope: ['email'] }));
 app.get('/auth/facebook/callback',
