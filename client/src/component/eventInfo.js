@@ -13,7 +13,7 @@ export default class Eventinfo extends React.Component {
 
   componentWillMount() {
     const selectedEventData = JSON.parse(this.props.params.eventInfo);
-    axios.get(`http://ec2-52-78-111-241.ap-northeast-2.compute.amazonaws.com/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`)
+    axios.get(`https://oneovern.com/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`)
     .then((res) => {
       const eventContents = JSON.parse(res.data);
       this.setState({

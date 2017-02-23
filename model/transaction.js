@@ -1,7 +1,10 @@
 const transaction = require('../db/transaction');
+const mypage = require('../db/mypage');
+const group = require('../db/group');
 const auth = require('../db/auth');
 
 module.exports = {
+  // give requested information based on context
   get: (req) => {
     const currentUser = req.session.passport.user;
     const query = req.query;
@@ -9,13 +12,13 @@ module.exports = {
     if (query.type === 'post') {
       return new Promise((resolve, reject) => (resolve()))
       .then(() => (
-        transaction.getGroupList(currentUser)
+        mypage.getGroupList(currentUser)
       ))
       .then((groupList) => {
         console.log('grouplist',groupList);
         const body = JSON.stringify(groupList);
         const jsonBody = JSON.parse(body);
-        return transaction.getGroupMember(jsonBody);
+        return group.getGroupMember(jsonBody);
       })
       .catch(err => Promise.reject(err));
     } else if (query.type === 'put'){
@@ -64,6 +67,7 @@ module.exports = {
       .catch(err => Promise.reject(err));
     }
   },
+  // create new event
   post: (req) => {
     const body = req.body;
     body.userid = req.session.passport.user;
@@ -97,6 +101,7 @@ module.exports = {
     .then(() => body)
     .catch(err => Promise.reject(err));
   },
+  // modify the event to suit the request
   put: (req) => {
     const body = req.body;
     body.userid = req.session.passport.user;

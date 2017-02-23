@@ -2,10 +2,11 @@ const group = require('../db/group');
 const auth = require('../db/auth');
 
 module.exports = {
+  // get self email / check for groupname / return groupmembers
   get: (req) => {
     const currentUser = req.session.passport.user;
     return new Promise((resolve, reject) => (resolve()))
-    .then(() =>{
+    .then(() => {
       if (req.query.target === 'groupmembers') {
         return auth.checkGroupMember(currentUser, req.query.groupname);
       }
@@ -29,17 +30,17 @@ module.exports = {
       return results;
     })
     .catch(err => {
-      console.log('catch!');
-      return Promise.reject(err)
+      return Promise.reject(err);
     });
   },
+  // create new group
   post: (req) => {
     req.body.userid = req.session.passport.user;
     return new Promise((resolve, reject) => (resolve()))
     .then(() => (group.addNewGroup(req.body)))
     .catch(err => Promise.reject(err));
   },
-// group edit add new person failed
+// edit the group based on the context
   put: (req) => {
     const body = req.body;
     return auth.checkGroupAdmin(req.session.passport.user, body.oldgroupname)

@@ -3,7 +3,7 @@ import Router, { browserHistory } from 'react-router';
 import moment from 'moment';
 import axios from 'axios';
 
-//정산자가 선택되지 않았을 시 에러 메세지가 필요//
+//정산자가 선택되지 않았을 시 에러 메세지가 필요/////
 
 export default class EditEvent extends React.Component {
   constructor() {
