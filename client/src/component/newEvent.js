@@ -50,8 +50,8 @@ export default class NewEvent extends React.Component {
   }
 
   componentWillMount() {
-    const getGroupData = axios.get('https://oneovern.com/api/transaction?type=post');
-    const getAllEvents = axios.get('https://oneovern.com/api/history');
+    const getGroupData = axios.get('http://localhost:3000/api/transaction?type=post');
+    const getAllEvents = axios.get('http://localhost:3000/api/history');
 
     Promise.all([getGroupData, getAllEvents]).then((res) => {
       const getData = JSON.parse(res[0].data);
@@ -190,23 +190,48 @@ export default class NewEvent extends React.Component {
       participants: nextSelectedGroupMembers,
     });
 
-    axios.post('https://oneovern.com/api/transaction', {
-      date: this.state.date,
-      oldrecipient: this.state.oldrecipient,
-      newrecipient: this.state.newrecipient,
-      groupname: this.state.selectedGroup,
-      eventname: this.state.eventName,
-      participants: nextSelectedGroupMembers,
-    })
-    .then((res) => {
-      if (res.status === 201) {
-        alert('이벤트가 등록되었습니다.');
-        browserHistory.push('/mypage');
-      } else {
-        alert('빈칸을 확인해주세요 ^^');
-        console.log('post response:', res);
+    // this is temp code for catching bug at newrecipient === participant  recipient compare test at backend
+    // I would like not to post if they are not the selectedRecipientName
+    // in the future if the bug is all resolved and stable, let's delete this part and rely on backend error report
+    let compare;
+    nextSelectedGroupMembers.forEach((member) => {
+      if (member.email === this.state.newrecipient.email) {
+        const recipient = JSON.stringify(this.state.newrecipient);
+        const participant = JSON.stringify(member);
+        console.log(recipient, participant);
+        if (recipient === participant) {
+          compare =  true;
+        }
+        else {
+          compare = false;
+        }
       }
     });
+    console.log(compare)
+    if (!compare) {
+      alert('newrecipient !== participant');
+      console.log('newrecipient', this.state.newrecipient, 'participant', nextSelectedGroupMembers)
+    }
+
+    else {
+      axios.post('http://localhost:3000/api/transaction', {
+        date: this.state.date,
+        oldrecipient: this.state.oldrecipient,
+        newrecipient: this.state.newrecipient,
+        groupname: this.state.selectedGroup,
+        eventname: this.state.eventName,
+        participants: nextSelectedGroupMembers,
+      })
+      .then((res) => {
+        if (res.status === 201) {
+          alert('이벤트가 등록되었습니다.');
+          browserHistory.push('/mypage');
+        } else {
+          alert('빈칸을 확인해주세요 ^^');
+          console.log('post response:', res);
+        }
+      });
+    }
   }
 
   // select & unselect memeber here
@@ -536,17 +561,24 @@ export default class NewEvent extends React.Component {
         let nextNewRecipient;
         const nextSelectedGroupMembers = this.getCurrentSelectedGroupMembers();
         const indivCost = this.getIndivCost();
-
+        const oldRecipient = this.getCurrentRecipient();
 
         nextSelectedGroupMembers.forEach((member, index) => {
           if (member.username === selectedRecipientName) {
             nextNewRecipient = Object.assign({}, nextSelectedGroupMembers[index]);
-            if (member.selected){
+            // if (member.selected){
               nextNewRecipient.ispaid = 1;
+              member.ispaid = 1;
               if (!member.isManualCost) {
                 nextNewRecipient.cost = indivCost;
-                member.cost = indivCost;
+                // member.cost = indivCost;
               }
+            // }
+          }
+          else {
+            // take care of old recipient member in participant: flag down
+            if (member.email === oldRecipient.email) {
+              member.ispaid = 0;
             }
           }
         });
@@ -573,7 +605,7 @@ export default class NewEvent extends React.Component {
     })
     .then((eventTarget) => {
       if (eventTarget.name === 'eventGroup') {
-        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
+        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -582,7 +614,7 @@ export default class NewEvent extends React.Component {
         })
       }
       else if (eventTarget.name === 'eventDate') {
-        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
+        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -591,7 +623,7 @@ export default class NewEvent extends React.Component {
         })
       }
       else if (eventTarget.type === 'text') {
-        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
+        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -825,7 +857,6 @@ export default class NewEvent extends React.Component {
                     <button type="button" className="btn addEventButton" value="이벤트 등록" onClick={this.preCheck}><b>이벤트 등록</b></button>
                   </div>
                 </div>
-                <input type="button" className="Bang" value="계산 쾅!" onClick={this.evaluateAll} />
                 <p>{this.state.totalCostErrorMessage}</p>
                 <br />
                 <br />

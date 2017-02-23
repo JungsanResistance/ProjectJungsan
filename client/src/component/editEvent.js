@@ -56,10 +56,10 @@ export default class EditEvent extends React.Component {
 
 
     // all groups I belong info
-    const getGroupData = axios.get('https://oneovern.com/api/transaction?type=post');
+    const getGroupData = axios.get('http://localhost:3000/api/transaction?type=post');
 
     // Event info
-    const getEventData = axios.get(`https://oneovern.com/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`);
+    const getEventData = axios.get(`http://localhost:3000/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`);
 
 
     Promise.all([getGroupData, getEventData])
@@ -216,7 +216,7 @@ export default class EditEvent extends React.Component {
     const filterParticipants = nextSelectedGroupMembers.filter((member) => {
       return member.selected;
     });
-    
+
     const storage = [];
     filterParticipants.forEach((member) => {
       storage.push({
@@ -238,7 +238,7 @@ export default class EditEvent extends React.Component {
       participants: storage,
     });
 
-    axios.put('https://oneovern.com/api/transaction', {
+    axios.put('http://localhost:3000/api/transaction', {
       olddate: this.state.oldDate,
       newdate: this.state.newDate,
       oldrecipient: this.state.oldrecipient,
@@ -524,22 +524,26 @@ export default class EditEvent extends React.Component {
       let nextNewRecipient;
       const nextSelectedGroupMembers = this.getCurrentGroupMembers();
       const indivCost = this.getIndivCost();
+
       nextSelectedGroupMembers.forEach((member, index) => {
         if (member.username === selectedRecipientName) {
          nextNewRecipient = Object.assign({}, nextSelectedGroupMembers[index]);
-         delete nextNewRecipient.isManualCost;
-         delete nextNewRecipient.selected;
-         console.log(nextNewRecipient)
          nextNewRecipient.ispaid = 1;
-        //  nextNewRecipient.selected = true;
-         nextNewRecipient.cost = indivCost;
          member.ispaid = 1;
+         if (!member.isManualCost) {
+           nextNewRecipient.cost = indivCost;
+         }
         }
-        // set past recipient's ispaid flag down
-        else if (member.email === this.state.newrecipient.email && member.name !== selectedRecipientName) {
-          nextSelectedGroupMembers[index].ispaid = 0;
+        // take care of old recipient member in participant: flag down
+        else {
+          if (member.email === this.state.newrecipient.email) {
+            member.ispaid = 0;
+          }
         }
       });
+
+      delete nextNewRecipient.isManualCost;
+      delete nextNewRecipient.selected;
       console.log('nextNewREcipient', nextNewRecipient);
 
       this.setState({
@@ -586,7 +590,7 @@ export default class EditEvent extends React.Component {
     })
     .then((eventTarget) => {
       if (eventTarget.name === 'eventGroup') {
-        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
+        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -595,7 +599,7 @@ export default class EditEvent extends React.Component {
         })
       }
       else if (eventTarget.name === 'eventDate') {
-        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
+        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -604,7 +608,7 @@ export default class EditEvent extends React.Component {
         })
       }
       else if (eventTarget.type === 'text') {
-        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
+        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -800,7 +804,7 @@ export default class EditEvent extends React.Component {
                   name="recipientList" className="form-control recipientSelect"
                   onChange={this.selectHandleChange} >
                   <option>{this.state.newrecipient.username}</option>
-                  {recipientList}
+                  {recipientTable}
                 </select>
               </div>
               <div className="form-group">
