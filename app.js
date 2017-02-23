@@ -41,7 +41,6 @@ app.get('*', (req, res, next) => {
         res.sendfile(path.join(__dirname, 'client/dist/index.html'));
       } else return next();
     } else {
-      console.log('why???');
       res.redirect('/');
     }
   } else return next();
