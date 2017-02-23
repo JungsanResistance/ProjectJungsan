@@ -3,8 +3,8 @@ import moment from 'moment';
 import axios from 'axios';
 import Router, { browserHistory } from 'react-router';
 
-// http://localhost:3000/
-// http://localhost:3000
+// https://oneovern.com/
+// https://oneovern.com
 
 export default class NewEvent extends React.Component {
   constructor() {
@@ -53,8 +53,8 @@ export default class NewEvent extends React.Component {
   }
 
   componentWillMount() {
-    const getGroupData = axios.get('http://localhost:3000/api/transaction?type=post');
-    const getAllEvents = axios.get('http://localhost:3000/api/history');
+    const getGroupData = axios.get('https://oneovern.com/api/transaction?type=post');
+    const getAllEvents = axios.get('https://oneovern.com/api/history');
 
     Promise.all([getGroupData, getAllEvents]).then((res) => {
       const getData = JSON.parse(res[0].data);
@@ -193,7 +193,7 @@ export default class NewEvent extends React.Component {
       participants: nextSelectedGroupMembers,
     });
 
-    axios.post('http://localhost:3000/api/transaction', {
+    axios.post('https://oneovern.com/api/transaction', {
       date: this.state.date,
       oldrecipient: this.state.oldrecipient,
       newrecipient: this.state.newrecipient,
@@ -576,7 +576,7 @@ export default class NewEvent extends React.Component {
     })
     .then((eventTarget) => {
       if (eventTarget.name === 'eventGroup') {
-        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
+        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -585,7 +585,7 @@ export default class NewEvent extends React.Component {
         })
       }
       else if (eventTarget.name === 'eventDate') {
-        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
+        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -594,7 +594,7 @@ export default class NewEvent extends React.Component {
         })
       }
       else if (eventTarget.type === 'text') {
-        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
+        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
 
         .then((res) => {
           if (res.data.length-2) {
