@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios';
-import Router, { browserHistory } from 'react-router'
+import Router, { browserHistory } from 'react-router';
+import Navbar from './func/navbar';
+
 export default class AddNewGroup extends React.Component {
 
   constructor() {
@@ -187,6 +189,7 @@ export default class AddNewGroup extends React.Component {
 
     return (
       <div>
+        <Navbar />
         <br />
         <br />
           <div className="container-fluid">

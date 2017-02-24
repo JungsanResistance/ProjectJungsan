@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import Router, { browserHistory } from 'react-router'
+import Navbar from './func/navbar';
 
 export default class GroupEditForm extends React.Component {
 
@@ -314,7 +315,28 @@ export default class GroupEditForm extends React.Component {
 
     return (
       <div>
-
+        <Navbar />
+        <h2>groupname :</h2>
+          <input
+            type="text" className="editGroupName" placeholder={this.state.oldGroupname}
+            onChange={this.handleGroup} onKeyPress={this.handleKeyPress}/>
+          <input type="submit" value="중복확인" onClick={this.handleGroupName} />
+          <p className={this.state.groupDuplicateFlag}>{this.state.errorGroupnameDuplicate} </p>
+        <br />
+        <br />
+        <h2>groupmember :</h2>
+          Add groupmember :
+          <input
+            type="text" className="editGroupMember" placeholder=" e.g. wnghee91@gmail.com"
+            size="30" onKeyPress={this.handleKeyPress} onChange={this.handleGroup} />
+          <input
+            type="submit" value="add" onClick={this.handleAddMember} />
+        {this.state.errorMemberDuplicate}
+        <br />
+        <ul>
+          {members}
+        </ul>
+        <input type="button" value="그룹수정" onClick={this.handleSubmitGroup} />
         <br />
         <br />
           <div className="container-fluid">

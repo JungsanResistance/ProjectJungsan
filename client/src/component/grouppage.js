@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import axios from 'axios';
 import RenderMembers from './func/renderMember';
+import Navbar from './func/navbar';
 
 export default class GroupPage extends React.Component {
   constructor() {
@@ -138,6 +139,7 @@ export default class GroupPage extends React.Component {
 
     return (
       <div>
+        <Navbar />
         <div className="container">
             <div className="col-md-1"></div>
           <div className="col-md-10">

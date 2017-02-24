@@ -1,7 +1,7 @@
 import React from 'react';
 import Router, { browserHistory, Link } from 'react-router';
 import axios from 'axios';
-
+import Navbar from './func/navbar';
 
 export default class Eventinfo extends React.Component {
   constructor() {
@@ -51,7 +51,7 @@ export default class Eventinfo extends React.Component {
 
     return(
       <div>
-
+        <Navbar />
         <div className="container">
           <div className="row">
             <div className="col-md-3"></div>

@@ -2,6 +2,9 @@ import React from 'react';
 import axios from 'axios';
 import Router, { browserHistory } from 'react-router';
 import HistoryTable from './historyTable';
+import Navbar from './func/navbar';
+
+const Loader = require('react-loader');
 
 export default class History extends React.Component {
 
@@ -13,6 +16,7 @@ export default class History extends React.Component {
       imgUrl: '',
       ispaid: 0,
       myEmail: '',
+      loaded: false,
     };
 
     this.handleEditEvent = this.handleEditEvent.bind(this);
@@ -30,6 +34,11 @@ export default class History extends React.Component {
         loanedHistory: getData.loaned,
         myEmail: myEmailData,
       });
+    })
+    .then(() => {
+      this.setState({
+        loaded: true,
+      });
     });
   }
   // edit single event // under the consturction
@@ -40,12 +49,15 @@ export default class History extends React.Component {
   render() {
     return (
       <div className="historyTable">
+        <Navbar />
+        <Loader loaded={this.state.loaded}>
         <table className="table">
           <HistoryTable debtHistory={this.state.debtHistory} myEmail={this.state.myEmail} />
           <br />
           <br />
           <HistoryTable loanedHistory={this.state.loanedHistory} myEmail={this.state.myEmail} />
         </table>
+        </Loader>
       </div>
     );
   }

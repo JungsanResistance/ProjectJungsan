@@ -2,7 +2,7 @@ import React from 'react';
 import Router, { browserHistory } from 'react-router';
 import moment from 'moment';
 import axios from 'axios';
-
+import Navbar from './func/navbar';
 //정산자가 선택되지 않았을 시 에러 메세지가 필요/////
 
 export default class EditEvent extends React.Component {
@@ -56,10 +56,10 @@ export default class EditEvent extends React.Component {
 
 
     // all groups I belong info
-    const getGroupData = axios.get('http://localhost:3000/api/transaction?type=post');
+    const getGroupData = axios.get('https://oneovern.com/api/transaction?type=post');
 
     // Event info
-    const getEventData = axios.get(`http://localhost:3000/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`);
+    const getEventData = axios.get(`https://oneovern.com/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`);
 
 
     Promise.all([getGroupData, getEventData])
@@ -238,7 +238,7 @@ export default class EditEvent extends React.Component {
       participants: storage,
     });
 
-    axios.put('http://localhost:3000/api/transaction', {
+    axios.put('https://oneovern.com/api/transaction', {
       olddate: this.state.oldDate,
       newdate: this.state.newDate,
       oldrecipient: this.state.oldrecipient,
@@ -395,9 +395,10 @@ export default class EditEvent extends React.Component {
     });
 
     // this calculation is unsure
-    // const indivCost = 100 * Math.ceil(((this.state.totalCost - sumAllManualCost) / ((length - isManualCostCount) * 100)));
     const count = this.countSelectedMember();
-    const indivCost = count - isManualCostCount ? (this.state.totalCost - sumAllManualCost) / (count - isManualCostCount) : this.state.selectedGroupMembers[memberIndexHasManualCost];
+    const indivCost = count - isManualCostCount ?
+       100 * Math.ceil((this.state.totalCost - sumAllManualCost) / ((count - isManualCostCount) * 100))
+       : this.state.selectedGroupMembers[memberIndexHasManualCost];
     return indivCost;
   }
 
@@ -492,8 +493,8 @@ export default class EditEvent extends React.Component {
     }, 0);
 
 
-    const highEndDeviation = total + 100;
-    const lowEndDeviation = total - 100;
+    const highEndDeviation = total + 1000;
+    const lowEndDeviation = total - 1000;
     console.log('highEnd', highEndDeviation, 'lowEnd', lowEndDeviation, 'sumMemberCost', sumMemberCost);
     if (sumMemberCost < highEndDeviation && sumMemberCost > lowEndDeviation) {
       return true;
@@ -590,7 +591,7 @@ export default class EditEvent extends React.Component {
     })
     .then((eventTarget) => {
       if (eventTarget.name === 'eventGroup') {
-        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
+        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -599,7 +600,7 @@ export default class EditEvent extends React.Component {
         })
       }
       else if (eventTarget.name === 'eventDate') {
-        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
+        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -608,7 +609,7 @@ export default class EditEvent extends React.Component {
         })
       }
       else if (eventTarget.type === 'text') {
-        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
+        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -765,6 +766,7 @@ export default class EditEvent extends React.Component {
 
     return (
       <div>
+        <Navbar />
         <br />
         <br />
         <div className="container-fluid">
