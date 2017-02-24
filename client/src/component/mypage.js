@@ -50,8 +50,8 @@ export default class Mypage extends React.Component {
   }
 
   reset() {
-    const myData = axios.get('http://localhost:3000/api/misc');
-    const groupData = axios.get('http://localhost:3000/api/mypage');
+    const myData = axios.get('https://oneovern.com/api/misc');
+    const groupData = axios.get('https://oneovern.com/api/mypage');
     Promise.all([myData, groupData]).then((res) => {
       const myEmailData = JSON.parse(res[0].data)[0].email;
       const groupStorage = [];
@@ -105,7 +105,7 @@ export default class Mypage extends React.Component {
 
     if (answer) {
       console.log(individualTransacionDone)
-      axios.put(`http://localhost:3000/api/misc`, individualTransacionDone)
+      axios.put(`https://oneovern.com/api/misc`, individualTransacionDone)
       .then((res) => {
         if (res.status === 200) {
           if (eventValue === '정산요청') {
@@ -252,7 +252,7 @@ export default class Mypage extends React.Component {
                       {/* <li className="newgroup" onClick={this.handleGroupPage}><Link to="group"><b>+그룹 생성</b></Link></li> */}
                     {/* </ul> */}
                   </li>
-                  <li className="navbarMenu"><a className="logout" href="http://localhost:3000/logout"><b className="navbarMenu">로그아웃</b></a></li>
+                  <li className="navbarMenu"><a className="logout" href="https://oneovern.com/logout"><b className="navbarMenu">로그아웃</b></a></li>
                 </ul>
               </div>
             </div>
