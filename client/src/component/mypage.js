@@ -86,7 +86,7 @@ export default class Mypage extends React.Component {
     const eventValue = event.target.value;
     let actionType = 'pending';
     let answer = true;
-
+    console.log(event.target)
     if (event.target.value === '수락') {
       actionType = 'accept';
     }
@@ -104,6 +104,7 @@ export default class Mypage extends React.Component {
     }
 
     if (answer) {
+      console.log(individualTransacionDone)
       axios.put(`https://oneovern.com/api/misc`, individualTransacionDone)
       .then((res) => {
         if (res.status === 200) {
@@ -134,7 +135,7 @@ export default class Mypage extends React.Component {
     } = this.state;
     let declineButton = '';
     let actionButton =
-    <button className="btn btn-outline-success" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
+    <button className="btn btn-outline-success" value="정산요청" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
 
     let rendingPage = '';
 
@@ -143,25 +144,25 @@ export default class Mypage extends React.Component {
         //render all sumlist except me//
         if (data.email !== this.state.myEmail) {
           actionButton =
-          <button className="btn btn-outline-success" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
+          <button className="btn btn-outline-success" value="정산요청" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
 
           this.state.pendingUserList.forEach((member) => {
             if (data.email === member.applicantemail || data.email === member.acceptoremail) {
               // actionButton = '정산요청';
               if (member.applicantemail === this.state.myEmail && member.status === 1) {
                 actionButton =
-                <button className="btn btn-outline-info" onClick={(event) => this.handleDone(event, index)}>정산중</button>;
+                <button className="btn btn-outline-info">정산중</button>;
 
               }
               else if (member.status === 1) {
                 actionButton =
-                <button className="btn btn-outline-info" onClick={(event) => this.handleDone(event, index)}>수락</button>;
+                <button className="btn btn-outline-info" value="수락" onClick={(event) => this.handleDone(event, index)}>수락</button>;
                 declineButton =
-                <button className="btn btn-outline-info" onClick={(event) => this.handleDone(event, index)}>거절</button>;
+                <button className="btn btn-outline-info" value="거절" onClick={(event) => this.handleDone(event, index)}>거절</button>;
               }
               else if (member.status === null) {
                 actionButton =
-                <button className="btn btn-outline-success" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
+                <button className="btn btn-outline-success" value="정산요청" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
               }
             }
           });
