@@ -52,7 +52,7 @@ export default class AddNewGroup extends React.Component {
       .then((res) => {
         if (res.status === 201) {
           console.log('post response:', res);
-          browserHistory.push('/mypage');
+          browserHistory.push('/grouppage');
         } else {
           console.log(res.status)
         }
@@ -182,7 +182,7 @@ export default class AddNewGroup extends React.Component {
           <td>{data.username}</td>
           <td>{data.email}</td>
           <td><button
-            type="button" className="btn" value="delete" name={data.email}
+            type="button" className="btn btn-outline-info" value="delete" name={data.email}
             onClick={this.handleMemberDelete} >삭제</button>
           </td>
         </tr>);

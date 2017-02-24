@@ -305,7 +305,7 @@ export default class GroupEditForm extends React.Component {
               <td>{member.email}</td>
               <td><button
                 type="button" className="btn btn-outline-info" value="delete" name={member.email}
-                onClick={this.handleMemberDelete} />
+                onClick={this.handleMemberDelete} >삭제</button>
               </td>
             </tr>);
         }
