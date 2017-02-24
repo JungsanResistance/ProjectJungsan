@@ -39,12 +39,12 @@ export default class AddNewGroup extends React.Component {
     if (!this.state.groupname.length) {
       console.log("empty group name!!");
       this.setState({
-        errorGroupnameDuplicate: '그룹 이름좀 넣으라고 이자식아'
+        errorGroupnameDuplicate: '그룹 이름을 넣어주세요'
       })
     }
     else {
       console.log("groupname::",this.state.groupname,
-      "groupmembers::::", this.state.groupmembers,)
+      "groupmembers::::", this.state.groupmembers);
       axios.post('https://oneovern.com/api/group', {
         groupname: this.state.groupname,
         groupmembers: this.state.groupmembers,
@@ -63,14 +63,16 @@ export default class AddNewGroup extends React.Component {
     }
   }
   handleInput(event) {
-    if (event.target.className === 'inputGroupName') {
+    if (event.target.className === 'form-control inputGroupName') {
+      console.log(event.target.value)
       this.setState({
         groupname: event.target.value,
         errorGroupnameDuplicate: '',
       });
     }
-    else if (event.target.className === 'addGroupMembers') {
-      // console.log(this.state.emailToBeChecked)
+    else if (event.target.className === 'form-control addGroupMembers') {
+      console.log(event.target.value);
+
       this.setState({
         emailToBeChecked: event.target.value,
       });
@@ -78,18 +80,24 @@ export default class AddNewGroup extends React.Component {
   }
 
   handleAddMember() {
-    document.body.getElementsByClassName('addGroupMembers')[0].value = '';
+    document.body.getElementsByClassName('form-control addGroupMembers')[0].value = '';
     axios.get(`https://oneovern.com/api/groupedit?target=email&email=${this.state.emailToBeChecked}`)
     .then((res) => {
       console.log(res.data);
       const data = JSON.parse(res.data);
       if (data.length) {
-        const nextGroupmembers = this.state.groupmembers;
+        const nextGroupmembers = this.state.groupmembers.slice();
         const duplicateEmailCheck = this.state.groupmembers.some((item) => {
           return item.email === data[0].email;
         });
-        console.log(duplicateEmailCheck)
-        if (!duplicateEmailCheck) {
+
+        console.log("duplicateEmailCheck", duplicateEmailCheck)
+        if (duplicateEmailCheck) {
+          this.setState({
+            errorMemberDuplicate: '이미 추가된 멤버입니다',
+          });
+        } else {
+          console.log(nextGroupmembers)
           nextGroupmembers.push({
             username: data[0].username,
             email: data[0].email,
@@ -98,14 +106,10 @@ export default class AddNewGroup extends React.Component {
             groupmembers: nextGroupmembers,
             errorMemberDuplicate: '',
           });
-        } else {
-          this.setState({
-            errorMemberDuplicate: 'user is already added!',
-          });
         }
       } else {
         this.setState({
-          errorMemberDuplicate: 'user email does not exist!',
+          errorMemberDuplicate: '등록된 email이 없습니다.',
         });
       }
     });
@@ -113,7 +117,7 @@ export default class AddNewGroup extends React.Component {
 
   handleKeyPress(event) {
     if (event.charCode === 13) {
-      if (event.target.className === 'addGroupMembers') {
+      if (event.target.className === 'form-control addGroupMembers') {
         this.handleAddMember();
       }
       else {
@@ -135,7 +139,7 @@ export default class AddNewGroup extends React.Component {
         const data = JSON.parse(res.data);
         if (data.length) {
           this.setState({
-            errorGroupnameDuplicate: '이 그룹이름은 이미 있어 띵구야',
+            errorGroupnameDuplicate: '중복된 그룹 이름입니다',
             groupDuplicateFlag: "errorMemberDuplicateFalse",
           })
         }
@@ -165,9 +169,11 @@ export default class AddNewGroup extends React.Component {
   }
 
   render() {
+    console.log(this.state.groupmembers)
     const groupMembers = this.state.groupmembers.map((data, index) => {
-      if(index !==0) {
-        return
+      console.log(data)
+      if (index !==0) {
+        return (
         <tr>
           <td>{data.username}</td>
           <td>{data.email}</td>
@@ -175,7 +181,7 @@ export default class AddNewGroup extends React.Component {
             type="submit" value="delete" name={data.email}
             onClick={this.handleMemberDelete} />
           </td>
-        </tr>;
+        </tr>);
       }
       else {
         return (
