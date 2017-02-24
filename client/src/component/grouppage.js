@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import axios from 'axios';
 import RenderMembers from './func/renderMember';
+import Navbar from './func/navbar';
 
 export default class GroupPage extends React.Component {
   constructor() {
@@ -14,9 +15,9 @@ export default class GroupPage extends React.Component {
 
   componentWillMount() {
     // get all group-member pair data
-    const pairGroupMember = axios.get(`https://oneovern.com/api/transaction?type=post`);
+    const pairGroupMember = axios.get(`http://localhost:3000/api/transaction?type=post`);
     // get isadmin data for each groupData
-    const adminData = axios.get(`https://oneovern.com/api/mypage`);
+    const adminData = axios.get(`http://localhost:3000/api/mypage`);
 
     Promise.all([pairGroupMember, adminData])
     .then((res) => {
@@ -76,6 +77,7 @@ export default class GroupPage extends React.Component {
 
     return (
       <div>
+        <Navbar />
         <div className="container">
             <div className="col-md-1"></div>
           <div className="col-md-10">
