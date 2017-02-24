@@ -21,10 +21,10 @@ export default class GroupPage extends React.Component {
     const pairGroupMember = axios.get(`https://oneovern.com/api/transaction?type=post`);
     // get isadmin data for each groupData
     const adminData = axios.get(`https://oneovern.com/api/mypage`);
-
+    console.log('we get here')
     Promise.all([pairGroupMember, adminData])
     .then((res) => {
-      console.log(res)
+      console.log('hahahahahha', res)
       const getGroupMemberData = JSON.parse(res[0].data);
       const getGroupAdminInfo = JSON.parse(res[1].data).groupList;
       console.log('getGroupAdminInfo', getGroupAdminInfo);

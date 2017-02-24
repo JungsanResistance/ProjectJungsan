@@ -21,7 +21,7 @@ export default class GroupEditForm extends React.Component {
     };
     this.handleAddMember = this.handleAddMember.bind(this);
     this.handleInput = this.handleInput.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.handleEneter = this.handleEneter.bind(this);
     this.handleMemberDelete = this.handleMemberDelete.bind(this);
     this.handleSubmitGroup = this.handleSubmitGroup.bind(this);
     this.handleGroupName = this.handleGroupName.bind(this);
@@ -30,7 +30,7 @@ export default class GroupEditForm extends React.Component {
   componentWillMount() {
     axios.get(`https://oneovern.com/api/groupedit?target=groupmembers&groupname=${this.props.params.groupname}`)
     .then((res) => {
-      console.log("res!!!!!!!!!",res)
+      console.log("res!!!!!!!!!", res)
       const groupData = JSON.parse(res.data);
       const groupMemberData = groupData.map((data) => {
         return {
@@ -40,15 +40,17 @@ export default class GroupEditForm extends React.Component {
           email: data.email,
         };
       });
+
       this.setState({
-        newGroupmembers: groupMemberData.map(groupMember => Object.assign({}, groupMember)),
-        oldGroupmembers: groupMemberData.map(groupMember => Object.assign({}, groupMember)),
+        newGroupmembers: groupMemberData,
+        oldGroupmembers: groupMemberData,
       });
+
     });
   }
 
   handleSubmitGroup() {
-    this.handleGroupName()
+    this.handleGroupName();
 
     if(this.state.errorGroupnameDuplicate !== '현재 사용하고 있는 그룹이름입니다.' &&
     this.state.errorGroupnameDuplicate !== '이 그룹이름은 이미 있어 띵구야') {
@@ -68,11 +70,9 @@ export default class GroupEditForm extends React.Component {
         if ((groupNameCheck === false) && groupMemberCheck) {
             axios.put(`https://oneovern.com/api/groupedit`,
               {
-                body: {
                   oldgroupname: this.state.oldGroupname,
                   newgroupname: this.state.newGroupname,
                   action: 'modifyGroupName',
-                }
               }
             )
             .then((res) => {
@@ -155,28 +155,34 @@ export default class GroupEditForm extends React.Component {
           newGroupname: event.target.value,
           errorSubmit: '',
           errorGroupnameDuplicate: '',
-        })
+        });
       } else {
         this.setState({
           newGroupname: this.props.params.groupname,
         });
       }
     }
-    else if (event.target.className === 'form-control editGroupMember') {
+    else if (event.target.className === 'form-control addGroupMembers') {
         this.setState({
           emailToBeChecked: event.target.value,
           errorMemberDuplicate: '',
           errorSubmit: '',
-        })
+        });
     }
   }
 
   handleAddMember() {
-    document.body.getElementsByClassName('editGroupMember')[0].value = '';
+    document.body.getElementsByClassName('form-control addGroupMembers')[0].value = '';
+    console.log(this.state.emailToBeChecked)
+
     axios.get(`https://oneovern.com/api/groupedit?target=email&email=${this.state.emailToBeChecked}`)
     .then((res) => {
       const data = JSON.parse(res.data);
-      const nextGroupmembers = [...this.state.newGroupmembers];
+      console.log('received data', data)
+      const nextGroupmembers = this.state.newGroupmembers.map((member) => {
+        return member;
+      });
+
       if (data.length) {
         const duplicateEmailCheck = nextGroupmembers.some((item) => {
           return item.email === data[0].email;
@@ -188,6 +194,9 @@ export default class GroupEditForm extends React.Component {
             email: data[0].email,
             active: 1,
           });
+
+          console.log(nextGroupmembers);
+
           this.setState({
             newGroupmembers: nextGroupmembers,
             errorMemberDuplicate: '추가되었습니다.',
@@ -217,6 +226,7 @@ export default class GroupEditForm extends React.Component {
         }
       }
       else {
+        console.log('hi')
         this.setState({
           errorMemberDuplicate: '등록된 이메일주소가 아닙니다!',
           emailToBeChecked: '',
@@ -225,33 +235,42 @@ export default class GroupEditForm extends React.Component {
     });
   }
 
-  handleKeyPress(event) {
+  handleEneter(event) {
     if (event.charCode === 13) {
-      if (event.target.className === 'form-control editGroupMember') {
-        this.handleAddMember();
-      }
-      else if (event.target.className === 'form-control editGroupName') {
+      if (event.target.className === 'form-control inputGroupName') {
         this.handleGroupName();
+      }
+      else if (event.target.className === 'form-control addGroupMembers') {
+        console.log('enter')
+        this.handleAddMember();
       }
     }
   }
 
   handleMemberDelete(event) {
+    console.log(event.target)
     console.log("delete clicked")
-    const NextGroupmembers = [...this.state.newGroupmembers];
-    NextGroupmembers.map((data) => {
-      if (data.username === event.target.name) {
-        data.active = 0;
+    const nextGroupmembers = this.state.newGroupmembers.map((member) => {
+      return member;
+    });
+
+    console.log(nextGroupmembers)
+    nextGroupmembers.forEach((member) => {
+      if (member.username === event.target.name) {
+        member.active = 0;
       }
     });
+    console.log(nextGroupmembers)
+    alert('hey')
     this.setState({
-      newGroupmembers: NextGroupmembers,
+      newGroupmembers: nextGroupmembers,
       errorMemberDuplicate: '',
       errorSubmit: '',
     });
   }
 
   handleGroupName() {
+    console.log(this.state.newGroupname);
     axios.get(`https://oneovern.com/api/groupedit?target=groupname&groupname=${this.state.newGroupname}`)
     .then((res) => {
       const data = JSON.parse(res.data);
@@ -275,43 +294,33 @@ export default class GroupEditForm extends React.Component {
   }
 
   render() {
-    // const members = [];
-    // this.state.newGroupmembers.forEach((member) => {
-    //   if (member.active) {
-    //     members.push(
-    //       <li>
-    //         {member.username} ({member.email})
-    //         <input
-    //         type="button" name={member.username} value="delete" onClick={this.handleMemberDelete}/>
-    //       </li>)
-    //   }
-    // });
-
     console.log('this.state.newGroupmembers',this.state.newGroupmembers)
-
-    const members = this.state.newGroupmembers.map((member, index) => {
-      if(index !==0 ) {
-        return (
-        <tr>
-          <td>{member.username}</td>
-          <td>{member.email}</td>
-          <td><input
-            type="submit" value="delete" name={member.email}
-            onClick={this.handleMemberDelete} />
-          </td>
-        </tr>);
-      }
-      else {
-        return (
-          <tr>
-            <td>{member.username}</td>
-            <td>{member.email}</td>
-            <td>그룹장</td>
-          </tr>);
+    const members = [];
+    this.state.newGroupmembers.forEach((member, index) => {
+      if (member.active) {
+        if (index !== 0) {
+          members.push(
+            <tr>
+              <td>{member.username}</td>
+              <td>{member.email}</td>
+              <td><button
+                type="button" className="btn btn-outline-info" value="delete" name={member.email}
+                onClick={this.handleMemberDelete} />
+              </td>
+            </tr>);
+        }
+        else {
+          members.push(
+            <tr>
+              <td>{member.username}</td>
+              <td>{member.email}</td>
+              <td>그룹장</td>
+            </tr>);
+          }
       }
     });
 
-    console.log('members',members)
+    console.log('members', members)
 
     return (
       <div>
@@ -340,14 +349,14 @@ export default class GroupEditForm extends React.Component {
                       <div className="form-group">
                         <input
                           type="text" className="form-control inputGroupName" placeholder="그룹이름을 적어주세요."
-                          onChange={this.handleInput} onKeyPress={this.handleKeyPress} />
+                          onChange={this.handleInput} onKeyPress={this.handleEneter} />
                         <button type="button" className="btn duplicateGroupnameCheck" onClick={this.handleGroupName}>중복확인</button>
                         <p className={this.state.groupDuplicateFlag}>{this.state.errorGroupnameDuplicate} </p>
                       </div>
                       <div className="form-group">
                         <input
                           type="text" className="form-control addGroupMembers" placeholder="그룹원의 이메일을 적어주세요. ex) wnghee91@gmail.com"
-                          onChange={this.handleInput} onKeyPress={this.handleKeyPress} />
+                          onChange={this.handleInput} onKeyPress={this.handleEneter} />
                         <button type="button" className="btn addGroupMember" onClick={this.handleAddMember} >그룹원 추가</button>
                         <p className="errorMemberDuplicateFalse">{this.state.errorMemberDuplicate} </p>
                       </div>
