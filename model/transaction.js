@@ -148,13 +148,21 @@ module.exports = {
     .then((isAdmin) => {
       if (!isAdmin.length) return Promise.reject('Not the admin');
     })
-    .then(() => (
-      transaction.updateEventDetail(body)
-    ))
+    .then(() => {
+      return new Promise((resolve, reject) => {
+        resolve(transaction.updateEventDetail(body));
+      });
+    })
     .then(() => {
       console.log('updateEventDetail');
       return new Promise((resolve, reject) => {
         resolve(transaction.updateEventAddParticipants(body));
+      });
+    })
+    .then(() => {
+            console.log('updateEventAddParticipants');
+      return new Promise((resolve, reject) => {
+        resolve(transaction.updateParticipantsCost(body));
       });
     })
     .then(() => {

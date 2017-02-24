@@ -323,7 +323,7 @@ export default class NewEvent extends React.Component {
       });
     }
 
-    if (this.state.groupMemberErrorMesseage.length) {
+    if (this.state.groupMemberErrorMesseage) {
       this.setState({
         selectedGroupMembers: nextSelectedGroupMembers,
         groupMemberErrorMesseage: '',

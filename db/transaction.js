@@ -260,6 +260,31 @@ module.exports = {
     });
   },
 
+  updateParticipantsCost: (body) => {
+    let updateParticipantsCostQuery = '';
+    body.participants.forEach((participant) => {
+      updateParticipantsCostQuery += `
+      UPDATE eventmember SET cost=${participant.cost}
+      where  user_idx = (SELECT idx
+                        FROM   user
+                        WHERE  email = '${participant.email}')
+      AND    event_idx = (SELECT idx
+                          FROM   event
+                          WHERE  eventname = '${body.neweventname}'
+                                 AND date = '${body.newdate}'
+                                 AND group_idx = (SELECT idx
+                                                  FROM   groups
+                                                  WHERE  groupname = '${body.groupname}'))
+      ;`;
+    });
+    console.log(updateParticipantsCostQuery);
+    return new Promise((resolve, reject) => {
+      connection.query(updateParticipantsCostQuery, (err) => {
+        if (err) return reject(err);
+        return resolve();
+      });
+    });
+  },
   /**
    * add new participants to the existing event
    * @param {string} body.groupname - the name of the group under which event took place.
