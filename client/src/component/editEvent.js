@@ -395,9 +395,10 @@ export default class EditEvent extends React.Component {
     });
 
     // this calculation is unsure
-    // const indivCost = 100 * Math.ceil(((this.state.totalCost - sumAllManualCost) / ((length - isManualCostCount) * 100)));
     const count = this.countSelectedMember();
-    const indivCost = count - isManualCostCount ? (this.state.totalCost - sumAllManualCost) / (count - isManualCostCount) : this.state.selectedGroupMembers[memberIndexHasManualCost];
+    const indivCost = count - isManualCostCount ?
+       100 * Math.ceil((this.state.totalCost - sumAllManualCost) / ((count - isManualCostCount) * 100))
+       : this.state.selectedGroupMembers[memberIndexHasManualCost];
     return indivCost;
   }
 
@@ -492,8 +493,8 @@ export default class EditEvent extends React.Component {
     }, 0);
 
 
-    const highEndDeviation = total + 100;
-    const lowEndDeviation = total - 100;
+    const highEndDeviation = total + 1000;
+    const lowEndDeviation = total - 1000;
     console.log('highEnd', highEndDeviation, 'lowEnd', lowEndDeviation, 'sumMemberCost', sumMemberCost);
     if (sumMemberCost < highEndDeviation && sumMemberCost > lowEndDeviation) {
       return true;

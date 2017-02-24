@@ -26,8 +26,8 @@ export default class Mypage extends React.Component {
 
   componentWillMount() {
     this.reset();
-    // const myData = axios.get('https://oneovern.com/api/misc');
-    // const groupData = axios.get('https://oneovern.com/api/mypage');
+    // const myData = axios.get('http://localhost:3000/api/misc');
+    // const groupData = axios.get('http://localhost:3000/api/mypage');
     // Promise.all([myData, groupData]).then(res => {
     //   const myEmailData = JSON.parse(res[0].data)[0].email
     //   const groupStorage = [];
@@ -50,8 +50,8 @@ export default class Mypage extends React.Component {
   }
 
   reset() {
-    const myData = axios.get('https://oneovern.com/api/misc');
-    const groupData = axios.get('https://oneovern.com/api/mypage');
+    const myData = axios.get('http://localhost:3000/api/misc');
+    const groupData = axios.get('http://localhost:3000/api/mypage');
     Promise.all([myData, groupData]).then((res) => {
       const myEmailData = JSON.parse(res[0].data)[0].email;
       const groupStorage = [];
@@ -86,7 +86,7 @@ export default class Mypage extends React.Component {
     const eventValue = event.target.value;
     let actionType = 'pending';
     let answer = true;
-
+    console.log(event.target)
     if (event.target.value === '수락') {
       actionType = 'accept';
     }
@@ -104,7 +104,8 @@ export default class Mypage extends React.Component {
     }
 
     if (answer) {
-      axios.put(`https://oneovern.com/api/misc`, individualTransacionDone)
+      console.log(individualTransacionDone)
+      axios.put(`http://localhost:3000/api/misc`, individualTransacionDone)
       .then((res) => {
         if (res.status === 200) {
           if (eventValue === '정산요청') {
@@ -134,7 +135,7 @@ export default class Mypage extends React.Component {
     } = this.state;
     let declineButton = '';
     let actionButton =
-    <button className="btn btn-outline-success" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
+    <button className="btn btn-outline-success" value="정산요청" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
 
     let rendingPage = '';
 
@@ -143,25 +144,25 @@ export default class Mypage extends React.Component {
         //render all sumlist except me//
         if (data.email !== this.state.myEmail) {
           actionButton =
-          <button className="btn btn-outline-success" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
+          <button className="btn btn-outline-success" value="정산요청" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
 
           this.state.pendingUserList.forEach((member) => {
             if (data.email === member.applicantemail || data.email === member.acceptoremail) {
               // actionButton = '정산요청';
               if (member.applicantemail === this.state.myEmail && member.status === 1) {
                 actionButton =
-                <button className="btn btn-outline-info" onClick={(event) => this.handleDone(event, index)}>정산중</button>;
+                <button className="btn btn-outline-info">정산중</button>;
 
               }
               else if (member.status === 1) {
                 actionButton =
-                <button className="btn btn-outline-info" onClick={(event) => this.handleDone(event, index)}>수락</button>;
+                <button className="btn btn-outline-info" value="수락" onClick={(event) => this.handleDone(event, index)}>수락</button>;
                 declineButton =
-                <button className="btn btn-outline-info" onClick={(event) => this.handleDone(event, index)}>거절</button>;
+                <button className="btn btn-outline-info" value="거절" onClick={(event) => this.handleDone(event, index)}>거절</button>;
               }
               else if (member.status === null) {
                 actionButton =
-                <button className="btn btn-outline-success" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
+                <button className="btn btn-outline-success" value="정산요청" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
               }
             }
           });
@@ -251,7 +252,7 @@ export default class Mypage extends React.Component {
                       {/* <li className="newgroup" onClick={this.handleGroupPage}><Link to="group"><b>+그룹 생성</b></Link></li> */}
                     {/* </ul> */}
                   </li>
-                  <li className="navbarMenu"><a className="logout" href="https://oneovern.com/logout"><b className="navbarMenu">로그아웃</b></a></li>
+                  <li className="navbarMenu"><a className="logout" href="http://localhost:3000/logout"><b className="navbarMenu">로그아웃</b></a></li>
                 </ul>
               </div>
             </div>

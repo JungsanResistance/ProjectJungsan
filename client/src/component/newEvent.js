@@ -111,7 +111,7 @@ export default class NewEvent extends React.Component {
       errCount += 1;
     }
     currentGroupMembers.forEach((member) => {
-      if (member.cost <= 0) {
+      if (member.selected && member.cost <= 0) {
         memberCostCheck = false;
       }
     })
@@ -400,8 +400,11 @@ export default class NewEvent extends React.Component {
     });
 
     const count = this.countSelectedMember();
-    console.log('selected member count', count, 'is manualCost count', isManualCostCount)
-    const indivCost = count - isManualCostCount ? (this.state.totalCost - sumAllManualCost) / (count - isManualCostCount) : this.state.selectedGroupMembers[memberIndexHasManualCost];
+    console.log('selected member count', count, 'is manualCost count', isManualCostCount);
+    // assign arithmetic average or just manually input cost
+    const indivCost = count - isManualCostCount ?
+       100 * Math.ceil((this.state.totalCost - sumAllManualCost) / ((count - isManualCostCount) * 100))
+       : this.state.selectedGroupMembers[memberIndexHasManualCost];
     return indivCost;
   }
 
@@ -506,8 +509,8 @@ export default class NewEvent extends React.Component {
     }, 0);
 
 
-    const highEndDeviation = total + 100;
-    const lowEndDeviation = total - 100;
+    const highEndDeviation = total + 1000;
+    const lowEndDeviation = total - 1000;
     // console.log('highEnd', highEndDeviation, 'lowEnd', lowEndDeviation, 'sumMemberCost', sumMemberCost);
     if (sumMemberCost < highEndDeviation && sumMemberCost > lowEndDeviation) {
       return true;
