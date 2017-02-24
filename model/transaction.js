@@ -111,7 +111,7 @@ module.exports = {
       } else {
         body.isadmin = false;
       }
-      // return transaction.postTransaction(body);
+      return transaction.postTransaction(body);
     })
     .then(() => {
       body.participants.forEach((participant) => {
