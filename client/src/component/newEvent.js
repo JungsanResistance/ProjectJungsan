@@ -37,7 +37,6 @@ export default class NewEvent extends React.Component {
     this.preCheck = this.preCheck.bind(this);
     this.eventDuplicateCheck = this.eventDuplicateCheck.bind(this);
     this.handleManualInputCost = this.handleManualInputCost.bind(this);
-    // this.handleManualCostUpdate = this.handleManualCostUpdate.bind(this);
     this.evaluateAll = this.evaluateAll.bind(this);
     this.countSelectedMember = this.countSelectedMember.bind(this);
     this.getCurrentSelectedGroupMembers = this.getCurrentSelectedGroupMembers.bind(this);
@@ -89,87 +88,105 @@ export default class NewEvent extends React.Component {
     let receipientSelectedFlag = true;
     let memberCostCheck = true;
     let nextGroupStyle, nextDateStyle, nextEventNameStyle, nextNewRecipientStyle, nextCostStyle;
+    let nextErrorMessage, nextGroupMemberErrorMessage, nextTotalCostErrorMessage;
     const currentGroupMembers = this.state.myAllGroupUserData[this.state.selectedGroup];
+
     if (this.state.selectedGroup === '') {
       nextGroupStyle = 'inputStyle';
-      errCount += 1;
-    }
-    if (this.state.date === '') {
-      nextDateStyle = 'inputStyle';
-      errCount += 1;
-    }
-    if (!this.state.eventName.length) {
-      nextEventNameStyle = 'inputStyle';
-      errCount += 1;
-    }
-    if (!Object.keys(this.state.newrecipient).length) {
-      nextNewRecipientStyle = 'inputStyle';
-      errCount += 1;
-    }
-    if (!(this.state.totalCost > 0)) {
-      nextCostStyle = 'inputStyle';
-      errCount += 1;
-    }
-    currentGroupMembers.forEach((member) => {
-      if (member.selected && member.cost <= 0) {
-        memberCostCheck = false;
-      }
-    })
+      nextErrorMessage = '그룹을 선택해 주세요'
+      // errCount += 1;
 
-    const isRecipientSelected = currentGroupMembers.some((member) => {
-      if (member.selected)
-        return member.email === this.state.newrecipient.email
-    });
-    if (!isRecipientSelected) {
-      receipientSelectedFlag = false;
-    }
-
-    if (currentGroupMembers.length === 0) {
-      anyMemberSelected = false;
-    }
-
-    this.setState({
-      groupStyle: nextGroupStyle,
-      dateStyle: nextDateStyle,
-      eventNameStyle: nextEventNameStyle,
-      recipientStyle: nextNewRecipientStyle,
-      costStyle: nextCostStyle,
-    });
-
-    const handleSubmitCondition = !errCount && anyMemberSelected
-      && receipientSelectedFlag && this.checkTotal() && memberCostCheck;
-
-    if (handleSubmitCondition) {
-      if (!this.state.eventErrorMesseage.length) {
-        this.handleSubmit();
-      }
+      this.setState({
+        groupStyle: nextGroupStyle,
+        errorMesseage: nextErrorMessage,
+      });
     }
     else {
-      if (!receipientSelectedFlag) {
-        this.setState({
-          errorMesseage: '정산자를 포함시켜주세요',
-        })
+      if (this.state.date === '') {
+        nextDateStyle = 'inputStyle';
+        errCount += 1;
       }
-      if (errCount) {
-        this.setState({
-          errorMesseage: '빈칸을 모두 채워주세요',
+
+      if (this.state.eventName) {
+        if (!this.state.eventName.length) {
+          nextEventNameStyle = 'inputStyle';
+          errCount += 1;
+        }
+      }
+
+      if (!Object.keys(this.state.newrecipient).length) {
+        nextNewRecipientStyle = 'inputStyle';
+        errCount += 1;
+      }
+      if (!(this.state.totalCost > 0)) {
+        nextCostStyle = 'inputStyle';
+        errCount += 1;
+      }
+
+      if (currentGroupMembers) {
+        currentGroupMembers.forEach((member) => {
+          if (member.selected && member.cost <= 0) {
+            memberCostCheck = false;
+          }
         });
       }
-      if (!anyMemberSelected) {
-        this.setState({
-          groupMemberErrorMesseage: '함께 식사한 친구들을 선택해주세요',
-        });
+
+      const isRecipientSelected = currentGroupMembers ? currentGroupMembers.some((member) => {
+        if (member.selected)
+          return member.email === this.state.newrecipient.email
+      }) : false;
+
+      if (!isRecipientSelected) {
+        receipientSelectedFlag = false;
       }
-      if (!this.checkTotal()) {
-        this.setState({
-          totalCostErrorMessage: '총 금액이 맞지 않습니다',
-        });
+
+      if (currentGroupMembers.length === 0) {
+        anyMemberSelected = false;
       }
-      if (!memberCostCheck) {
-        this.setState({
-          totalCostErrorMessage: '모든 금액은 0원보다 커야합니다',
-        })
-      }
+
+      this.setState({
+        groupStyle: nextGroupStyle,
+        dateStyle: nextDateStyle,
+        eventNameStyle: nextEventNameStyle,
+        recipientStyle: nextNewRecipientStyle,
+        costStyle: nextCostStyle,
+      }, () => {
+        const handleSubmitCondition = !errCount && anyMemberSelected
+          && receipientSelectedFlag && this.checkTotal() && memberCostCheck;
+
+        if (handleSubmitCondition) {
+          if (!this.state.eventErrorMesseage.length) {
+            this.handleSubmit();
+          }
+        }
+        else {
+
+          if (!this.state.groupname) {
+            nextErrorMessage = '그룹을 선택해 주세요'
+          }
+          if (!receipientSelectedFlag) {
+              nextErrorMessage = '정산자를 포함시켜주세요';
+          }
+          if (errCount) {
+              nextErrorMessage = '빈칸을 모두 채워주세요';
+          }
+          if (!anyMemberSelected) {
+              nextGroupMemberErrorMessage = '함께 식사한 친구들을 선택해주세요';
+          }
+          if (!memberCostCheck) {
+            nextTotalCostErrorMessage = '모든 금액은 0원보다 커야합니다';
+          }
+          if (!this.checkTotal()) {
+              nextTotalCostErrorMessage = '총 금액이 맞지 않습니다';
+          }
+
+          this.setState({
+            errorMesseage: nextErrorMessage,
+            groupMemberErrorMesseage: nextGroupMemberErrorMessage,
+            totalCostErrorMessage: nextTotalCostErrorMessage,
+          });
+        }
+      });
     }
   }
 
@@ -177,9 +194,13 @@ export default class NewEvent extends React.Component {
   handleSubmit() {
     const nextSelectedGroupMembers = this.getCurrentSelectedGroupMembers();
     // trim uncessary participant property
+    const onlySelectedGroupMembers = [];
     nextSelectedGroupMembers.forEach((member) => {
-      delete member.isManualCost;
-      delete member.selected;
+      if (member.selected) {
+        delete member.isManualCost;
+        delete member.selected;
+        onlySelectedGroupMembers.push(member);
+        }
     });
 
     console.log('==============this is the data we are sending', {
@@ -188,7 +209,7 @@ export default class NewEvent extends React.Component {
       newrecipient: this.state.newrecipient,
       groupname: this.state.selectedGroup,
       eventname: this.state.eventName,
-      participants: nextSelectedGroupMembers,
+      participants: onlySelectedGroupMembers,
     });
 
     // this is temp code for catching bug at newrecipient === participant  recipient compare test at backend
@@ -221,7 +242,7 @@ export default class NewEvent extends React.Component {
         newrecipient: this.state.newrecipient,
         groupname: this.state.selectedGroup,
         eventname: this.state.eventName,
-        participants: nextSelectedGroupMembers,
+        participants: onlySelectedGroupMembers,
       })
       .then((res) => {
         if (res.status === 201) {
@@ -733,7 +754,7 @@ export default class NewEvent extends React.Component {
     // console.log('all group data', this.state.myAllGroupUserData);
     // console.log('selected Group Members', this.state.selectedGroupMembers);
     // console.log('selected group name', this.state.selectedGroup)
-    console.log('this.state.newrecipient', this.state.newrecipient)
+    // console.log('this.state.newrecipient', this.state.newrecipient)
     // get all group Key as array
     const getGroupKeyArray = Object.keys(this.state.myAllGroupUserData);
     const groupSelection = getGroupKeyArray.map((group) => {
