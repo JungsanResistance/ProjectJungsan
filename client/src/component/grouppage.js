@@ -4,12 +4,15 @@ import axios from 'axios';
 import RenderMembers from './func/renderMember';
 import Navbar from './func/navbar';
 
+const Loader = require('react-loader');
+
 export default class GroupPage extends React.Component {
   constructor() {
     super();
     this.state = {
       myGroupList: [],
       adminData: [],
+      loaded: false,
     };
   }
 
@@ -46,6 +49,11 @@ export default class GroupPage extends React.Component {
       this.setState({
         myGroupList: groupList,
         adminData: getGroupAdminInfo,
+      });
+    })
+    .then(() => {
+      this.setState({
+        loaded: true,
       });
     });
   }
@@ -110,7 +118,9 @@ export default class GroupPage extends React.Component {
         <div className="tab-pane active" id={groupname} role="tabpanel">
           <RenderMembers groupname={groupname} />
         <br />
-        {editButton}
+        <div>
+        <center className="editButton">{editButton}</center>
+        </div>
         </div>
         )
       }
@@ -121,7 +131,7 @@ export default class GroupPage extends React.Component {
             <br />
           <div>
           <center className="editButton">{editButton}</center>
-      </div>
+          </div>
           </div>
         );
       }
@@ -140,6 +150,7 @@ export default class GroupPage extends React.Component {
     return (
       <div>
         <Navbar />
+        <Loader loaded={this.state.loaded}>
         <div className="container">
             <div className="col-md-1"></div>
           <div className="col-md-10">
@@ -163,13 +174,13 @@ export default class GroupPage extends React.Component {
         <div className="tab-content">
           {groupMemberTab}
           <br />
-          <center>{editButton}</center>
         </div>
         <div className="container">
         </div>
             </div>
             <div className="col-md-1"></div>
         </div>
+        </Loader>
       </div>
     );
   }

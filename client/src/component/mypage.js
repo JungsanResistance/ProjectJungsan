@@ -6,6 +6,8 @@ import History from './history';
 import NewEvent from './newEvent';
 import Navbar from './func/navbar';
 
+const Loader = require('react-loader');
+
 export default class Mypage extends React.Component {
   constructor() {
     super();
@@ -16,6 +18,7 @@ export default class Mypage extends React.Component {
       pendingUserList: [],
       testtest: '',
       rendingPage: '',
+      loaded: false,
     };
     this.handleDone = this.handleDone.bind(this);
     this.reset = this.reset.bind(this);
@@ -26,8 +29,8 @@ export default class Mypage extends React.Component {
 
   componentWillMount() {
     this.reset();
-    // const myData = axios.get('http://localhost:3000/api/misc');
-    // const groupData = axios.get('http://localhost:3000/api/mypage');
+    // const myData = axios.get('https://oneovern.com/api/misc');
+    // const groupData = axios.get('https://oneovern.com/api/mypage');
     // Promise.all([myData, groupData]).then(res => {
     //   const myEmailData = JSON.parse(res[0].data)[0].email
     //   const groupStorage = [];
@@ -66,6 +69,11 @@ export default class Mypage extends React.Component {
         sumList: getData.sumList,
         myEmail: myEmailData,
         pendingUserList: getData.pendingUserList,
+      });
+    })
+    .then(() => {
+      this.setState({
+        loaded: true,
       });
     });
   }
@@ -183,7 +191,7 @@ export default class Mypage extends React.Component {
             </tr>,
           );
         }
-      });
+      })
     }
 
     // const groups = this.state.groupList.map((data) => {
@@ -226,10 +234,13 @@ export default class Mypage extends React.Component {
 
     console.log('rendingPage', rendingPage)
 
+
     return (
       <div>
         <Navbar />
+        <Loader loaded={this.state.loaded}>
         {rendingPage}
+        </Loader>
       </div>
     );
   }
