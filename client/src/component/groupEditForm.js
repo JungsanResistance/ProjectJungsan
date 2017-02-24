@@ -20,7 +20,7 @@ export default class GroupEditForm extends React.Component {
       groupDuplicateFlag: '',
     };
     this.handleAddMember = this.handleAddMember.bind(this);
-    this.handleGroup = this.handleGroup.bind(this);
+    this.handleInput = this.handleInput.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.handleMemberDelete = this.handleMemberDelete.bind(this);
     this.handleSubmitGroup = this.handleSubmitGroup.bind(this);
@@ -148,8 +148,8 @@ export default class GroupEditForm extends React.Component {
     }
   };
 
-  handleGroup(event) {
-    if (event.target.className === 'editGroupName') {
+  handleInput(event) {
+    if (event.target.className === 'form-control inputGroupName') {
       if (event.target.value.length){
         this.setState({
           newGroupname: event.target.value,
@@ -162,7 +162,7 @@ export default class GroupEditForm extends React.Component {
         });
       }
     }
-    else if (event.target.className === 'editGroupMember') {
+    else if (event.target.className === 'form-control editGroupMember') {
         this.setState({
           emailToBeChecked: event.target.value,
           errorMemberDuplicate: '',
@@ -227,10 +227,10 @@ export default class GroupEditForm extends React.Component {
 
   handleKeyPress(event) {
     if (event.charCode === 13) {
-      if (event.target.className === 'editGroupMember') {
+      if (event.target.className === 'form-control editGroupMember') {
         this.handleAddMember();
       }
-      else if (event.target.className === 'editGroupName') {
+      else if (event.target.className === 'form-control editGroupName') {
         this.handleGroupName();
       }
     }
