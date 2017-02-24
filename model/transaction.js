@@ -21,6 +21,8 @@ module.exports = {
           const body = JSON.stringify(groupList);
           const jsonBody = JSON.parse(body);
           return group.getGroupMember(jsonBody);
+        } else {
+          return [];
         }
       })
       .catch(err => Promise.reject(err));
