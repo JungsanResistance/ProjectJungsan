@@ -274,44 +274,106 @@ export default class GroupEditForm extends React.Component {
   }
 
   render() {
-    const members = [];
-    this.state.newGroupmembers.forEach((member) => {
-      if (member.active) {
-        members.push(
-          <li>
-            {member.username} ({member.email})
-            <input
-            type="button" name={member.username} value="delete" onClick={this.handleMemberDelete}/>
-          </li>)
+    // const members = [];
+    // this.state.newGroupmembers.forEach((member) => {
+    //   if (member.active) {
+    //     members.push(
+    //       <li>
+    //         {member.username} ({member.email})
+    //         <input
+    //         type="button" name={member.username} value="delete" onClick={this.handleMemberDelete}/>
+    //       </li>)
+    //   }
+    // });
+
+    console.log('this.state.newGroupmembers',this.state.newGroupmembers)
+
+    const members = this.state.newGroupmembers.map((member, index) => {
+      if(index !==0 ) {
+        return (
+        <tr>
+          <td>{member.username}</td>
+          <td>{member.email}</td>
+          <td><input
+            type="submit" value="delete" name={member.email}
+            onClick={this.handleMemberDelete} />
+          </td>
+        </tr>);
+      }
+      else {
+        return (
+          <tr>
+            <td>{member.username}</td>
+            <td>{member.email}</td>
+            <td>그룹장</td>
+          </tr>);
       }
     });
 
+    console.log('members',members)
+
     return (
       <div>
-        <h2>groupname :</h2>
-          <input
-            type="text" className="editGroupName" placeholder={this.state.oldGroupname}
-            onChange={this.handleGroup} onKeyPress={this.handleKeyPress}/>
-          <input type="submit" value="중복확인" onClick={this.handleGroupName} />
-          <p className={this.state.groupDuplicateFlag}>{this.state.errorGroupnameDuplicate} </p>
+
         <br />
         <br />
-        <h2>groupmember :</h2>
-          Add groupmember :
-          <input
-            type="text" className="editGroupMember" placeholder=" e.g. wnghee91@gmail.com"
-            size="30" onKeyPress={this.handleKeyPress} onChange={this.handleGroup} />
-          <input
-            type="submit" value="add" onClick={this.handleAddMember} />
-        {this.state.errorMemberDuplicate}
-        <br />
-        <ul>
-          {members}
-        </ul>
-        <input type="button" value="그룹수정" onClick={this.handleSubmitGroup} />
-        <br />
-        <br />
-        {this.state.errorSubmit}
+          <div className="container-fluid">
+            <div className="row">
+              <div className="col-md-3"></div>
+              <div className="col-md-6">
+                <div className="newGroupFormBox">
+                  <div className="newGroupFormTop">
+                    <div className="form-top-left">
+                      <h3>그룹명과 그룹멤버를 수정해보세요!</h3>
+                    <p><h4>내용을 수정한 후에 그룹수정버튼을 눌러주세요.</h4></p>
+                    </div>
+                    <div className="form-top-right">
+                      <div className="icon-user">
+                        <b><span className="glyphicon glyphicon-user">
+                        </span></b>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="newGroupFormBottom">
+                    <form className="newEventForm">
+                      <div className="form-group">
+                        <input
+                          type="text" className="form-control inputGroupName" placeholder="그룹이름을 적어주세요."
+                          onChange={this.handleInput} onKeyPress={this.handleKeyPress} />
+                        <button type="button" className="btn duplicateGroupnameCheck" onClick={this.handleGroupName}>중복확인</button>
+                        <p className={this.state.groupDuplicateFlag}>{this.state.errorGroupnameDuplicate} </p>
+                      </div>
+                      <div className="form-group">
+                        <input
+                          type="text" className="form-control addGroupMembers" placeholder="그룹원의 이메일을 적어주세요. ex) wnghee91@gmail.com"
+                          onChange={this.handleInput} onKeyPress={this.handleKeyPress} />
+                        <button type="button" className="btn addGroupMember" onClick={this.handleAddMember} >그룹원 추가</button>
+                        <p className="errorMemberDuplicateFalse">{this.state.errorMemberDuplicate} </p>
+                      </div>
+                      <div className="form-group">
+                        <table className="table table-hover memberSelect">
+                          <thead>
+                            <tr>
+                              <th>이름</th>
+                            <th>이메일</th>
+                          <th>비고</th>
+                            </tr>
+                          </thead>
+                          {members}
+                        </table>
+                      </div>
+                    </form>
+                    <div className="form-footer">
+                      <button type="button" className="btn submitNewGroup" value="그룹수정" onClick={this.handleSubmitGroup}><b>그룹수정</b></button>
+
+                    </div>
+                  </div>
+                  {this.state.errorSubmit}
+                </div>
+                </div>
+                <div className="col-sm-3"></div>
+              </div>
+          </div>
       </div>
     );
   }

@@ -316,6 +316,19 @@ th {
 
 }
 
+.mainPageImage {
+  text-align: center;
+  width:80%;
+}
+
+.editButton {
+  margin: auto;
+  display: block;
+}
+
+.tab-pane.active {
+  text-align: center;
+}
 /*.groupPageTable {
   display: inline-block;;
 }*/

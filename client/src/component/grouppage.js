@@ -51,28 +51,90 @@ export default class GroupPage extends React.Component {
 
   render() {
     let editButton;
-    const groupList = this.state.myGroupList.map((groupname) => {
+    // groupList.push()
+    const groupNameTab = [];
+    console.log('adminData',this.state.adminData)
+    this.state.myGroupList.forEach((groupname, index) => {
+      // this.state.adminData.forEach((group) => {
+      //   if (group.groupname === groupname) {
+      //     if (group.isadmin) {
+      //       editButton = <Link to={"groupeditform/"+groupname}><button className="btn btn-outline-primary" type="button">그룹정보수정</button></Link>;
+      //       return;
+      //     }
+      //     else {
+      //       editButton = '';
+      //       return;
+      //     }
+      //   }
+      // });
+      if (index === 0) {
+        groupNameTab.push(
+          <li className="nav-item">
+          <a className="nav-link active" data-toggle="tab" href={"#"+this.state.myGroupList[0]} role="tab">{this.state.myGroupList[0]}</a>
+        </li>
+      );
+      } else {
+        groupNameTab.push(
+          // <div className="mygroupTab">
+            <li className="nav-item">
+              <a className="nav-link" data-toggle="tab" href={"#"+groupname} role="tab">{groupname}</a>
+            </li>
+        )
+      }
+    });
+
+    groupNameTab[0] =
+    <li className="nav-item">
+      <a className="nav-link active" data-toggle="tab" href={"#"+this.state.myGroupList[0]} role="tab">{this.state.myGroupList[0]}</a>
+    </li>;
+
+    console.log('groupNameTab',groupNameTab)
+
+    const groupMemberTab = [];
+
+    this.state.myGroupList.forEach((groupname, index) => {
       this.state.adminData.forEach((group) => {
         if (group.groupname === groupname) {
           if (group.isadmin) {
-            editButton = '';
+            editButton = <Link to={"groupeditform/"+groupname}><button className="btn btn-outline-primary" type="button">그룹정보수정</button></Link>;
             return;
           } else {
-            editButton = <button className="btn btn-outline-primary" type="button">그룹정보수정</button>;
+            editButton = '';
             return;
           }
         }
       });
-      return (
-        <div className="mygroupTable">
-        <tr>
-          <h3>{groupname}</h3>
+      if (index === 0) {
+        groupMemberTab.push(
+        <div className="tab-pane active" id={groupname} role="tabpanel">
           <RenderMembers groupname={groupname} />
-          <p>{editButton}</p>
-        </tr>
+        <br />
+        {editButton}
+        </div>
+        )
+      }
+      else {
+        groupMemberTab.push(
+          <div className="tab-pane" id={groupname} role="tabpanel">
+            <RenderMembers groupname={groupname} />
+            <br />
+          <div>
+          <center className="editButton">{editButton}</center>
       </div>
-      )
+          </div>
+        );
+      }
     });
+
+    console.log("groupMemberTab", groupMemberTab)
+    // console.log(groupMemberTab[0].props);
+    //
+    // console.log(this.state.myGroupList[0])
+
+    // groupMemberTab[0] =
+    // <div className="tab-pane" id={groupname} role="tabpanel"><RenderMembers groupname={groupname} /></div>
+
+
 
     return (
       <div>
@@ -80,16 +142,29 @@ export default class GroupPage extends React.Component {
             <div className="col-md-1"></div>
           <div className="col-md-10">
             <header className="jumbotron Mygroup">
-                <center><h2 className="groupageHeaderText"> 우리 그룹 정산은 'n분의 일'에서!</h2></center>
+                <center><h2 className="groupageHeaderText"> 그룹 정산은 'n분의 일'에서!</h2></center>
               <br />
             <br />
-            <p><center><a className="btn grouppageHeaderButton">그룹 추가</a></center>
-                </p>
+          <Link to="group">
+            <p>
+              <center>
+                <a className="btn grouppageHeaderButton">그룹 추가</a>
+              </center>
+            </p>
+          </Link>
             </header>
             <hr className="grouppageLine"/>
           <br/>
-          <br/>
-          {groupList}
+        <ul className="nav nav-tabs" role="tablist">
+          {groupNameTab}
+        </ul>
+        <div className="tab-content">
+          {groupMemberTab}
+          <br />
+          <center>{editButton}</center>
+        </div>
+        <div className="container">
+        </div>
             </div>
             <div className="col-md-1"></div>
         </div>
