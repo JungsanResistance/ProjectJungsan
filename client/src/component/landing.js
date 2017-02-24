@@ -16,9 +16,9 @@ export default class Landing extends React.Component {
               </h1>
               <br />
               <br />
-              <p className="mainPageParagraph">This page will grow as we add more and more components from Bootstr...</p>
+              <p className="mainPageParagraph">N빵 하기 어려우시죠. 1/n 이 쉽게 해결해 드리겠습니다</p>
               <ul>
-
+                <img className="background-image" src="http://image.chosun.com/sitedata/image/201606/10/2016061000149_0.jpg" />
               </ul>
             </header>
           </div>

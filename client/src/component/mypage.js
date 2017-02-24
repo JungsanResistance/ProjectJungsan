@@ -26,8 +26,8 @@ export default class Mypage extends React.Component {
 
   componentWillMount() {
     this.reset();
-    // const myData = axios.get('https://oneovern.com/api/misc');
-    // const groupData = axios.get('https://oneovern.com/api/mypage');
+    // const myData = axios.get('http://localhost:3000/api/misc');
+    // const groupData = axios.get('http://localhost:3000/api/mypage');
     // Promise.all([myData, groupData]).then(res => {
     //   const myEmailData = JSON.parse(res[0].data)[0].email
     //   const groupStorage = [];
@@ -50,8 +50,8 @@ export default class Mypage extends React.Component {
   }
 
   reset() {
-    const myData = axios.get('https://oneovern.com/api/misc');
-    const groupData = axios.get('https://oneovern.com/api/mypage');
+    const myData = axios.get('http://localhost:3000/api/misc');
+    const groupData = axios.get('http://localhost:3000/api/mypage');
     Promise.all([myData, groupData]).then((res) => {
       const myEmailData = JSON.parse(res[0].data)[0].email;
       const groupStorage = [];
@@ -104,7 +104,7 @@ export default class Mypage extends React.Component {
     }
 
     if (answer) {
-      axios.put(`https://oneovern.com/api/misc`, individualTransacionDone)
+      axios.put(`http://localhost:3000/api/misc`, individualTransacionDone)
       .then((res) => {
         if (res.status === 200) {
           if (eventValue === '정산요청') {
@@ -172,9 +172,9 @@ export default class Mypage extends React.Component {
       });
     }
 
-    const groups = this.state.groupList.map((data) => {
-      return <li className="myPageGroupName"><Link to={"grouppage/"+data}><b>{data}</b></Link></li>;
-    });
+    // const groups = this.state.groupList.map((data) => {
+    //   return <li className="myPageGroupName"><Link to={"grouppage/"+data}><b>{data}</b></Link></li>;
+    // });
 
 
     if (this.state.rendingPage === "history") {
@@ -228,19 +228,21 @@ export default class Mypage extends React.Component {
                     <a className="dropdown-toggle navbarMenu" data-toggle="dropdown" href="#"><b className="navbarMenu">내 이벤트
                     </b><span className="caret"></span></a>
                     <ul className="dropdown-menu">
-                      <li className="newevent" onClick={this.handleEventPage}><a href="#"><b>이벤트 생성</b></a></li>
-                      <li className="eventHistory" onClick={this.handleHistoryPage}><a href="#"><b>정산내역</b></a></li>
+                      <li className="newevent" ><Link to={"transaction"}><b>이벤트 생성</b></Link></li>
+                      <li className="eventHistory" ><Link to={"history"}><b>정산내역</b></Link></li>
                     </ul>
                   </li>
-                  <li className="dropdown">
+                  <li>
+                  <Link to={"grouppage/"}>
                     <a className="dropdown-toggle navbarMenu" data-toggle="dropdown" href="#"><b className="navbarMenu">내 그룹
                     </b><span className="caret"></span></a>
-                    <ul className="dropdown-menu">
-                      {groups}
-                      <li className="newgroup" onClick={this.handleGroupPage}><Link to="group"><b>+그룹 생성</b></Link></li>
-                    </ul>
+                    {/* <ul className="dropdown-menu"> */}
+                  </Link>
+                      {/* {groups} */}
+                      {/* <li className="newgroup" onClick={this.handleGroupPage}><Link to="group"><b>+그룹 생성</b></Link></li> */}
+                    {/* </ul> */}
                   </li>
-                  <li className="navbarMenu"><a className="logout" href="https://oneovern.com/logout"><b className="navbarMenu">로그아웃</b></a></li>
+                  <li className="navbarMenu"><a className="logout" href="http://localhost:3000/logout"><b className="navbarMenu">로그아웃</b></a></li>
                 </ul>
               </div>
             </div>

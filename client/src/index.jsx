@@ -21,7 +21,7 @@ ReactDOM.render(
       <Route path="transaction" component={NewEvent} />
       <Route path="group" component={AddNewGroup} />
       <Route path="groupeditform/:groupname" component={GroupEditForm} />
-      <Route path="grouppage/:groupname" component={GroupPage} />
+      <Route path="grouppage" component={GroupPage} />
       <Route path="eventinfo/:eventInfo" component={Eventinfo} />
       <Route path="eventedit/:eventInfo" component={EditEvent} />
       <Route path="failed" component={FailedRedirect} />

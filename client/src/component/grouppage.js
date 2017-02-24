@@ -16,9 +16,9 @@ export default class GroupPage extends React.Component {
 
 
     // get all group-member pair data
-    const pairGroupMember = axios.get(`https://oneovern.com/api/transaction?type=post`);
+    const pairGroupMember = axios.get(`http://localhost:3000/api/transaction?type=post`);
     // get isadmin data for each groupData
-    const adminData = axios.get(`https://oneovern.com/api/mypage`);
+    const adminData = axios.get(`http://localhost:3000/api/mypage`);
 
     Promise.all([pairGroupMember, adminData])
     .then((res) => {
@@ -73,7 +73,7 @@ export default class GroupPage extends React.Component {
             editButton = '';
             return;
           } else {
-            editButton = <button type="button" value="그룹정보" />;
+            editButton = <Link to={'groupeditform/' + groupname}>그룹수정</Link>;
             return;
           }
         }
@@ -85,7 +85,7 @@ export default class GroupPage extends React.Component {
           <RenderMembers groupname={groupname} />
           <p>{editButton}</p>
         </div>
-      )
+      );
     });
 
     return (
