@@ -79,7 +79,7 @@ export default class GroupPage extends React.Component {
       if (index === 0) {
         groupNameTab.push(
           <li className="nav-item">
-          <a className="nav-link active" data-toggle="tab" href={"#"+this.state.myGroupList[0]} role="tab">{this.state.myGroupList[0]}</a>
+          <a className="nav-link active" data-toggle="tab" href={"#"+this.state.myGroupList[0]} role="tab"><h3>{groupname}</h3></a>
         </li>
       );
       } else {
@@ -167,17 +167,18 @@ export default class GroupPage extends React.Component {
           </Link>
             </header>
             <hr className="grouppageLine"/>
-          <br/>
-        <ul className="nav nav-tabs" role="tablist">
+            <br/>
+          {/* <center><h3 className="groupListName">내 그룹</h3></center> */}
+            <ul className="nav nav-tabs" role="tablist">
           {groupNameTab}
-        </ul>
-        <div className="tab-content">
-          {groupMemberTab}
-          <br />
-        </div>
-        <div className="container">
-        </div>
-            </div>
+            </ul>
+            <div className="tab-content">
+                {groupMemberTab}
+                  <br />
+                </div>
+                  <div className="container">
+                  </div>
+          </div>
             <div className="col-md-1"></div>
         </div>
         </Loader>

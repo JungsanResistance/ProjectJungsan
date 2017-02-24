@@ -1,10 +1,10 @@
 @font-face {
   font-family: "jungsanFont";
-  src:url("./../font/210맨발의청춘L.ttf")
+  src:url("./../font/Daum_Regular.ttf");
 }
 
 body {
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: jungsanFont;
 }
 
 table {
@@ -262,11 +262,14 @@ th {
 .form-top-left {
   /*float: left;*/
   display: inline-block;
-
-  width: 70%;
-  width: 390px;
+  /*width: 100%;*/
+  width: 460px;
   padding-left: 35px;
 }
+/*
+.groupListName {
+  background-image: url("./../image/grouppageImage.jpg");
+}*/
 
 .btn-outline-success {
   border: 1.8px solid #5cb85c;
@@ -339,6 +342,10 @@ th {
 .tab-pane.active {
   text-align: center;
 }
+
+/*.mypageHeader {
+  margin: auto;
+}*/
 /*.groupPageTable {
   display: inline-block;;
 }*/
