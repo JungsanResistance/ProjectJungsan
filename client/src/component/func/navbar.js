@@ -35,7 +35,7 @@ export default class Navbar extends React.Component {
                     </b><span className="caret"></span></a>
                   </Link>
                   </li>
-                  <li className="navbarMenu"><a className="logout" href="http://localhost:3000/logout"><b className="navbarMenu">로그아웃</b></a></li>
+                  <li className="navbarMenu"><a className="logout" href="https://oneovern.com/logout"><b className="navbarMenu">로그아웃</b></a></li>
                 </ul>
               </div>
             </div>

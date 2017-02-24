@@ -4,6 +4,8 @@ import Router, { browserHistory } from 'react-router';
 import HistoryTable from './historyTable';
 import Navbar from './func/navbar';
 
+const Loader = require('react-loader');
+
 export default class History extends React.Component {
 
   constructor() {
@@ -14,13 +16,14 @@ export default class History extends React.Component {
       imgUrl: '',
       ispaid: 0,
       myEmail: '',
+      loaded: false,
     };
 
     this.handleEditEvent = this.handleEditEvent.bind(this);
   }
   componentWillMount() {
-    const myData = axios.get('http://localhost:3000/api/misc');
-    const historyData = axios.get('http://localhost:3000/api/history');
+    const myData = axios.get('https://oneovern.com/api/misc');
+    const historyData = axios.get('https://oneovern.com/api/history');
 
     Promise.all([myData, historyData]).then(res => {
       const myEmailData = JSON.parse(res[0].data)[0].email;
@@ -30,6 +33,11 @@ export default class History extends React.Component {
         debtHistory: getData.debt,
         loanedHistory: getData.loaned,
         myEmail: myEmailData,
+      });
+    })
+    .then(() => {
+      this.setState({
+        loaded: true,
       });
     });
   }
@@ -42,12 +50,14 @@ export default class History extends React.Component {
     return (
       <div className="historyTable">
         <Navbar />
+        <Loader loaded={this.state.loaded}>
         <table className="table">
           <HistoryTable debtHistory={this.state.debtHistory} myEmail={this.state.myEmail} />
           <br />
           <br />
           <HistoryTable loanedHistory={this.state.loanedHistory} myEmail={this.state.myEmail} />
         </table>
+        </Loader>
       </div>
     );
   }
