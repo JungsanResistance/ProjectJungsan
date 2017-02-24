@@ -54,6 +54,7 @@ export default class NewEvent extends React.Component {
     const getAllEvents = axios.get('https://oneovern.com/api/history');
 
     Promise.all([getGroupData, getAllEvents]).then((res) => {
+      console.log('res', res)
       const getData = JSON.parse(res[0].data);
       const getHistory = JSON.parse(res[1].data);
       const groupStorage = {};

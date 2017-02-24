@@ -86,7 +86,11 @@ export default class AddNewGroup extends React.Component {
       console.log(res.data);
       const data = JSON.parse(res.data);
       if (data.length) {
-        const nextGroupmembers = this.state.groupmembers.slice();
+
+        const nextGroupmembers = this.state.groupmembers.map((member) => {
+          return member;
+        });
+        console.log('after add member', nextGroupmembers)
         const duplicateEmailCheck = this.state.groupmembers.some((item) => {
           return item.email === data[0].email;
         });
@@ -120,7 +124,7 @@ export default class AddNewGroup extends React.Component {
       if (event.target.className === 'form-control addGroupMembers') {
         this.handleAddMember();
       }
-      else {
+      else if (event.target.className === 'form-control inputGroupName') {
         this.handleGroupName();
       }
     }
@@ -177,9 +181,9 @@ export default class AddNewGroup extends React.Component {
         <tr>
           <td>{data.username}</td>
           <td>{data.email}</td>
-          <td><input
-            type="submit" value="delete" name={data.email}
-            onClick={this.handleMemberDelete} />
+          <td><button
+            type="button" className="btn" value="delete" name={data.email}
+            onClick={this.handleMemberDelete} >삭제</button>
           </td>
         </tr>);
       }
