@@ -105,8 +105,17 @@ th {
   /*width:25px;*/
   height:20px;
 }
-.signIn {
-  width: 200px;
+.googleButton {
+  height: 50px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.facebookButton {
+  height: 44px;
+  margin-top: 3px;
+  margin-left: 10px;
+  margin-right: 10px;
+
 }
 .selected {
   background-color: rgba(209, 209, 208, 0.8);
