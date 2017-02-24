@@ -82,7 +82,17 @@ module.exports = {
     return transaction.getEventDetail(body.groupname, body.eventname, body.date)
     .then((isDuplicate) => {
       if (isDuplicate.length) return Promise.reject('Is a duplicate');
-      else return auth.checkGroupMember(body.userid, body.groupname)
+      // prevent participant with cost 0
+      else return new Promise((resolve, reject) => {
+        req.body.participants.forEach((member) => {
+          if (!member.cost) {
+            return reject('Participant with cost 0 found');
+          }
+        });
+      });
+    })
+    .then(() => {
+      return auth.checkGroupMember(body.userid, body.groupname)
     })
     .then((isMember) => {
       if (!isMember.length) return Promise.reject('Not a group member');

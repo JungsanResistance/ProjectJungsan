@@ -36,7 +36,11 @@ module.exports = {
         res.sendStatus(201);
       })
       .catch((err) => {
+        console.log(err)
         if (err === 'Is a duplicate') {
+          res.sendStatus(400);
+          throw err;
+        } else if (err === 'Participant with cost 0 found') {
           res.sendStatus(400);
           throw err;
         } else if (err === 'Recipient is not a participant') {
