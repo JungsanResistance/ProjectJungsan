@@ -59,6 +59,7 @@ export default class Mypage extends React.Component {
       getData.groupList.forEach((group) => {
         groupStorage.push(group.groupname);
       });
+      console.log('pending',getData.pendingUserList)
       this.setState({
         groupList: groupStorage,
         sumList: getData.sumList,
@@ -133,14 +134,15 @@ export default class Mypage extends React.Component {
       groupList,
       sumList,
     } = this.state;
-    let declineButton = '';
-    let actionButton =
-    <button className="btn btn-outline-success" value="정산요청" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
 
     let rendingPage = '';
 
     if (sumList && this.state.myEmail) {
       sumList.forEach((data, index) => {
+        let declineButton = '';
+        let actionButton =
+        <button className="btn btn-outline-success" value="정산요청" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
+        console.log('data', data)
         //render all sumlist except me//
         if (data.email !== this.state.myEmail) {
           actionButton =
@@ -154,7 +156,8 @@ export default class Mypage extends React.Component {
                 <button className="btn btn-outline-info">정산중</button>;
 
               }
-              else if (member.status === 1) {
+              else if (member.acceptoremail === this.state.myEmail && member.status === 1) {
+                console.log('what???');
                 actionButton =
                 <button className="btn btn-outline-info" value="수락" onClick={(event) => this.handleDone(event, index)}>수락</button>;
                 declineButton =
