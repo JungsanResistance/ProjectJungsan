@@ -251,7 +251,7 @@ export default class Mypage extends React.Component {
                       {/* <li className="newgroup" onClick={this.handleGroupPage}><Link to="group"><b>+그룹 생성</b></Link></li> */}
                     {/* </ul> */}
                   </li>
-                  <li className="navbarMenu"><a className="logout" href="https://oneovern/logout"><b className="navbarMenu">로그아웃</b></a></li>
+                  <li className="navbarMenu"><a className="logout" href="https://oneovern.com/logout"><b className="navbarMenu">로그아웃</b></a></li>
                 </ul>
               </div>
             </div>
