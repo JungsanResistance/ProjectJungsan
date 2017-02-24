@@ -1,10 +1,21 @@
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
 table {
   bordercollape: collapse;
 }
 
-tr,td,th {
+th {
   border: 3px solid #ddd;
   text-align: center;
+  font-size:25px;
+}
+
+tr,td {
+  border: 3px solid #ddd;
+  text-align: center;
+  font-size: 17px;
 }
 
 th {
@@ -52,7 +63,7 @@ th {
 }
 
 
-.jumbotron {
+.landingPageJumbotron {
   background-color: rgba(39, 133, 194, 0.9);
   /*#5FCEC0;*/
   color:white;
@@ -131,16 +142,99 @@ th {
 }
 
 
+/*#eee*/
+
+.groupSelect, .dateSelect, .spaceSelect, .recipientSelect, .costSelect
+ {
+  height: 50px;
+  margin: 0;
+  padding: 0 20px;
+  vertical-align: middle;
+  background: #f8f8f8;
+  border: 3px solid #ddd;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 50px;
+  color: #888;
+  border-radius: 4px;
+  box-shadow: none;
+  transition: all .3s;
+}
+
+.inputGroupName, .addGroupMembers {
+  height: 50px;
+  /*width:80%;*/
+  margin: 0;
+  padding: 0 20px;
+  vertical-align: middle;
+  background: #f8f8f8;
+  border: 3px solid #ddd;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 50px;
+  color: #888;
+  border-radius: 4px;
+  box-shadow: none;
+  transition: all .3s;
+}
+
+.addCostInfo {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  display: inline-block;
+}
+
+
 .newEventFormBox {
   width:100%;
 }
 
 .newEventFormTop {
   text-algin: left;
+  background: #eee;
+  padding-bottom:20px;
+  border-bottom: 2px dashed #ddd;
+}
+
+.newEventFormBottom {
+  padding: 25px 25px 30px 25px;
+  padding-top:40px;
+  background: #eee;
+  border-radius: 0 0 4px 4px;
+  text-align: left;
+}
+
+.newGroupFormTop {
+  text-algin: left;
+  background: #eee;
+  padding-bottom:20px;
+  border-bottom: 2px dashed #ddd;
+}
+
+.newGroupFormBottom {
+  padding: 25px 25px 30px 25px;
+  padding-top:40px;
+  background: #eee;
+  border-radius: 0 0 4px 4px;
+  text-align: left;
+}
+
+.editEventGroupname {
+  font-size: 18px;
+  font-weight: bold;
+  /*line-height: 50px;*/
+}
+
+.form-group {
+  /*width:80%;*/
+  /*display: inline-block;*/
 }
 
 .form-top-right {
-  float: left;
+  /*float: left;*/
+  display: inline-block;
   width: 20%;
   padding-top: 20px;
   padding-right: 27px;
@@ -152,5 +246,80 @@ th {
 }
 
 .form-top-left {
-  float: left;
+  /*float: left;*/
+  display: inline-block;
+
   width: 70%;
+  width: 390px;
+  padding-left: 35px;
+}
+
+.btn-outline-success {
+  border: 1.8px solid #5cb85c;
+  color: #5cb85c;
+  background-color: white;
+  font-weight:bold;
+}
+
+.groupSelect {
+
+}
+
+.btn-outline-info {
+  border: 1.8px solid #5bc0de;
+  color: #5bc0de;
+  background-color: white;
+  font-weight:bold;
+}
+
+.btn-outline-primary {
+  border: 1.8px solid #0275d8;
+  color: #0275d8;
+  background-color: white;
+  font-weight:bold;
+}
+
+.Mygroup {
+  color:
+}
+
+.glyphicon-user {
+  width: 60px;
+}
+
+.groupageHeaderText {
+  font-size: 50px;
+}
+
+.grouppageHeaderButton {
+  background-color: rgba(39, 133, 194, 0.9);
+  color: white;
+  font-size:20px;
+  width: 120px;
+  height: 42px;
+  margin:auto;
+  display: inline-block;;
+}
+
+.addGroupMember, .duplicateGroupnameCheck {
+  margin-top:4px;
+  display: inline-block;
+}
+
+.mygroupTable {
+  display: inline-block;
+  /*width:90%;*/
+}
+
+.editInfoPenal {
+  background-color: rgba(39, 133, 194, 0.9);
+
+}
+
+/*.groupPageTable {
+  display: inline-block;;
+}*/
+
+/*.grouppageLine {
+  width:20px;
+}*/

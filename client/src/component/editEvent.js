@@ -774,8 +774,8 @@ export default class EditEvent extends React.Component {
             <div className="editEventFormBox">
               <div className="newEventFormTop">
                 <div className="form-top-left">
-                  <h3>이벤트 내용이 잘못됐나요?</h3>
-                  <p>잘못된 부분을 고치고 수정버튼 클릭!</p>
+                  <h2>이벤트 내용이 잘못됐나요?</h2>
+                  <p><h4>잘못된 부분을 고치고 수정버튼 클릭!</h4></p>
                 </div>
                 <div className="form-top-right">
                   <div className="icon-pencil">
@@ -787,8 +787,9 @@ export default class EditEvent extends React.Component {
               <div className="newEventFormBottom">
                 <form className="newEventForm">
                   <div className="form-group">
-                    <b className="editEventGroupname">그룹명 : {this.state.groupname}</b>
+                    <b className="editEventGroupname">그룹명 : {this.state.currentgroupname}</b>
                   </div>
+                <br />
               <div className="form-group">
                 <input
                   name="eventDate" className="form-control dateSelect" type="date"
@@ -830,7 +831,6 @@ export default class EditEvent extends React.Component {
                 <button type="button" className="btn editEventButton" value="이벤트 등록" onClick={this.handleSubmit}><b>이벤트 수정</b></button>
               </div>
             </div>
-
             </div>
           </div>
           <div className="col-md-3"></div>

@@ -9,7 +9,9 @@ export default class Landing extends React.Component {
         <div className="container-fluid">
           <div className="col-sm-2"></div>
           <div className="col-sm-8">
-          <div className="jumbotron">
+
+          <div className="jumbotron landingPageJumbotron">
+
             <header>
               <h1 className="mainPageHeader">
               n분의 일
@@ -21,6 +23,7 @@ export default class Landing extends React.Component {
                 <img className="background-image" src="http://image.chosun.com/sitedata/image/201606/10/2016061000149_0.jpg" />
               </ul>
             </header>
+
           </div>
           <br/>
           <center><SignIn /></center>

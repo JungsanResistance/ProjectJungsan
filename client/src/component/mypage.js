@@ -133,26 +133,35 @@ export default class Mypage extends React.Component {
       sumList,
     } = this.state;
     let declineButton = '';
-    let actionButton = '정산요청';
-    let rendingPage ='';
+    let actionButton =
+    <button className="btn btn-outline-success" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
+
+    let rendingPage = '';
 
     if (sumList && this.state.myEmail) {
       sumList.forEach((data, index) => {
         //render all sumlist except me//
         if (data.email !== this.state.myEmail) {
-          actionButton = '정산요청';
+          actionButton =
+          <button className="btn btn-outline-success" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
+
           this.state.pendingUserList.forEach((member) => {
             if (data.email === member.applicantemail || data.email === member.acceptoremail) {
               // actionButton = '정산요청';
               if (member.applicantemail === this.state.myEmail && member.status === 1) {
-                actionButton = '정산중';
+                actionButton =
+                <button className="btn btn-outline-info" onClick={(event) => this.handleDone(event, index)}>정산중</button>;
+
               }
               else if (member.status === 1) {
-                actionButton = '수락';
-                declineButton = <button value='거절' onClick={(event) => this.handleDone(event, index)}>거절</button>
+                actionButton =
+                <button className="btn btn-outline-info" onClick={(event) => this.handleDone(event, index)}>수락</button>;
+                declineButton =
+                <button className="btn btn-outline-info" onClick={(event) => this.handleDone(event, index)}>거절</button>;
               }
               else if (member.status === null) {
-                actionButton = '정산요청';
+                actionButton =
+                <button className="btn btn-outline-success" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
               }
             }
           });
@@ -163,7 +172,7 @@ export default class Mypage extends React.Component {
               <td>{data.email}</td>
               <td>{data.cost}</td>
               <td>
-                <button value={actionButton} onClick={(event) => this.handleDone(event, index)}>{actionButton}</button>
+                {actionButton}
                 {declineButton}
               </td>
             </tr>,
