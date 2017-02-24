@@ -118,7 +118,9 @@ export default class GroupPage extends React.Component {
         <div className="tab-pane active" id={groupname} role="tabpanel">
           <RenderMembers groupname={groupname} />
         <br />
-        {editButton}
+        <div>
+        <center className="editButton">{editButton}</center>
+        </div>
         </div>
         )
       }
@@ -129,7 +131,7 @@ export default class GroupPage extends React.Component {
             <br />
           <div>
           <center className="editButton">{editButton}</center>
-      </div>
+          </div>
           </div>
         );
       }
@@ -172,7 +174,6 @@ export default class GroupPage extends React.Component {
         <div className="tab-content">
           {groupMemberTab}
           <br />
-          <center>{editButton}</center>
         </div>
         <div className="container">
         </div>
