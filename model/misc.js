@@ -15,7 +15,7 @@ module.exports = {
     const currentUser = req.session.passport.user;
     const action = req.body.action;
     return new Promise((resolve, reject) => {
-      resolve(misc.checkStatus(req.body, currentUser));
+      resolve(misc.checkStatus(req.body.recipientemail, currentUser));
     })
     .then((pendingDetail) => {
       console.log(pendingDetail);

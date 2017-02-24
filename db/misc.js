@@ -72,7 +72,7 @@ module.exports = {
    * @param {string} userid - the id of the current user.
    * @return {array} res - a list containing the transaction status between two users
    */
-  checkStatus: (body, userid) => {
+  checkStatus: (recipientemail, userid) => {
     let checkStatusQuery = `
     SELECT (SELECT username
             FROM   user u
@@ -90,11 +90,12 @@ module.exports = {
     FROM   pendinguser
     WHERE  applicant_idx = (SELECT idx
                                  FROM   user
-                                 WHERE  email = '${body.recipientemail}')
+                                 WHERE  email = '${recipientemail}')
            AND acceptor_idx = (SELECT idx
                                    FROM   user
                                    WHERE  userid = '${userid}')
       ; `;
+
     return new Promise((resolve, reject) => {
       connection.query(checkStatusQuery, (err, res) => {
         if (err) return reject(err);
@@ -109,21 +110,21 @@ module.exports = {
         SELECT (SELECT username
                 FROM   user u
                 WHERE  idx = pendinguser.applicant_idx) AS applicant,
-                (SELECT username
+                (SELECT email
                  FROM   user u
                  WHERE  idx = pendinguser.applicant_idx) AS applicantemail,
                 (SELECT username
                  FROM   user u
                  WHERE  idx = pendinguser.acceptor_idx)  AS acceptor,
-                (SELECT username
+                (SELECT email
                  FROM   user u
                  WHERE  idx = pendinguser.acceptor_idx)  AS acceptoremail,
                status
         FROM   pendinguser
-        WHERE  applicant_idx = (SELECT idx
+        WHERE  acceptor_idx = (SELECT idx
                                 FROM   user
-                                WHERE  email = '${body.recipientemail}')
-               AND acceptor_idx = (SELECT idx
+                                WHERE  email = '${recipientemail}')
+               AND applicant_idx = (SELECT idx
                                    FROM   user
                                    WHERE  userid = '${userid}')
         ; `;
@@ -169,7 +170,7 @@ module.exports = {
    * @param {string} body.acceptoremail - the email of the acceptor(person who received transaction).
    * @return {error} err - return err if error occurs, nothing if successful
    */
-  rejectPending: (body, userid) => {
+  rejectPending: (body) => {
     const rejectPendingquery = `
     DELETE FROM pendinguser
     WHERE  applicant_idx = (SELECT idx
@@ -193,7 +194,7 @@ module.exports = {
    * @param {string} body.acceptoremail - the email of the acceptor(person who received transaction).
    * @return {error} err - return err if error occurs, nothing if successful
    */
-  updatePending: (body, userid) => {
+  updatePending: (body) => {
     const updatePendingquery = `
     UPDATE pendinguser set status = 1
     WHERE  applicant_idx = (SELECT idx

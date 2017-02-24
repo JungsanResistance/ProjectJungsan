@@ -2,6 +2,7 @@ const transaction = require('../db/transaction');
 const mypage = require('../db/mypage');
 const group = require('../db/group');
 const auth = require('../db/auth');
+const misc = require('../db/misc');
 
 module.exports = {
   // give requested information based on context
@@ -89,6 +90,7 @@ module.exports = {
             return reject('Participant with cost 0 found');
           }
         });
+        resolve();
       });
     })
     .then(() => {
@@ -105,7 +107,23 @@ module.exports = {
       } else {
         body.isadmin = false;
       }
-      return transaction.postTransaction(body);
+      // return transaction.postTransaction(body);
+    })
+    .then(() => {
+      body.participants.forEach((participant) => {
+        return new Promise((resolve, reject) => {
+          resolve(misc.checkStatus(participant.email, body.userid))
+        })
+        .then((pending) => {
+          let JSONpending = JSON.stringify(pending);
+          JSONpending = JSON.parse(JSONpending)[0];
+          console.log(JSONpending);
+          if (JSONpending){
+            console.log('atwork')
+            misc.rejectPending(JSONpending);
+          }
+        });
+      });
     })
     // return event detail when successful for sending emails
     .then(() => body)
@@ -159,6 +177,22 @@ module.exports = {
           resolve(transaction.updateEventDropParticipants(body));
         });
       }
+    })
+    .then(() => {
+      body.participants.forEach((participant) => {
+        return new Promise((resolve, reject) => {
+          resolve(misc.checkStatus(participant.email, body.userid))
+        })
+        .then((pending) => {
+          let JSONpending = JSON.stringify(pending);
+          JSONpending = JSON.parse(JSONpending)[0];
+          console.log(JSONpending);
+          if (JSONpending){
+            console.log('atwork')
+            misc.rejectPending(JSONpending);
+          }
+        });
+      });
     })
     // return event detail when successful for sending emails
     .then(() => body)
