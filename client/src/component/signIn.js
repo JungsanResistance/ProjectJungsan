@@ -7,10 +7,10 @@ export default class SignIn extends React.Component {
     const imgUrl2 = 'http://www.freeiconspng.com/uploads/facebook-sign-in-button-png-26.png';
     return (
       <div>
-        <a href="http://localhost:3000/auth/google/">
+        <a href="https://oneovern/auth/google/">
           <img src={imgUrl1} className="signIn" />
         </a>
-        <a href="http://localhost:3000/auth/facebook/">
+        <a href="https://oneovern/auth/facebook/">
           <img src={imgUrl2} className="signIn" />
         </a>
       </div>
