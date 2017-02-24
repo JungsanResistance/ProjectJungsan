@@ -56,9 +56,7 @@ export default class Eventinfo extends React.Component {
           <div className="row">
             <div className="col-md-3"></div>
             <div className="col-md-6">
-
               <div className="panel panel-primary">
-
                 <div className="panel-heading"><h3>{eventContents.eventname}</h3></div>
               <div className="panel-body">
                 <h4><p className="eventInfoGroupname">1.groupname : {eventContents.groupname}</p></h4>
