@@ -32,7 +32,7 @@ export default class Navbar extends React.Component {
                   <li>
                   <Link to={"grouppage"}>
                     <a className="dropdown-toggle navbarMenu" data-toggle="dropdown" href="#"><b className="navbarMenu">내 그룹
-                    </b><span className="caret"></span></a>
+                    </b></a>
                   </Link>
                   </li>
                   <li className="navbarMenu"><a className="logout" href="https://oneovern.com/logout"><b className="navbarMenu">로그아웃</b></a></li>

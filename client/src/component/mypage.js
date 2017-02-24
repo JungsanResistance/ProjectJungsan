@@ -200,17 +200,19 @@ export default class Mypage extends React.Component {
     else {
       rendingPage =
       <div className="container mypage">
-      <div className="col-md-1"></div>
-      <div className="col-md-10">
-      <h1>my Page</h1>
-      <br />
-      <br />
-      <table className="table table-striped">
-        <thead>
+        <div className="col-md-1"></div>
+        <div className="col-md-10">
+        <center><h1 className="mypageHeader">내가 정산해야 할 내역</h1></center>
+        <br />
+      {/* <h3 className="mypageHeaderMessage"></h3> */}
+          <br />
+          <br />
+          <table className="table table-striped">
+            <thead>
             <tr className="mypageTableRow">
-              <th>name</th>
-              <th>email</th>
-              <th>cost</th>
+              <th>이름</th>
+            <th>이메일</th>
+          <th>총액</th>
               <th></th>
             </tr>
         </thead>
