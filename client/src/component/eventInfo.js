@@ -33,7 +33,7 @@ export default class Eventinfo extends React.Component {
       if (eventEditAuth === true) {
         editButton =
         <Link to={"eventedit/"+this.props.params.eventInfo}>
-          <input type="button" value='이벤트 수정' />
+          <button type="button" className='btn btn-outline-primary' >이벤트 수정</button>
         </Link>
       } else {
         editButton = '';
@@ -41,33 +41,51 @@ export default class Eventinfo extends React.Component {
       newrecipientUsername = eventContents.newrecipient.username;
       newrecipientEmail = eventContents.newrecipient.email;
       eventContents.participants.forEach((member) => {
-        memberList.push(<li>{member.username} ({member.email})</li>);
+        memberList.push(
+          <tr>
+            <td>{member.username}</td>
+            <td>{member.email}</td>
+          </tr>);
       });
     }
 
-
-
     return(
       <div>
-        <h1>
-          {eventContents.eventname}
-        </h1>
-        <br />
-        groupname : {eventContents.groupname}
-        <br />
-        <br />
-        date : {eventContents.date}
-        <br />
-        <br />
-        정산자 : {newrecipientUsername} ({newrecipientEmail})
-        <br />
-        <br />
-        참여자 :
-        <ul>
-          {memberList}
-        </ul>
-        <br />
-        {editButton}
+
+        <div className="container">
+          <div className="row">
+            <div className="col-md-3"></div>
+            <div className="col-md-6">
+
+              <div className="panel panel-primary">
+
+                <div className="panel-heading"><h3>{eventContents.eventname}</h3></div>
+              <div className="panel-body">
+                <h4><p className="eventInfoGroupname">1.groupname : {eventContents.groupname}</p></h4>
+                <hr/>
+                <h4><p className="eventInfoDate">2.date : {eventContents.date}</p></h4>
+                <hr/>
+              <h4><p className="eventInfoRecipient">3.정산자 : {newrecipientUsername} ({newrecipientEmail})</p></h4>
+                <hr/>
+              <h4>4.참석자 :</h4>
+              <br/>
+                <table className="table table-hover memberSelect">
+                  <thead>
+                    <tr>
+                      <th>이름</th>
+                    <th>이메일</th>
+                    </tr>
+                  </thead>
+                  {memberList}
+                </table>
+              </div>
+                <div className="panel-footer"><center>{editButton}</center></div>
+              </div>
+            </div>
+            <div className="col-md-3"></div>
+          </div>
+        </div>
+
       </div>
     );
   }
