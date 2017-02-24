@@ -799,7 +799,7 @@ export default class EditEvent extends React.Component {
               </div>
               <div className="form-group">
                 <input
-                  type="text" className="form-control spaceSelect" placeholder={this.state.oldeventname}
+                  type="text" className="form-control spaceSelect" placeholder={this.state.oldEventName}
                   onChange={this.inputHandleChange} />
               </div>
               <div className="form-group">
