@@ -37,7 +37,6 @@ export default class NewEvent extends React.Component {
     this.preCheck = this.preCheck.bind(this);
     this.eventDuplicateCheck = this.eventDuplicateCheck.bind(this);
     this.handleManualInputCost = this.handleManualInputCost.bind(this);
-    // this.handleManualCostUpdate = this.handleManualCostUpdate.bind(this);
     this.evaluateAll = this.evaluateAll.bind(this);
     this.countSelectedMember = this.countSelectedMember.bind(this);
     this.getCurrentSelectedGroupMembers = this.getCurrentSelectedGroupMembers.bind(this);
