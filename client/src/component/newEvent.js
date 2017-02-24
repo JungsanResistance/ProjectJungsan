@@ -110,7 +110,7 @@ export default class NewEvent extends React.Component {
       errCount += 1;
     }
     currentGroupMembers.forEach((member) => {
-      if (member.cost < 0) {
+      if (member.cost <= 0) {
         memberCostCheck = false;
       }
     })
@@ -166,7 +166,7 @@ export default class NewEvent extends React.Component {
       }
       if (!memberCostCheck) {
         this.setState({
-          totalCostErrorMessage: '모든 금액은 양의 정수여야 합니다',
+          totalCostErrorMessage: '모든 금액은 0원보다 커야합니다',
         })
       }
     }
