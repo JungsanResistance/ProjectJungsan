@@ -76,7 +76,6 @@ export default class HistoryTable extends React.Component {
     const eventList = [];
     let editButton = <button className="btn btn-outline-primary">이벤트 정보</button>
     let actionButton = '';
-    let declineButton = '';
     let history, tableName, tableType;
 
     if (this.props.debtHistory) {
@@ -97,6 +96,7 @@ export default class HistoryTable extends React.Component {
 //debt와 loaned 구분//
   if (history) {
     history.forEach((eventItem, index) => {
+      let declineButton = '';
       if (eventItem.email !== this.props.myEmail) {
         //이벤트 수정권한 추가//
 
