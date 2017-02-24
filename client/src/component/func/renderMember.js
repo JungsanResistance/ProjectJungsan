@@ -24,16 +24,28 @@ export default class RenderMembers extends React.Component {
   }
 
   render() {
-    const members = this.state.groupmemberList.map((member) => {
+    const members = this.state.groupmemberList.map((member, index) => {
       if (member.active) {
-        return <li>{member.username} ({member.email})</li>
+        return (
+        <tr>
+        <th>{index}</th>
+        <td>{member.username}</td>
+        <td>({member.email})</td>
+        </tr>);
       }
     });
     return (
       <div>
-        <ul>
-          {members}
-        </ul>
+        <table className="table groupPageTable">
+          <thead className="groupPageTableHead">
+            <th>#</th>
+            <th>이름</th>
+            <th>이메일</th>
+          </thead>
+          <tbody>
+            {members}
+          </tbody>
+        </table>
       </div>
     );
   }

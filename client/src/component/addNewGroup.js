@@ -165,14 +165,23 @@ export default class AddNewGroup extends React.Component {
   render() {
     const groupMembers = this.state.groupmembers.map((data, index) => {
       if(index !==0) {
-        return <li>
-          {data.username} ({data.email}) <input
+        return
+        <tr>
+          <td>{data.username}</td>
+          <td>{data.email}</td>
+          <td><input
             type="submit" value="delete" name={data.email}
             onClick={this.handleMemberDelete} />
-        </li>;
+          </td>
+        </tr>;
       }
       else {
-        return <li>{data.username} ({data.email}) : 그룹장 짱짱님</li>;
+        return (
+          <tr>
+            <td>{data.username}</td>
+            <td>{data.email}</td>
+            <td>그룹장</td>
+          </tr>);
       }
     });
 
@@ -188,7 +197,7 @@ export default class AddNewGroup extends React.Component {
                   <div className="newGroupFormTop">
                     <div className="form-top-left">
                       <h3>새로운 그룹을 만들어보세요!</h3>
-                      <p>그룹원들과의 정산을 쉽고 편리하게 할 수 있습니다.</p>
+                    <p><h4>그룹원들과의 정산을 쉽고 편리하게 할 수 있습니다.</h4></p>
                     </div>
                     <div className="form-top-right">
                       <div className="icon-user">
@@ -197,13 +206,11 @@ export default class AddNewGroup extends React.Component {
                       </div>
                     </div>
                   </div>
-
-
-                  <div className="newEventFormBottom">
+                  <div className="newGroupFormBottom">
                     <form className="newEventForm">
                       <div className="form-group">
                         <input
-                          type="text" className="form-control inputGroupName"
+                          type="text" className="form-control inputGroupName" placeholder="그룹이름을 적어주세요."
                           onChange={this.handleInput} onKeyPress={this.handleKeyPress} />
                         <button type="button" className="btn duplicateGroupnameCheck" onClick={this.handleGroupName}>중복확인</button>
                         <p className={this.state.groupDuplicateFlag}>{this.state.errorGroupnameDuplicate} </p>
@@ -211,18 +218,27 @@ export default class AddNewGroup extends React.Component {
 
                       <div className="form-group">
                         <input
-                          type="text" className="form-control addGroupMembers" placeholder="ex) wnghee91@gmail.com"
+                          type="text" className="form-control addGroupMembers" placeholder="그룹원의 이메일을 적어주세요. ex) wnghee91@gmail.com"
                           onChange={this.handleInput} onKeyPress={this.handleKeyPress} />
-                        <input type="submit" onClick={this.handleAddMember} value="add" />
+                        <button type="button" className="btn addGroupMember" onClick={this.handleAddMember} >그룹원 추가</button>
                         <p className="errorMemberDuplicateFalse">{this.state.errorMemberDuplicate} </p>
                       </div>
+
+
                       <div className="form-group">
-                        Following Members will be added to your group: {this.state.groupname}
-                        <br />
-                          <ul>
-                            {groupMembers}
-                          </ul>
+                        <table className="table table-hover memberSelect">
+                          <thead>
+                            <tr>
+                              <th>이름</th>
+                            <th>이메일</th>
+                          <th>비고</th>
+                            </tr>
+                          </thead>
+                          {groupMembers}
+                        </table>
                       </div>
+
+
                     </form>
                     <div className="form-footer">
                       <button type="button" className="btn submitNewGroup" value="이벤트 등록" onClick={this.handleSubmit}><b>이벤트 등록</b></button>

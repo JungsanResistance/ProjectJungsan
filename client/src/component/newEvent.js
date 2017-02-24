@@ -763,7 +763,7 @@ export default class NewEvent extends React.Component {
                 <div className="newEventFormTop">
                   <div className="form-top-left">
                     <h3>새로운 이벤트를 만들어보세요!</h3>
-                    <p>그룹원간의 채무관계를 쉽게 파악할 수 있습니다.</p>
+                  <p><h4>그룹원간의 채무관계를 쉽게 파악할 수 있습니다.</h4></p>
                   </div>
                   <div className="form-top-right">
                     <div className="icon-pencil">
@@ -808,8 +808,12 @@ export default class NewEvent extends React.Component {
                           placeholder="총액은?" onChange={this.inputHandleChange} />
                     </div>
                     <div className="form-group">
-                      * 멤버의 이름을 클릭하면 금액을 추가할 수 있습니다.
+                      <p className="addCostInfo">
+                      * 멤버의 이름을 클릭하면 금액을 추가할 수 있습니다.<br/>
+                      * 금액란을 클릭하면 금액을 변경할 수 있습니다.
+                      </p>
                       <br />
+
                       <table className="table table-hover memberSelect">
                         <thead>
                           <tr>
@@ -825,13 +829,11 @@ export default class NewEvent extends React.Component {
                     <button type="button" className="btn addEventButton" value="이벤트 등록" onClick={this.preCheck}><b>이벤트 등록</b></button>
                   </div>
                 </div>
-                <input type="button" className="Bang" value="계산 쾅!" onClick={this.evaluateAll} />
                 <p>{this.state.totalCostErrorMessage}</p>
                 <br />
                 <br />
                 {this.state.groupMemberErrorMesseage}
                 <br />
-                <input type="button" className="inputData" value="이벤트 등록" onClick={this.preCheck} />
               </div>
               </div>
               <div className="col-sm-3"></div>

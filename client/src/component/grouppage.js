@@ -13,8 +13,6 @@ export default class GroupPage extends React.Component {
   }
 
   componentWillMount() {
-
-
     // get all group-member pair data
     const pairGroupMember = axios.get(`https://oneovern.com/api/transaction?type=post`);
     // get isadmin data for each groupData
@@ -44,7 +42,6 @@ export default class GroupPage extends React.Component {
         groupList.push(key);
       }
 
-
       this.setState({
         myGroupList: groupList,
         adminData: getGroupAdminInfo,
@@ -53,18 +50,6 @@ export default class GroupPage extends React.Component {
   }
 
   render() {
-
-    // let editButton;
-    // this.state.myGroupList.forEach((myGroup) => {
-    //   if (myGroup.groupname === this.props.params.groupname) {
-    //     if (!myGroup.isadmin) {
-    //       editButton = '';
-    //     } else {
-    //       editButton = <input type="submit" value="edit" />;
-    //     }
-    //   }
-    // });
-
     let editButton;
     const groupList = this.state.myGroupList.map((groupname) => {
       this.state.adminData.forEach((group) => {
@@ -73,37 +58,41 @@ export default class GroupPage extends React.Component {
             editButton = '';
             return;
           } else {
-            editButton = <button type="button" value="그룹정보" />;
+            editButton = <button className="btn btn-outline-primary" type="button">그룹정보수정</button>;
             return;
           }
         }
       });
-
       return (
-        <div>
-          <li>{groupname}</li>
+        <div className="mygroupTable">
+        <tr>
+          <h3>{groupname}</h3>
           <RenderMembers groupname={groupname} />
           <p>{editButton}</p>
-        </div>
+        </tr>
+      </div>
       )
     });
 
     return (
       <div>
-        <ul>
-          groupList
+        <div className="container">
+            <div className="col-md-1"></div>
+          <div className="col-md-10">
+            <header className="jumbotron Mygroup">
+                <center><h2 className="groupageHeaderText"> 우리 그룹 정산은 'n분의 일'에서!</h2></center>
+              <br />
+            <br />
+            <p><center><a className="btn grouppageHeaderButton">그룹 추가</a></center>
+                </p>
+            </header>
+            <hr className="grouppageLine"/>
+          <br/>
+          <br/>
           {groupList}
-        </ul>
-        {/* <h1>
-        {this.props.params.groupname}
-        </h1>
-        <br />
-        <RenderMembers groupname={this.props.params.groupname} />
-        <br />
-        <br />
-        <Link to={'groupeditform/'+ this.props.params.groupname}>
-        {editButton}
-        </Link> */}
+            </div>
+            <div className="col-md-1"></div>
+        </div>
       </div>
     );
   }
