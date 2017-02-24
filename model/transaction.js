@@ -17,9 +17,13 @@ module.exports = {
       ))
       .then((groupList) => {
         console.log('grouplist',groupList);
-        const body = JSON.stringify(groupList);
-        const jsonBody = JSON.parse(body);
-        return group.getGroupMember(jsonBody);
+        if (groupList.length) {
+          const body = JSON.stringify(groupList);
+          const jsonBody = JSON.parse(body);
+          return group.getGroupMember(jsonBody);
+        } else {
+          return [];
+        }
       })
       .catch(err => Promise.reject(err));
     } else if (query.type === 'put'){
