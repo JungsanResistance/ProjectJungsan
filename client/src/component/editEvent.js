@@ -10,7 +10,7 @@ export default class EditEvent extends React.Component {
     super();
     this.state = {
       currentgroupname: '',
-      oldeventName: '',
+      oldEventName: '',
       newEventName: '',
       oldDate: '',
       newDate: '',
@@ -56,10 +56,10 @@ export default class EditEvent extends React.Component {
 
 
     // all groups I belong info
-    const getGroupData = axios.get('https://oneovern.com/api/transaction?type=post');
+    const getGroupData = axios.get('http://localhost:3000/api/transaction?type=post');
 
     // Event info
-    const getEventData = axios.get(`https://oneovern.com/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`);
+    const getEventData = axios.get(`http://localhost:3000/api/transaction?type=put&groupname=${selectedEventData.groupname}&eventname=${selectedEventData.eventname}&date=${selectedEventData.date}`);
 
 
     Promise.all([getGroupData, getEventData])
@@ -238,7 +238,7 @@ export default class EditEvent extends React.Component {
       participants: storage,
     });
 
-    axios.put('https://oneovern.com/api/transaction', {
+    axios.put('http://localhost:3000/api/transaction', {
       olddate: this.state.oldDate,
       newdate: this.state.newDate,
       oldrecipient: this.state.oldrecipient,
@@ -251,7 +251,7 @@ export default class EditEvent extends React.Component {
     .then((res) => {
       if (res.status === 200) {
         alert('이벤트가 등록되었습니다.');
-        browserHistory.push('/mypage');
+        browserHistory.push('/history');
       }
       else if (res.status === 401){
         alert('수정 권한이 없습니다');
@@ -591,7 +591,7 @@ export default class EditEvent extends React.Component {
     })
     .then((eventTarget) => {
       if (eventTarget.name === 'eventGroup') {
-        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
+        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -600,7 +600,7 @@ export default class EditEvent extends React.Component {
         })
       }
       else if (eventTarget.name === 'eventDate') {
-        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
+        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -609,7 +609,7 @@ export default class EditEvent extends React.Component {
         })
       }
       else if (eventTarget.type === 'text') {
-        return axios.get(`https://oneovern.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
+        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -642,7 +642,7 @@ export default class EditEvent extends React.Component {
     if (event.target.type === 'date') {
       this.eventDuplicateCheck(event);
       this.setState({
-        newdate: event.target.value,
+        newDate: event.target.value,
         dateStyle: '',
       });
     }
@@ -674,8 +674,9 @@ export default class EditEvent extends React.Component {
 
     else if (event.target.type === 'text') {
       this.eventDuplicateCheck(event);
+      console.log('new event name', event.target.value)
       this.setState({
-        eventName: event.target.value,
+        newEventName: event.target.value,
         eventNameStyle: '',
       });
     }
@@ -805,7 +806,7 @@ export default class EditEvent extends React.Component {
               <div className="form-group">
                 <select
                   name="recipientList" className="form-control recipientSelect"
-                  onChange={this.selectHandleChange} >
+                  onChange={this.selectHandleRecipient} >
                   <option>{this.state.newrecipient.username}</option>
                   {recipientTable}
                 </select>
