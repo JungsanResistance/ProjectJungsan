@@ -254,14 +254,15 @@ export default class GroupEditForm extends React.Component {
       return member;
     });
 
-    console.log(nextGroupmembers)
+    console.log(JSON.stringify(nextGroupmembers));
     nextGroupmembers.forEach((member) => {
-      if (member.username === event.target.name) {
+      console.log(member, event.target.name)
+      if (member.email === event.target.name) {
         member.active = 0;
+        console.log(member)
       }
     });
-    console.log(nextGroupmembers)
-    alert('hey')
+    console.log(JSON.stringify(nextGroupmembers));
     this.setState({
       newGroupmembers: nextGroupmembers,
       errorMemberDuplicate: '',

@@ -10,7 +10,7 @@ export default class EditEvent extends React.Component {
     super();
     this.state = {
       currentgroupname: '',
-      oldeventName: '',
+      oldEventName: '',
       newEventName: '',
       oldDate: '',
       newDate: '',
@@ -251,7 +251,7 @@ export default class EditEvent extends React.Component {
     .then((res) => {
       if (res.status === 200) {
         alert('이벤트가 등록되었습니다.');
-        browserHistory.push('/mypage');
+        browserHistory.push('/history');
       }
       else if (res.status === 401){
         alert('수정 권한이 없습니다');
@@ -642,7 +642,7 @@ export default class EditEvent extends React.Component {
     if (event.target.type === 'date') {
       this.eventDuplicateCheck(event);
       this.setState({
-        newdate: event.target.value,
+        newDate: event.target.value,
         dateStyle: '',
       });
     }
@@ -674,8 +674,9 @@ export default class EditEvent extends React.Component {
 
     else if (event.target.type === 'text') {
       this.eventDuplicateCheck(event);
+      console.log('new event name', event.target.value)
       this.setState({
-        eventName: event.target.value,
+        newEventName: event.target.value,
         eventNameStyle: '',
       });
     }
@@ -805,7 +806,7 @@ export default class EditEvent extends React.Component {
               <div className="form-group">
                 <select
                   name="recipientList" className="form-control recipientSelect"
-                  onChange={this.selectHandleChange} >
+                  onChange={this.selectHandleRecipient} >
                   <option>{this.state.newrecipient.username}</option>
                   {recipientTable}
                 </select>
