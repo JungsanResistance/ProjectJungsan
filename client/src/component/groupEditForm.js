@@ -28,7 +28,7 @@ export default class GroupEditForm extends React.Component {
   }
 
   componentWillMount() {
-    axios.get(`http://localhost:3000/api/groupedit?target=groupmembers&groupname=${this.props.params.groupname}`)
+    axios.get(`https://oneovern.com/api/groupedit?target=groupmembers&groupname=${this.props.params.groupname}`)
     .then((res) => {
       console.log("res!!!!!!!!!", res)
       const groupData = JSON.parse(res.data);
@@ -68,7 +68,7 @@ export default class GroupEditForm extends React.Component {
       }
       else {
         if ((groupNameCheck === false) && groupMemberCheck) {
-            axios.put(`http://localhost:3000/api/groupedit`,
+            axios.put(`https://oneovern.com/api/groupedit`,
               {
                   oldgroupname: this.state.oldGroupname,
                   newgroupname: this.state.newGroupname,
@@ -92,7 +92,7 @@ export default class GroupEditForm extends React.Component {
         }
 
         else if (groupNameCheck && (groupMemberCheck === false)) {
-          axios.put(`http://localhost:3000/api/groupedit`,
+          axios.put(`https://oneovern.com/api/groupedit`,
              {
                action: 'modifyGroupMembers',
                data: {
@@ -118,7 +118,7 @@ export default class GroupEditForm extends React.Component {
           });
         }
         else if ((groupNameCheck || groupMemberCheck) === false) {
-          axios.put(`http://localhost:3000/api/groupedit`,
+          axios.put(`https://oneovern.com/api/groupedit`,
              {
                action: 'modifyGroupAll',
                data: {
@@ -175,7 +175,7 @@ export default class GroupEditForm extends React.Component {
     document.body.getElementsByClassName('form-control addGroupMembers')[0].value = '';
     console.log(this.state.emailToBeChecked)
 
-    axios.get(`http://localhost:3000/api/groupedit?target=email&email=${this.state.emailToBeChecked}`)
+    axios.get(`https://oneovern.com/api/groupedit?target=email&email=${this.state.emailToBeChecked}`)
     .then((res) => {
       const data = JSON.parse(res.data);
       console.log('received data', data)
@@ -272,7 +272,7 @@ export default class GroupEditForm extends React.Component {
 
   handleGroupName() {
     console.log(this.state.newGroupname);
-    axios.get(`http://localhost:3000/api/groupedit?target=groupname&groupname=${this.state.newGroupname}`)
+    axios.get(`https://oneovern.com/api/groupedit?target=groupname&groupname=${this.state.newGroupname}`)
     .then((res) => {
       const data = JSON.parse(res.data);
       console.log(data.length )
