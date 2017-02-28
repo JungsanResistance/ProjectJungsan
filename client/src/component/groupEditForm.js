@@ -52,7 +52,7 @@ export default class GroupEditForm extends React.Component {
   handleSubmitGroup() {
     this.handleGroupName();
 
-    if(this.state.errorGroupnameDuplicate !== '현재 사용하고 있는 그룹이름입니다.' &&
+    if (this.state.errorGroupnameDuplicate !== '현재 사용하고 있는 그룹이름입니다.' &&
     this.state.errorGroupnameDuplicate !== '이 그룹이름은 이미 있어 띵구야') {
       const groupMemberCheck = JSON.stringify(this.state.newGroupmembers) === JSON.stringify(this.state.oldGroupmembers);
       const groupNameCheck = this.state.newGroupname === this.state.oldGroupname;
@@ -68,7 +68,12 @@ export default class GroupEditForm extends React.Component {
       }
       else {
         if ((groupNameCheck === false) && groupMemberCheck) {
-            axios.put(`https://oneovern.com/api/groupedit`,
+          console.log('this is the data we are submiting', {
+            oldgroupname: this.state.oldGroupname,
+            newgroupname: this.state.newGroupname,
+            action: 'modifyGroupName',
+          });
+            axios.put(`https://oneovern.com/api/group`,
               {
                   oldgroupname: this.state.oldGroupname,
                   newgroupname: this.state.newGroupname,
@@ -78,11 +83,8 @@ export default class GroupEditForm extends React.Component {
             .then((res) => {
               if (res.status === 200){
                   console.log('post response:', res);
-                  // this.setState({
-                  //   errorSubmit: '그룹이름이 수정되었습니다!',
-                  // })
                   alert('그룹 이름이 수정되었습니다')
-                  browserHistory.push('/mypage');
+                  browserHistory.push('/grouppage');
                 } else {
                   console.log(res.status);
                 }
@@ -92,24 +94,19 @@ export default class GroupEditForm extends React.Component {
         }
 
         else if (groupNameCheck && (groupMemberCheck === false)) {
-          axios.put(`https://oneovern.com/api/groupedit`,
+          axios.put(`https://oneovern.com/api/group`,
              {
                action: 'modifyGroupMembers',
-               data: {
-                 oldgroupname: this.state.oldGroupname,
-                 newgroupname: this.state.newGroupname,
-                 groupmembers: this.state.newGroupmembers,
-              }
+               oldgroupname: this.state.oldGroupname,
+               newgroupname: this.state.newGroupname,
+               groupmembers: this.state.newGroupmembers,
              }
           )
           .then((res) => {
             console.log(res);
             if (res.status === 200){
-              // alert('그룹 이름이 수정되었습니다')
+              alert('그룹멤버가 수정 되었습니다.');
               browserHistory.push('/mypage');
-              this.setState({
-                errorSubmit: '그룹멤버가 수정되었습니다!',
-              })
             } else {
               this.setState({
                 errorSubmit: '에러..!? 운영자에게 연락주세요 ㅠㅠ',
@@ -118,31 +115,33 @@ export default class GroupEditForm extends React.Component {
           });
         }
         else if ((groupNameCheck || groupMemberCheck) === false) {
-          axios.put(`https://oneovern.com/api/groupedit`,
+          console.log('this is the data we are submiting', {
+            oldgroupname: this.state.oldGroupname,
+            newgroupname: this.state.newGroupname,
+            groupmembers: this.state.newGroupmembers,
+            action: 'modifyGroupAll',
+          });
+          axios.put(`https://oneovern.com/api/group`,
              {
-               action: 'modifyGroupAll',
-               data: {
-                 oldgroupname: this.state.oldGroupname,
-                 newgroupname: this.state.newGroupname,
-                 groupmembers: this.state.newGroupmembers,
-              }
+              action: 'modifyGroupAll',
+              oldgroupname: this.state.oldGroupname,
+              newgroupname: this.state.newGroupname,
+              groupmembers: this.state.newGroupmembers,
             }
           )
           .then((res) => {
             if(res.status === 200){
-              this.setState({
-                errorSubmit: '그룹멤버와 그룹이름이 수정되었습니다',
-              })
+              alert('그룹멤버와 그룹이름이 수정되었습니다.')
+              browserHistory.push('/grouppage');
             } else {
-              this.setState({
-                errorSubmit: '에러..!? 운영자에게 연락주세요 ㅠㅠ',
-              })
+              alert('그룹수정 실패 (시스템오류) 운영자에게 알려주세요')
+              browserHistory.push('/grouppage');
             }
           });
         }
         else {
           alert('수정사항이 없습니다.')
-          browserHistory.push('/mypage');
+          browserHistory.push('/grouppage');
         }
       }
     }
@@ -320,8 +319,6 @@ export default class GroupEditForm extends React.Component {
           }
       }
     });
-
-    console.log('members', members)
 
     return (
       <div>

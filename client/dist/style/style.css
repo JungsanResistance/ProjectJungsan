@@ -123,7 +123,8 @@ th {
 
 
 .errorMemberDuplicateFalse, .errorGroupnameDuplicate {
-  color:rgb(186, 18, 18);
+  /*color:rgb(186, 18, 18);*/
+  color: rgb(35, 204, 7);
 }
 
 .errorMemberDuplicateTrue {
