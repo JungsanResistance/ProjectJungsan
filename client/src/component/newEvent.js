@@ -95,7 +95,6 @@ export default class NewEvent extends React.Component {
     if (this.state.selectedGroup === '') {
       nextGroupStyle = 'inputStyle';
       nextErrorMessage = '그룹을 선택해 주세요'
-      // errCount += 1;
 
       this.setState({
         groupStyle: nextGroupStyle,
@@ -121,6 +120,10 @@ export default class NewEvent extends React.Component {
       }
       if (!(this.state.totalCost > 0)) {
         nextCostStyle = 'inputStyle';
+        errCount += 1;
+      }
+
+      if (this.state.totalCost < 1000) {
         errCount += 1;
       }
 
@@ -180,7 +183,9 @@ export default class NewEvent extends React.Component {
           if (!this.checkTotal()) {
               nextTotalCostErrorMessage = '총 금액이 맞지 않습니다';
           }
-
+          if (this.state.totalCost < 1000) {
+            nextTotalCostErrorMessage = '총 금액은 1,000 원 이상이어야 합니다';
+          }
           this.setState({
             errorMesseage: nextErrorMessage,
             groupMemberErrorMesseage: nextGroupMemberErrorMessage,
@@ -276,6 +281,7 @@ export default class NewEvent extends React.Component {
     // toggle selected flag when selecting member
     nextSelectedGroupMembers.forEach((member) => {
       if (member.email === selectedMember.email) {
+        console.log(member.selected)
         member.selected = !member.selected;
 
         // toggle ispaid flag for the recipient
@@ -409,6 +415,9 @@ export default class NewEvent extends React.Component {
   }
 
   getIndivCost() {
+    if (this.state.totalCost < 1000) {
+      return 0;
+    }
     let sumAllManualCost = 0;
     let isManualCostCount = 0;
     // const nextSelectedGroupMembers = this.state.selectedGroupMembers;
