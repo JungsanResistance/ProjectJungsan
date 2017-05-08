@@ -250,8 +250,6 @@ export default class AddNewGroup extends React.Component {
                           {groupMembers}
                         </table>
                       </div>
-
-
                     </form>
                     <div className="form-footer">
                       <button type="button" className="btn submitNewGroup" value="이벤트 등록" onClick={this.handleSubmit}><b>그룹 생성</b></button>
