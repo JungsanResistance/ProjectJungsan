@@ -6,7 +6,7 @@ export default class SignOut extends React.Component {
 
     return (
       <div>
-        <a className="logout" href="http://ec2-13-124-106-58.ap-northeast-2.compute.amazonaws.com:3000logout">
+        <a className="logout" href="http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000logout">
           Logout
         </a>
       </div>
