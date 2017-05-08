@@ -44,7 +44,7 @@ export default class HistoryTable extends React.Component {
       action: action,
     };
 
-    axios.put(`http://ec2-13-124-106-58.ap-northeast-2.compute.amazonaws.com/api/history?type=${type}`, historyData)
+    axios.put(`http://ec2-13-124-106-58.ap-northeast-2.compute.amazonaws.com:3000/api/history?type=${type}`, historyData)
     .then(res => {
       if(res.status === 200) {
         if (eventValue === '정산하기' || eventValue === '수락') {
@@ -55,7 +55,7 @@ export default class HistoryTable extends React.Component {
       }
     })
     .then(() => {
-      return axios.get('http://ec2-13-124-106-58.ap-northeast-2.compute.amazonaws.com/api/history');
+      return axios.get('http://ec2-13-124-106-58.ap-northeast-2.compute.amazonaws.com:3000/api/history');
     })
     .then((res) => {
       const getData = JSON.parse(res.data);
