@@ -18,9 +18,9 @@ export default class GroupPage extends React.Component {
 
   componentWillMount() {
     // get all group-member pair data
-    const pairGroupMember = axios.get(`http://localhost:3000/api/transaction?type=post`);
+    const pairGroupMember = axios.get(`http://ec2-13-124-106-58.ap-northeast-2.compute.amazonaws.com/api/transaction?type=post`);
     // get isadmin data for each groupData
-    const adminData = axios.get(`http://localhost:3000/api/mypage`);
+    const adminData = axios.get(`http://ec2-13-124-106-58.ap-northeast-2.compute.amazonaws.com/api/mypage`);
     console.log('we get here')
     Promise.all([pairGroupMember, adminData])
     .then((res) => {

@@ -50,8 +50,8 @@ export default class NewEvent extends React.Component {
   }
 
   componentWillMount() {
-    const getGroupData = axios.get('http://localhost:3000/api/transaction?type=post');
-    const getAllEvents = axios.get('http://localhost:3000/api/history');
+    const getGroupData = axios.get('http://ec2-13-124-106-58.ap-northeast-2.compute.amazonaws.com/api/transaction?type=post');
+    const getAllEvents = axios.get('http://ec2-13-124-106-58.ap-northeast-2.compute.amazonaws.com/api/history');
 
     Promise.all([getGroupData, getAllEvents]).then((res) => {
       console.log('res', res)
@@ -242,7 +242,7 @@ export default class NewEvent extends React.Component {
     }
 
     else {
-      axios.post('http://localhost:3000/api/transaction', {
+      axios.post('http://ec2-13-124-106-58.ap-northeast-2.compute.amazonaws.com/api/transaction', {
         date: this.state.date,
         oldrecipient: this.state.oldrecipient,
         newrecipient: this.state.newrecipient,
@@ -640,7 +640,7 @@ export default class NewEvent extends React.Component {
     })
     .then((eventTarget) => {
       if (eventTarget.name === 'eventGroup') {
-        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
+        return axios.get(`http://ec2-13-124-106-58.ap-northeast-2.compute.amazonaws.com/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -649,7 +649,7 @@ export default class NewEvent extends React.Component {
         })
       }
       else if (eventTarget.name === 'eventDate') {
-        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
+        return axios.get(`http://ec2-13-124-106-58.ap-northeast-2.compute.amazonaws.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
 
         .then((res) => {
           if (res.data.length-2) {
@@ -658,7 +658,7 @@ export default class NewEvent extends React.Component {
         })
       }
       else if (eventTarget.type === 'text') {
-        return axios.get(`http://localhost:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
+        return axios.get(`http://ec2-13-124-106-58.ap-northeast-2.compute.amazonaws.com/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
 
         .then((res) => {
           if (res.data.length-2) {
