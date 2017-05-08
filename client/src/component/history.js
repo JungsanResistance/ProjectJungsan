@@ -22,8 +22,8 @@ export default class History extends React.Component {
     this.handleEditEvent = this.handleEditEvent.bind(this);
   }
   componentWillMount() {
-    const myData = axios.get('https://oneovern.com/api/misc');
-    const historyData = axios.get('https://oneovern.com/api/history');
+    const myData = axios.get('http://localhost:3000/api/misc');
+    const historyData = axios.get('http://localhost:3000/api/history');
 
     Promise.all([myData, historyData]).then(res => {
       const myEmailData = JSON.parse(res[0].data)[0].email;

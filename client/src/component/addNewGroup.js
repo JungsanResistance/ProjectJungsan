@@ -26,7 +26,7 @@ export default class AddNewGroup extends React.Component {
   }
 
   componentWillMount() {
-    axios.get('https://oneovern.com/api/misc')
+    axios.get('http://localhost:3000/api/misc')
     .then((res) => {
       console.log(res);
       const logInUserData = JSON.parse(res.data);
@@ -45,7 +45,7 @@ export default class AddNewGroup extends React.Component {
     else {
       console.log("groupname::",this.state.groupname,
       "groupmembers::::", this.state.groupmembers);
-      axios.post('https://oneovern.com/api/group', {
+      axios.post('http://localhost:3000/api/group', {
         groupname: this.state.groupname,
         groupmembers: this.state.groupmembers,
       })
@@ -81,7 +81,7 @@ export default class AddNewGroup extends React.Component {
 
   handleAddMember() {
     document.body.getElementsByClassName('form-control addGroupMembers')[0].value = '';
-    axios.get(`https://oneovern.com/api/groupedit?target=email&email=${this.state.emailToBeChecked}`)
+    axios.get(`http://localhost:3000/api/groupedit?target=email&email=${this.state.emailToBeChecked}`)
     .then((res) => {
       console.log(res.data);
       const data = JSON.parse(res.data);
@@ -138,7 +138,7 @@ export default class AddNewGroup extends React.Component {
       })
     }
     else {
-      axios.get(`https://oneovern.com/api/groupedit?target=groupname&groupname=${this.state.groupname}`)
+      axios.get(`http://localhost:3000/api/groupedit?target=groupname&groupname=${this.state.groupname}`)
       .then((res) => {
         const data = JSON.parse(res.data);
         if (data.length) {

@@ -29,8 +29,8 @@ export default class Mypage extends React.Component {
 
   componentWillMount() {
     this.reset();
-    // const myData = axios.get('https://oneovern.com/api/misc');
-    // const groupData = axios.get('https://oneovern.com/api/mypage');
+    // const myData = axios.get('http://localhost:3000/api/misc');
+    // const groupData = axios.get('http://localhost:3000/api/mypage');
     // Promise.all([myData, groupData]).then(res => {
     //   const myEmailData = JSON.parse(res[0].data)[0].email
     //   const groupStorage = [];
@@ -54,9 +54,10 @@ export default class Mypage extends React.Component {
 
   reset() {
 
-    const myData = axios.get('https://oneovern.com/api/misc');
-    const groupData = axios.get('https://oneovern.com/api/mypage');
+    const myData = axios.get('http://localhost:3000/api/misc');
+    const groupData = axios.get('http://localhost:3000/api/mypage');
     Promise.all([myData, groupData]).then((res) => {
+      console.log('in?')
       const myEmailData = JSON.parse(res[0].data)[0].email;
       const groupStorage = [];
       const getData = JSON.parse(res[1].data);
@@ -115,7 +116,7 @@ export default class Mypage extends React.Component {
 
     if (answer) {
 
-      axios.put(`https://oneovern.com/api/misc`, individualTransacionDone)
+      axios.put(`http://localhost:3000/api/misc`, individualTransacionDone)
       .then((res) => {
         if (res.status === 200) {
           if (eventValue === '정산요청') {
