@@ -35,7 +35,7 @@ export default class Navbar extends React.Component {
                     </b></a>
                   </Link>
                   </li>
-                  <li className="navbarMenu"><a className="logout" href="https://oneovern.com/logout"><b className="navbarMenu">로그아웃</b></a></li>
+                  <li className="navbarMenu"><a className="logout" href="http://ec2-13-124-106-58.ap-northeast-2.compute.amazonaws.comlogout"><b className="navbarMenu">로그아웃</b></a></li>
                 </ul>
               </div>
             </div>
