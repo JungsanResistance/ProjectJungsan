@@ -3,7 +3,7 @@ import axios from 'axios';
 
 
 export default class RenderMembers extends React.Component {
-  constructor(){
+  constructor()  {
     super();
     this.state = {
       groupmemberList: [],
@@ -11,33 +11,29 @@ export default class RenderMembers extends React.Component {
   }
 
   componentWillMount() {
-    console.log('this.props.groupname', this.props.groupname)
     axios.get(`http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/group?target=groupmembers&groupname=${this.props.groupname}`)
     .then((res) => {
       if (res.status === 200) {
-        console.log('res.data',res.data)
-      const groupData = JSON.parse(res.data);
-      console.log(groupData)
-      this.setState({
-        groupmemberList: groupData,
-      });
+        const groupData = JSON.parse(res.data);
+        this.setState({
+          groupmemberList: groupData,
+        });
       }
     });
   }
 
   render() {
-    console.log('this.state.groupmemberList', this.state.groupmemberList)
     const members = this.state.groupmemberList.map((member, index) => {
       if (member.active) {
         return (
-        <tr>
-        <th>{index}</th>
-        <td>{member.username}</td>
-        <td>({member.email})</td>
-        </tr>);
+          <tr>
+            <th>{index}</th>
+            <td>{member.username}</td>
+            <td>({member.email})</td>
+          </tr>);
       }
     });
-    console.log('members',members)
+
     return (
       <div>
         <table className="table groupPageTable">
