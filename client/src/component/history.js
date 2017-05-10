@@ -18,7 +18,6 @@ export default class History extends React.Component {
       myEmail: '',
       loaded: false,
     };
-
     this.handleEditEvent = this.handleEditEvent.bind(this);
   }
   componentWillMount() {
@@ -28,7 +27,6 @@ export default class History extends React.Component {
     Promise.all([myData, historyData]).then(res => {
       const myEmailData = JSON.parse(res[0].data)[0].email;
       const getData = JSON.parse(res[1].data);
-      console.log('getData', getData);
       this.setState({
         debtHistory: getData.debt,
         loanedHistory: getData.loaned,
@@ -51,12 +49,18 @@ export default class History extends React.Component {
       <div className="historyTable">
         <Navbar />
         <Loader loaded={this.state.loaded}>
-        <table className="table">
-          <HistoryTable debtHistory={this.state.debtHistory} myEmail={this.state.myEmail} />
-          <br />
-          <br />
-          <HistoryTable loanedHistory={this.state.loanedHistory} myEmail={this.state.myEmail} />
-        </table>
+          <table className="table">
+            <HistoryTable
+              debtHistory={this.state.debtHistory}
+              myEmail={this.state.myEmail}
+            />
+            <br />
+            <br />
+            <HistoryTable
+              loanedHistory={this.state.loanedHistory}
+              myEmail={this.state.myEmail}
+            />
+          </table>
         </Loader>
       </div>
     );

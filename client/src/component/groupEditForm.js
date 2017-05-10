@@ -8,7 +8,7 @@ export default class GroupEditForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      oldGroupname: this.props.params.groupname, // ???????
+      oldGroupname: this.props.params.groupname,
       newGroupname: this.props.params.groupname,
       emailToBeChecked: '',
       membername: '',
@@ -30,7 +30,6 @@ export default class GroupEditForm extends React.Component {
   componentWillMount() {
     axios.get(`http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/groupedit?target=groupmembers&groupname=${this.props.params.groupname}`)
     .then((res) => {
-      console.log("res!!!!!!!!!", res)
       const groupData = JSON.parse(res.data);
       const groupMemberData = groupData.map((data) => {
         return {
@@ -40,12 +39,10 @@ export default class GroupEditForm extends React.Component {
           email: data.email,
         };
       });
-
       this.setState({
         newGroupmembers: groupMemberData,
         oldGroupmembers: groupMemberData,
       });
-
     });
   }
 
@@ -73,44 +70,40 @@ export default class GroupEditForm extends React.Component {
             newgroupname: this.state.newGroupname,
             action: 'modifyGroupName',
           });
-            axios.put(`http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/group`,
-              {
-                  oldgroupname: this.state.oldGroupname,
-                  newgroupname: this.state.newGroupname,
-                  action: 'modifyGroupName',
-              }
-            )
-            .then((res) => {
-              if (res.status === 200){
-                  console.log('post response:', res);
-                  alert('그룹 이름이 수정되었습니다')
-                  browserHistory.push('/grouppage');
-                } else {
-                  console.log(res.status);
-                }
-              }
-            )
-          // }
-        }
-
-        else if (groupNameCheck && (groupMemberCheck === false)) {
           axios.put(`http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/group`,
-             {
-               action: 'modifyGroupMembers',
-               oldgroupname: this.state.oldGroupname,
-               newgroupname: this.state.newGroupname,
-               groupmembers: this.state.newGroupmembers,
-             }
+            {
+              oldgroupname: this.state.oldGroupname,
+              newgroupname: this.state.newGroupname,
+              action: 'modifyGroupName',
+            }
           )
           .then((res) => {
-            console.log(res);
+            if (res.status === 200) {
+              alert('그룹 이름이 수정되었습니다');
+              browserHistory.push('/grouppage');
+            } else {
+              console.log(res.status);
+            }
+          },
+          );
+        }
+        else if (groupNameCheck && (groupMemberCheck === false)) {
+          axios.put(`http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/group`,
+            {
+              action: 'modifyGroupMembers',
+              oldgroupname: this.state.oldGroupname,
+              newgroupname: this.state.newGroupname,
+              groupmembers: this.state.newGroupmembers,
+            },
+          )
+          .then((res) => {
             if (res.status === 200){
               alert('그룹멤버가 수정 되었습니다.');
               browserHistory.push('/mypage');
             } else {
               this.setState({
                 errorSubmit: '에러..!? 운영자에게 연락주세요 ㅠㅠ',
-              })
+              });
             }
           });
         }
@@ -122,12 +115,12 @@ export default class GroupEditForm extends React.Component {
             action: 'modifyGroupAll',
           });
           axios.put(`http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/group`,
-             {
+            {
               action: 'modifyGroupAll',
               oldgroupname: this.state.oldGroupname,
               newgroupname: this.state.newGroupname,
               groupmembers: this.state.newGroupmembers,
-            }
+            },
           )
           .then((res) => {
             if(res.status === 200){
@@ -149,7 +142,7 @@ export default class GroupEditForm extends React.Component {
 
   handleInput(event) {
     if (event.target.className === 'form-control inputGroupName') {
-      if (event.target.value.length){
+      if (event.target.value.length) {
         this.setState({
           newGroupname: event.target.value,
           errorSubmit: '',
@@ -162,22 +155,19 @@ export default class GroupEditForm extends React.Component {
       }
     }
     else if (event.target.className === 'form-control addGroupMembers') {
-        this.setState({
-          emailToBeChecked: event.target.value,
-          errorMemberDuplicate: '',
-          errorSubmit: '',
-        });
+      this.setState({
+        emailToBeChecked: event.target.value,
+        errorMemberDuplicate: '',
+        errorSubmit: '',
+      });
     }
   }
 
   handleAddMember() {
     document.body.getElementsByClassName('form-control addGroupMembers')[0].value = '';
-    console.log(this.state.emailToBeChecked)
-
     axios.get(`http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/groupedit?target=email&email=${this.state.emailToBeChecked}`)
     .then((res) => {
       const data = JSON.parse(res.data);
-      console.log('received data', data)
       const nextGroupmembers = this.state.newGroupmembers.map((member) => {
         return member;
       });
@@ -193,9 +183,6 @@ export default class GroupEditForm extends React.Component {
             email: data[0].email,
             active: 1,
           });
-
-          console.log(nextGroupmembers);
-
           this.setState({
             newGroupmembers: nextGroupmembers,
             errorMemberDuplicate: '추가되었습니다.',
@@ -208,7 +195,7 @@ export default class GroupEditForm extends React.Component {
               if (member.email === data[0].email) {
                 memberIndex = index;
               }
-          });
+            });
           if (nextGroupmembers[memberIndex].active) {
             this.setState({
               errorMemberDuplicate: '이미 추가된 멤버입니다!',
@@ -225,7 +212,6 @@ export default class GroupEditForm extends React.Component {
         }
       }
       else {
-        console.log('hi')
         this.setState({
           errorMemberDuplicate: '등록된 이메일주소가 아닙니다!',
           emailToBeChecked: '',
@@ -240,25 +226,20 @@ export default class GroupEditForm extends React.Component {
         this.handleGroupName();
       }
       else if (event.target.className === 'form-control addGroupMembers') {
-        console.log('enter')
         this.handleAddMember();
       }
     }
   }
 
   handleMemberDelete(event) {
-    console.log(event.target)
-    console.log("delete clicked")
     const nextGroupmembers = this.state.newGroupmembers.map((member) => {
       return member;
     });
 
     console.log(JSON.stringify(nextGroupmembers));
     nextGroupmembers.forEach((member) => {
-      console.log(member, event.target.name)
       if (member.email === event.target.name) {
         member.active = 0;
-        console.log(member)
       }
     });
     console.log(JSON.stringify(nextGroupmembers));
@@ -270,31 +251,28 @@ export default class GroupEditForm extends React.Component {
   }
 
   handleGroupName() {
-    console.log(this.state.newGroupname);
     axios.get(`http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/groupedit?target=groupname&groupname=${this.state.newGroupname}`)
     .then((res) => {
       const data = JSON.parse(res.data);
-      console.log(data.length )
       if (data.length && this.state.newGroupname !== this.props.params.groupname) {
         if (this.state.newGroupname === data[0].groupname) {
           this.setState({
             errorGroupnameDuplicate: '이 그룹이름은 이미 있어 띵구야',
-            groupDuplicateFlag: "errorMemberDuplicateFalse",
-          })
+            groupDuplicateFlag: 'errorMemberDuplicateFalse',
+          });
         }
       }
       else {
         this.setState({
           groupname: this.state.newGroupname,
           errorGroupnameDuplicate: '사용할 수 있는 이름이군요!',
-          groupDuplicateFlag: "errorMemberDuplicateTrue",
-        })
+          groupDuplicateFlag: 'errorMemberDuplicateTrue',
+        });
       }
     });
   }
 
   render() {
-    console.log('this.state.newGroupmembers',this.state.newGroupmembers)
     const members = [];
     this.state.newGroupmembers.forEach((member, index) => {
       if (member.active) {
@@ -303,11 +281,19 @@ export default class GroupEditForm extends React.Component {
             <tr>
               <td>{member.username}</td>
               <td>{member.email}</td>
-              <td><button
-                type="button" className="btn btn-outline-info" value="delete" name={member.email}
-                onClick={this.handleMemberDelete} >삭제</button>
+              <td>
+                <button
+                  type="button"
+                  className="btn btn-outline-info"
+                  value="delete"
+                  name={member.email}
+                  onClick={this.handleMemberDelete}
+                >
+                  삭제
+                </button>
               </td>
-            </tr>);
+            </tr>,
+          );
         }
         else {
           members.push(
@@ -316,7 +302,7 @@ export default class GroupEditForm extends React.Component {
               <td>{member.email}</td>
               <td>그룹장</td>
             </tr>);
-          }
+        }
       }
     });
 
@@ -325,63 +311,96 @@ export default class GroupEditForm extends React.Component {
         <Navbar />
         <br />
         <br />
-          <div className="container-fluid">
-            <div className="row">
-              <div className="col-md-3"></div>
-              <div className="col-md-6">
-                <div className="newGroupFormBox">
-                  <div className="newGroupFormTop">
-                    <div className="form-top-left">
-                      <h3>그룹명과 그룹멤버를 수정해보세요!</h3>
-                    <p><h4>내용을 수정한 후에 그룹수정버튼을 눌러주세요.</h4></p>
-                    </div>
-                    <div className="form-top-right">
-                      <div className="icon-user">
-                        <b><span className="glyphicon glyphicon-user">
-                        </span></b>
-                      </div>
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-md-3" />
+            <div className="col-md-6">
+              <div className="newGroupFormBox">
+                <div className="newGroupFormTop">
+                  <div className="form-top-left">
+                    <h3>그룹명과 그룹멤버를 수정해보세요!</h3>
+                    <p>
+                      <h4>내용을 수정한 후에 그룹수정버튼을 눌러주세요.</h4>
+                    </p>
+                  </div>
+                  <div className="form-top-right">
+                    <div className="icon-user">
+                      <b>
+                        <span className="glyphicon glyphicon-user" />
+                      </b>
                     </div>
                   </div>
-                  <div className="newGroupFormBottom">
-                    <form className="newEventForm">
-                      <div className="form-group">
-                        <input
-                          type="text" className="form-control inputGroupName" placeholder="그룹이름을 적어주세요."
-                          onChange={this.handleInput} onKeyPress={this.handleEneter} />
-                        <button type="button" className="btn duplicateGroupnameCheck" onClick={this.handleGroupName}>중복확인</button>
-                        <p className={this.state.groupDuplicateFlag}>{this.state.errorGroupnameDuplicate} </p>
-                      </div>
-                      <div className="form-group">
-                        <input
-                          type="text" className="form-control addGroupMembers" placeholder="그룹원의 이메일을 적어주세요. ex) wnghee91@gmail.com"
-                          onChange={this.handleInput} onKeyPress={this.handleEneter} />
-                        <button type="button" className="btn addGroupMember" onClick={this.handleAddMember} >그룹원 추가</button>
-                        <p className="errorMemberDuplicateFalse">{this.state.errorMemberDuplicate} </p>
-                      </div>
-                      <div className="form-group">
-                        <table className="table table-hover memberSelect">
-                          <thead>
-                            <tr>
-                              <th>이름</th>
+                </div>
+                <div className="newGroupFormBottom">
+                  <form className="newEventForm">
+                    <div className="form-group">
+                      <input
+                        type="text"
+                        className="form-control inputGroupName"
+                        placeholder="그룹이름을 적어주세요."
+                        onChange={this.handleInput}
+                        onKeyPress={this.handleEneter}
+                      />
+                      <button
+                        type="button"
+                        className="btn duplicateGroupnameCheck"
+                        onClick={this.handleGroupName}
+                      >
+                        중복확인
+                      </button>
+                      <p className={this.state.groupDuplicateFlag}>
+                        {this.state.errorGroupnameDuplicate}
+                      </p>
+                    </div>
+                    <div className="form-group">
+                      <input
+                        type="text"
+                        className="form-control addGroupMembers"
+                        placeholder="그룹원의 이메일을 적어주세요. ex) wnghee91@gmail.com"
+                        onChange={this.handleInput}
+                        onKeyPress={this.handleEneter}
+                      />
+                      <button
+                        type="button"
+                        className="btn addGroupMember"
+                        onClick={this.handleAddMember}
+                      >
+                        그룹원 추가
+                      </button>
+                      <p className="errorMemberDuplicateFalse">
+                        {this.state.errorMemberDuplicate}
+                      </p>
+                    </div>
+                    <div className="form-group">
+                      <table className="table table-hover memberSelect">
+                        <thead>
+                          <tr>
+                            <th>이름</th>
                             <th>이메일</th>
-                          <th>비고</th>
-                            </tr>
-                          </thead>
-                          {members}
-                        </table>
-                      </div>
-                    </form>
-                    <div className="form-footer">
-                      <button type="button" className="btn submitNewGroup" value="그룹수정" onClick={this.handleSubmitGroup}><b>그룹수정</b></button>
-
+                            <th>비고</th>
+                          </tr>
+                        </thead>
+                        {members}
+                      </table>
                     </div>
+                  </form>
+                  <div className="form-footer">
+                    <button
+                      type="button"
+                      className="btn submitNewGroup"
+                      value="그룹수정"
+                      onClick={this.handleSubmitGroup}
+                    >
+                      <b>그룹수정</b>
+                    </button>
                   </div>
-                  {this.state.errorSubmit}
                 </div>
-                </div>
-                <div className="col-sm-3"></div>
+                {this.state.errorSubmit}
               </div>
+            </div>
+            <div className="col-sm-3" />
           </div>
+        </div>
       </div>
     );
   }

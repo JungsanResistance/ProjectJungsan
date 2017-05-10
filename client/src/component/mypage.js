@@ -1,7 +1,6 @@
 import React from 'react';
-import { Link, browserHistory } from 'react-router';
+import { browserHistory } from 'react-router';
 import axios from 'axios';
-import SignOut from './signOut';
 import History from './history';
 import NewEvent from './newEvent';
 import Navbar from './func/navbar';
@@ -24,47 +23,22 @@ export default class Mypage extends React.Component {
     this.reset = this.reset.bind(this);
     this.handleHistoryPage = this.handleHistoryPage.bind(this);
     this.handleEventPage = this.handleEventPage.bind(this);
-
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.reset();
-    // const myData = axios.get('http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/misc');
-    // const groupData = axios.get('http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/mypage');
-    // Promise.all([myData, groupData]).then(res => {
-    //   const myEmailData = JSON.parse(res[0].data)[0].email
-    //   const groupStorage = [];
-    //   const getData = JSON.parse(res[1].data);
-    //   // console.log()
-    //   console.log('getData!!!!!:', getData);
-    //
-    //   getData.groupList.forEach((group) => {
-    //     groupStorage.push(group.groupname);
-    //   });
-    //     console.log(getData.pendingUserList)
-    //
-    //   this.setState({
-    //     groupList: groupStorage,
-    //     sumList: getData.sumList,
-    //     myEmail: myEmailData,
-    //     pendingUserList: getData.pendingUserList,
-    //   });
-    // })
   }
 
   reset() {
-
     const myData = axios.get('http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/misc');
     const groupData = axios.get('http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/mypage');
     Promise.all([myData, groupData]).then((res) => {
-      console.log('in?')
       const myEmailData = JSON.parse(res[0].data)[0].email;
       const groupStorage = [];
       const getData = JSON.parse(res[1].data);
       getData.groupList.forEach((group) => {
         groupStorage.push(group.groupname);
       });
-      console.log('pending',getData.pendingUserList)
       this.setState({
         groupList: groupStorage,
         sumList: getData.sumList,
@@ -82,22 +56,21 @@ export default class Mypage extends React.Component {
   handleHistoryPage(event) {
     this.setState({
       rendingPage: 'history',
-    })
+    });
   }
 
   handleEventPage() {
     this.setState({
       rendingPage: 'newEvent',
-    })
+    });
   }
 
   handleDone(event, index) {
     const nextSumList = [...this.state.sumList];
-    //promise callback에 넘기기 위한 변수 지정//
+    // promise callback에 넘기기 위한 변수 지정
     const eventValue = event.target.value;
     let actionType = 'pending';
     let answer = true;
-    console.log(event.target)
     if (event.target.value === '수락') {
       actionType = 'accept';
     }
@@ -115,7 +88,6 @@ export default class Mypage extends React.Component {
     }
 
     if (answer) {
-
       axios.put(`http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/misc`, individualTransacionDone)
       .then((res) => {
         if (res.status === 200) {
@@ -144,38 +116,72 @@ export default class Mypage extends React.Component {
       groupList,
       sumList,
     } = this.state;
-
     let rendingPage = '';
 
     if (sumList && this.state.myEmail) {
       sumList.forEach((data, index) => {
         let declineButton = '';
-        let actionButton =
-        <button className="btn btn-outline-success" value="정산요청" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
-        console.log('data', data)
-        //render all sumlist except me//
+        let actionButton = (
+          <button
+            className="btn btn-outline-success"
+            value="정산요청"
+            onClick={(event) => this.handleDone(event, index)}
+          >
+            정산요청
+          </button>
+        );
+
+        // render all sumlist except me
         if (data.email !== this.state.myEmail) {
-          actionButton =
-          <button className="btn btn-outline-success" value="정산요청" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
+          actionButton = (
+            <button
+              className="btn btn-outline-success"
+              value="정산요청"
+              onClick={(event) => this.handleDone(event, index)}
+            >
+              정산요청
+            </button>
+          );
 
           this.state.pendingUserList.forEach((member) => {
             if (data.email === member.applicantemail || data.email === member.acceptoremail) {
-              // actionButton = '정산요청';
               if (member.applicantemail === this.state.myEmail && member.status === 1) {
-                actionButton =
-                <button className="btn btn-outline-info">정산중</button>;
-
+                actionButton = (
+                  <button className="btn btn-outline-info">
+                    정산중
+                  </button>
+                );
               }
               else if (member.acceptoremail === this.state.myEmail && member.status === 1) {
-                console.log('what???');
-                actionButton =
-                <button className="btn btn-outline-info" value="수락" onClick={(event) => this.handleDone(event, index)}>수락</button>;
-                declineButton =
-                <button className="btn btn-outline-info" value="거절" onClick={(event) => this.handleDone(event, index)}>거절</button>;
+                actionButton = (
+                  <button
+                    className="btn btn-outline-info"
+                    value="수락"
+                    onClick={(event) => this.handleDone(event, index)}
+                  >
+                    수락
+                  </button>
+                )
+                declineButton = (
+                  <button
+                    className="btn btn-outline-info"
+                    value="거절"
+                    onClick={(event) => this.handleDone(event, index)}
+                  >
+                    거절
+                  </button>
+                );
               }
               else if (member.status === null) {
-                actionButton =
-                <button className="btn btn-outline-success" value="정산요청" onClick={(event) => this.handleDone(event, index)}>정산요청</button>;
+                actionButton = (
+                  <button
+                    className="btn btn-outline-success"
+                    value="정산요청"
+                    onClick={(event) => this.handleDone(event, index)}
+                  >
+                    정산요청
+                  </button>
+                );
               }
             }
           });
@@ -192,57 +198,53 @@ export default class Mypage extends React.Component {
             </tr>,
           );
         }
-      })
+      });
     }
 
-    // const groups = this.state.groupList.map((data) => {
-    //   return <li className="myPageGroupName"><Link to={"grouppage/"+data}><b>{data}</b></Link></li>;
-    // });
-
-
-    if (this.state.rendingPage === "history") {
-      rendingPage = <History />
+    if (this.state.rendingPage === 'history') {
+      rendingPage = <History />;
     }
     else if (this.state.rendingPage === 'newEvent') {
-      rendingPage = <NewEvent />
+      rendingPage = <NewEvent />;
     }
     else {
-      rendingPage =
-      <div className="container mypage">
-        <div className="col-md-1"></div>
-        <div className="col-md-10">
-        <center><h1 className="mypageHeader">내가 정산해야 할 내역</h1></center>
-        <br />
-      {/* <h3 className="mypageHeaderMessage"></h3> */}
-          <br />
-          <br />
-          <table className="table table-striped">
-            <thead>
-            <tr className="mypageTableRow">
-              <th>이름</th>
-            <th>이메일</th>
-          <th>총액</th>
-              <th></th>
-            </tr>
-        </thead>
-        <tbody>
-        {List}
-        </tbody>
-      </table>
-      <br />
-      </div>
-      <div className="col-md-1"></div>
-    </div>
-    }
-
-    console.log('rendingPage', rendingPage)
-
+      rendingPage = (
+        <div className="container mypage">
+          <div className="col-md-1" />
+          <div className="col-md-10">
+            <center>
+              <h1 className="mypageHeader">
+                내가 정산해야 할 내역
+              </h1>
+            </center>
+            <br />
+            <br />
+            <br />
+            <table className="table table-striped">
+              <thead>
+                <tr className="mypageTableRow">
+                  <th>이름</th>
+                  <th>이메일</th>
+                  <th>총액</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                {List}
+              </tbody>
+            </table>
+            <br />
+          </div>
+          <div className="col-md-1" />
+        </div>
+      );
+    };
 
     return (
       <div>
         <Navbar />
         <Loader loaded={this.state.loaded}>
-        {rendingPage}
+          {rendingPage}
         </Loader>
       </div>
     );

@@ -27,14 +27,18 @@ export default class Eventinfo extends React.Component {
     const eventEditAuth = JSON.parse(this.props.params.eventInfo).isadmin;
     let newrecipientUsername, newrecipientEmail, editButton;
     const eventContents = this.state.eventInfo;
-    console.log('eventContents', eventContents);
     if (Object.keys(eventContents).length > 0) {
-      //이벤트 권한에 따라 이벤트 버튼 추가//
+      // 이벤트 권한에 따라 이벤트 버튼 추가
       if (eventEditAuth === true) {
         editButton =
-        <Link to={"eventedit/"+this.props.params.eventInfo}>
-          <button type="button" className='btn btn-outline-primary' >이벤트 수정</button>
-        </Link>
+          <Link to={"eventedit/"+this.props.params.eventInfo}>
+            <button
+              type="button"
+              className="btn btn-outline-primary"
+            >
+              이벤트 수정
+            </button>
+          </Link>;
       } else {
         editButton = '';
       }
@@ -49,41 +53,56 @@ export default class Eventinfo extends React.Component {
       });
     }
 
-    return(
+    return (
       <div>
         <Navbar />
         <div className="container">
           <div className="row">
-            <div className="col-md-3"></div>
+            <div className="col-md-3" />
             <div className="col-md-6">
               <div className="panel panel-primary">
-                <div className="panel-heading"><h3>{eventContents.eventname}</h3></div>
-              <div className="panel-body">
-                <h4><p className="eventInfoGroupname">1.groupname : {eventContents.groupname}</p></h4>
-                <hr/>
-                <h4><p className="eventInfoDate">2.date : {eventContents.date}</p></h4>
-                <hr/>
-              <h4><p className="eventInfoRecipient">3.정산자 : {newrecipientUsername} ({newrecipientEmail})</p></h4>
-                <hr/>
-              <h4>4.참석자 :</h4>
-              <br/>
-                <table className="table table-hover memberSelect">
-                  <thead>
-                    <tr>
-                      <th>이름</th>
-                    <th>이메일</th>
-                    </tr>
-                  </thead>
-                  {memberList}
-                </table>
-              </div>
-                <div className="panel-footer"><center>{editButton}</center></div>
+                <div className="panel-heading">
+                  <h3>{eventContents.eventname}</h3>
+                </div>
+                <div className="panel-body">
+                  <h4>
+                    <p className="eventInfoGroupname">
+                      1.groupname : {eventContents.groupname}
+                    </p>
+                  </h4>
+                  <hr />
+                  <h4>
+                    <p className="eventInfoDate">
+                      2.date : {eventContents.date}
+                    </p>
+                  </h4>
+                  <hr />
+                  <h4>
+                    <p className="eventInfoRecipient">
+                      3.정산자 : {newrecipientUsername} ({newrecipientEmail})
+                    </p>
+                  </h4>
+                  <hr />
+                  <h4>4.참석자 :</h4>
+                  <br />
+                  <table className="table table-hover memberSelect">
+                    <thead>
+                      <tr>
+                        <th>이름</th>
+                        <th>이메일</th>
+                      </tr>
+                    </thead>
+                    {memberList}
+                  </table>
+                </div>
+                <div className="panel-footer">
+                  <center>{editButton}</center>
+                </div>
               </div>
             </div>
-            <div className="col-md-3"></div>
+            <div className="col-md-3" />
           </div>
         </div>
-
       </div>
     );
   }

@@ -1,9 +1,7 @@
 import React from 'react';
 import Router, { browserHistory } from 'react-router';
-import moment from 'moment';
 import axios from 'axios';
 import Navbar from './func/navbar';
-//정산자가 선택되지 않았을 시 에러 메세지가 필요/////
 
 export default class EditEvent extends React.Component {
   constructor() {
@@ -17,16 +15,13 @@ export default class EditEvent extends React.Component {
       oldrecipient: {},
       newrecipient: {},
       currentGroupMembers: [],
-
       totalCost: 0,
       sumIndivCost: 0,
-
       errorMesseage: '',
       groupMemberErrorMesseage: '',
       eventErrorMesseage: '',
       errorTotalMessage: '',
       totalCostErrorMessage: '',
-
       groupStyle: '',
       dateStyle: '',
       eventNameStyle: '',
@@ -54,7 +49,6 @@ export default class EditEvent extends React.Component {
   componentWillMount() {
     const selectedEventData = JSON.parse(this.props.params.eventInfo);
 
-
     // all groups I belong info
     const getGroupData = axios.get('http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/transaction?type=post');
 
@@ -64,15 +58,11 @@ export default class EditEvent extends React.Component {
 
     Promise.all([getGroupData, getEventData])
     .then((res) => {
-
       const groupData = JSON.parse(res[0].data);
       const eventData = JSON.parse(res[1].data);
-      console.log(groupData, eventData);
-
       const totalCost = eventData.participants.reduce((total, member) => {
         return total + member.cost;
       }, 0);
-
       const storage = [];
       const currentGroupMembers = groupData.filter((member) => {
         return member.groupname === eventData.groupname;
@@ -104,8 +94,6 @@ export default class EditEvent extends React.Component {
         });
       });
 
-      console.log(storage);
-
       this.setState({
         currentgroupname: eventData.groupname,
         oldEventName: eventData.eventname,
@@ -115,7 +103,7 @@ export default class EditEvent extends React.Component {
         newrecipient: eventData.newrecipient,
         oldrecipient: eventData.newrecipient,
         oldParticipants: eventData.participants,
-        totalCost: totalCost,
+        totalCost,
         currentGroupMembers: storage,
       });
     });
@@ -139,7 +127,6 @@ export default class EditEvent extends React.Component {
       errCount += 1;
     }
     if (!this.state.newrecipient) {
-      console.log('error recipient!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', this.state.newrecipient)
       nextNewRecipientStyle = 'inputStyle';
       errCount += 1;
     }
@@ -155,12 +142,11 @@ export default class EditEvent extends React.Component {
 
     const isRecipientSelected = currentGroupMembers.some((member) => {
       if (member.selected)
-        return member.email === this.state.newrecipient.email
+        return member.email === this.state.newrecipient.email;
     });
     if (!isRecipientSelected) {
       receipientSelectedFlag = false;
     }
-
     if (currentGroupMembers.length === 0) {
       anyMemberSelected = false;
     }
@@ -185,7 +171,7 @@ export default class EditEvent extends React.Component {
       if (!receipientSelectedFlag) {
         this.setState({
           errorMesseage: '정산자를 포함시켜주세요',
-        })
+        });
       }
       if (errCount) {
         this.setState({
@@ -205,7 +191,7 @@ export default class EditEvent extends React.Component {
       if (!memberCostCheck) {
         this.setState({
           totalCostErrorMessage: '모든 금액은 양의 정수여야 합니다',
-        })
+        });
       }
     }
   }
@@ -224,8 +210,8 @@ export default class EditEvent extends React.Component {
         email: member.email,
         cost: member.cost,
         ispaid: member.ispaid,
-      })
-    })
+      });
+    });
 
     console.log('this is the data we are sending', {
       olddate: this.state.oldDate,
@@ -253,12 +239,12 @@ export default class EditEvent extends React.Component {
         alert('이벤트가 등록되었습니다.');
         browserHistory.push('/history');
       }
-      else if (res.status === 401){
+      else if (res.status === 401) {
         alert('수정 권한이 없습니다');
         console.log('put response:', res);
       }
       else {
-        alert('시스템 오류')
+        alert('시스템 오류');
       }
     });
   }
@@ -316,7 +302,7 @@ export default class EditEvent extends React.Component {
         }
       });
     }
-    else if (this.countSelectedMember() === 1){
+    else if (this.countSelectedMember() === 1) {
       // when there is only one member selected
       nextSelectedGroupMembers.forEach((member) => {
         if (member.selected) {
@@ -374,7 +360,7 @@ export default class EditEvent extends React.Component {
   getCurrentGroupMembers() {
     return this.state.currentGroupMembers.map((member) => {
       return member;
-    })
+    });
   }
 
   getCurrentRecipient() {
@@ -409,8 +395,8 @@ export default class EditEvent extends React.Component {
 
     if (this.countSelectedMember() === 0) {
       nextGroupMembers.forEach((member) => {
-          member.cost = this.state.totalCost / nextGroupMembers.length;
-          member.selected = true;
+        member.cost = this.state.totalCost / nextGroupMembers.length;
+        member.selected = true;
       });
     }
     else if (this.countSelectedMember() === 1) {
@@ -438,10 +424,10 @@ export default class EditEvent extends React.Component {
 
     let nextTotalCostErrorMessage = '';
     if (this.checkTotal()) {
-      nextTotalCostErrorMessage = ''
+      nextTotalCostErrorMessage = '';
     }
     else {
-      nextTotalCostErrorMessage = '총 금액이 맞지 않습니다'
+      nextTotalCostErrorMessage = '총 금액이 맞지 않습니다';
     }
 
     this.setState({
@@ -478,8 +464,6 @@ export default class EditEvent extends React.Component {
         console.log('member not selected')
       }
     });
-
-    console.log('next members after update', nextSelectedGroupMembers)
     this.setState({
       currentGroupMembers: nextSelectedGroupMembers,
     });
@@ -492,10 +476,8 @@ export default class EditEvent extends React.Component {
       return total + member.cost;
     }, 0);
 
-
     const highEndDeviation = total + 1000;
     const lowEndDeviation = total - 1000;
-    console.log('highEnd', highEndDeviation, 'lowEnd', lowEndDeviation, 'sumMemberCost', sumMemberCost);
     if (sumMemberCost < highEndDeviation && sumMemberCost > lowEndDeviation) {
       return true;
     }
@@ -513,9 +495,7 @@ export default class EditEvent extends React.Component {
     }
 
     const selectedRecipientName = event.target.value;
-    console.log('selected recipient name', selectedRecipientName)
-
-    if (selectedRecipientName === "select the recipient") {
+    if (selectedRecipientName === 'select the recipient') {
       this.setState({
         newrecipient: {},
         groupMemberErrorMesseage: '',
@@ -528,13 +508,14 @@ export default class EditEvent extends React.Component {
 
       nextSelectedGroupMembers.forEach((member, index) => {
         if (member.username === selectedRecipientName) {
-         nextNewRecipient = Object.assign({}, nextSelectedGroupMembers[index]);
-         nextNewRecipient.ispaid = 1;
-         member.ispaid = 1;
-         if (!member.isManualCost) {
-           nextNewRecipient.cost = indivCost;
-         }
+          nextNewRecipient = Object.assign({}, nextSelectedGroupMembers[index]);
+          nextNewRecipient.ispaid = 1;
+          member.ispaid = 1;
+          if (!member.isManualCost) {
+            nextNewRecipient.cost = indivCost;
+          }
         }
+
         // take care of old recipient member in participant: flag down
         else {
           if (member.email === this.state.newrecipient.email) {
@@ -542,11 +523,9 @@ export default class EditEvent extends React.Component {
           }
         }
       });
-
       delete nextNewRecipient.isManualCost;
       delete nextNewRecipient.selected;
       console.log('nextNewREcipient', nextNewRecipient);
-
       this.setState({
         newrecipient: nextNewRecipient,
         currentGroupMembers: nextSelectedGroupMembers,
@@ -587,35 +566,32 @@ export default class EditEvent extends React.Component {
   eventDuplicateCheck(event) {
     let eventDuplicateExist = false;
     return new Promise((resolve, reject) => {
-      resolve(event.target)
+      resolve(event.target);
     })
     .then((eventTarget) => {
       if (eventTarget.name === 'eventGroup') {
         return axios.get(`http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/transaction?type=check&groupname=${eventTarget.value}&eventname=${this.state.eventName}&date=${this.state.date}`)
-
         .then((res) => {
-          if (res.data.length-2) {
+          if (res.data.length - 2) {
             return true;
           }
-        })
+        });
       }
       else if (eventTarget.name === 'eventDate') {
         return axios.get(`http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${this.state.eventName}&date=${eventTarget.value}`)
-
         .then((res) => {
-          if (res.data.length-2) {
+          if (res.data.length - 2) {
             return true;
           }
-        })
+        });
       }
       else if (eventTarget.type === 'text') {
         return axios.get(`http://ec2-52-78-69-252.ap-northeast-2.compute.amazonaws.com:3000/api/transaction?type=check&groupname=${this.state.selectedGroup}&eventname=${eventTarget.value}&date=${this.state.date}`)
-
         .then((res) => {
-          if (res.data.length-2) {
+          if (res.data.length - 2) {
             return true;
           }
-        })
+        });
       }
     })
     .then((eventDuplicateExist) => {
@@ -628,7 +604,7 @@ export default class EditEvent extends React.Component {
           eventErrorMesseage: '',
         });
       }
-    })
+    });
   }
 
   inputHandleChange(event) {
@@ -657,7 +633,7 @@ export default class EditEvent extends React.Component {
           member.cost = indivCost;
         }
         else {
-          console.log('member not selected')
+          console.log('member not selected');
         }
       });
 
@@ -674,7 +650,6 @@ export default class EditEvent extends React.Component {
 
     else if (event.target.type === 'text') {
       this.eventDuplicateCheck(event);
-      console.log('new event name', event.target.value)
       this.setState({
         newEventName: event.target.value,
         eventNameStyle: '',
@@ -682,13 +657,11 @@ export default class EditEvent extends React.Component {
     }
   }
 
-
   handleManualInputCost(event, costIndex) {
     const manualInputCost = parseInt(event.target.value);
-
     const nextSelectedGroupMembers = this.getCurrentGroupMembers();
-    // const indivCost = 100 * Math.ceil(((this.state.totalCost - sumAllManualCost) / ((length - isManualCostCount) * 100)));
 
+    // const indivCost = 100 * Math.ceil(((this.state.totalCost - sumAllManualCost) / ((length - isManualCostCount) * 100)));
     if (event.target.value.length) {
       nextSelectedGroupMembers[costIndex].isManualCost = true;
       nextSelectedGroupMembers[costIndex].cost = manualInputCost;
@@ -707,15 +680,9 @@ export default class EditEvent extends React.Component {
       this.updateIndivCostDisplay();
       this.updateRecipientInfo();
     });
-
   }
 
   render() {
-    console.log(this.state)
-    console.log('selected group name', this.state.currentGroupMembers)
-    console.log('this.state.newrecipient', this.state.newrecipient)
-
-
     let userTable;
     // retrieve group members for specific group
     const currentGroupMembers = this.state.currentGroupMembers;
@@ -725,41 +692,48 @@ export default class EditEvent extends React.Component {
 
     // render both selected and unselected member and apply style together
     if (currentGroupMembers.length) {
-        userTable = currentGroupMembers.map((member, index) => {
-          if (currentGroupMembers[index].selected) {
-            return (
-                <tr>
-                  <td onClick={event => this.selectHandleMember(event, member)} className="selected">
-                   {member.username} ({member.email})
-                  </td>
-                  <input
-                 type='number' placeholder={currentGroupMembers[index].cost}
-                      onChange={(event) => this.handleManualInputCost(event, index)}/>
-                </tr>);
-            } else {
-              return (
-                <tr>
-                  <td onClick={(event) => this.selectHandleMember(event, member)} className="unselected">
-                    {member.username} ({member.email})
-               </td>
-             </tr>);
-          }
-        });
-      }
-
+      userTable = currentGroupMembers.map((member, index) => {
+        if (currentGroupMembers[index].selected) {
+          return (
+            <tr>
+              <td
+                onClick={event => this.selectHandleMember(event, member)}
+                className="selected"
+              >
+               {member.username} ({member.email})
+              </td>
+              <input
+                type="number"
+                placeholder={currentGroupMembers[index].cost}
+                onChange={(event) => this.handleManualInputCost(event, index)}
+              />
+            </tr>
+          );
+        } else {
+          return (
+            <tr>
+              <td
+                onClick={(event) => this.selectHandleMember(event, member)}
+                className="unselected"
+              >
+                {member.username} ({member.email})
+              </td>
+            </tr>);
+        }
+      });
+    }
     else {
       userTable = [];
     }
 
-    let recipientTable;
-
+    // let recipientTable;
     // render recipient drop down list
     // if (currentGroupMembers.length) {
-      recipientTable = currentGroupMembers.map((member) => {
-        if (member.email !== this.state.newrecipient.email) {
-          return <option>{member.username}</option>;
-        }
-      });
+    const recipientTable = currentGroupMembers.map((member) => {
+      if (member.email !== this.state.newrecipient.email) {
+        return <option>{member.username}</option>;
+      }
+    });
     // }
     // else {
     //   recipientTable = [];
@@ -772,71 +746,85 @@ export default class EditEvent extends React.Component {
         <br />
         <div className="container-fluid">
           <div className="row">
-          <div className="col-md-3"></div>
-          <div className="col-md-6">
-            <div className="editEventFormBox">
-              <div className="newEventFormTop">
-                <div className="form-top-left">
-                  <h2>이벤트 내용이 잘못됐나요?</h2>
-                  <p><h4>잘못된 부분을 고치고 수정버튼 클릭!</h4></p>
+            <div className="col-md-3" />
+            <div className="col-md-6">
+              <div className="editEventFormBox">
+                <div className="newEventFormTop">
+                  <div className="form-top-left">
+                    <h2>이벤트 내용이 잘못됐나요?</h2>
+                    <p><h4>잘못된 부분을 고치고 수정버튼 클릭!</h4></p>
+                  </div>
+                  <div className="form-top-right">
+                    <div className="icon-pencil">
+                      <b>
+                        <span className="glyphicon glyphicon-pencil" />
+                      </b>
+                    </div>
+                  </div>
                 </div>
-                <div className="form-top-right">
-                  <div className="icon-pencil">
-                    <b><span className="glyphicon glyphicon-pencil">
-                    </span></b>
+                <div className="newEventFormBottom">
+                  <form className="newEventForm">
+                    <div className="form-group">
+                      <b className="editEventGroupname">그룹명 : {this.state.currentgroupname}</b>
+                    </div>
+                    <br />
+                    <div className="form-group">
+                      <input
+                        name="eventDate" className="form-control dateSelect" type="date"
+                        onChange={this.inputHandleChange}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <input
+                        type="text"
+                        className="form-control spaceSelect"
+                        placeholder={this.state.oldEventName}
+                        onChange={this.inputHandleChange}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <select
+                        name="recipientList"
+                        className="form-control recipientSelect"
+                        onChange={this.selectHandleRecipient}
+                      >
+                        <option>{this.state.newrecipient.username}</option>
+                        {recipientTable}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <input
+                        name="eventCost" className="form-control costSelect" type="number"
+                        placeholder={this.state.totalCost} onChange={this.inputHandleChange} />
+                    </div>
+                    <div className="form-group">
+                      * 멤버의 이름을 클릭하면 금액을 추가할 수 있습니다.
+                      <br />
+                      <table className="table table-hover memberSelect">
+                        <thead>
+                          <tr>
+                            <th>이름</th>
+                            <th>금액</th>
+                          </tr>
+                        </thead>
+                        {userTable}
+                      </table>
+                    </div>
+                  </form>
+                  <div className="form-footer">
+                    <button
+                      type="button"
+                      className="btn editEventButton"
+                      value="이벤트 등록"
+                      onClick={this.handleSubmit}
+                    >
+                      <b>이벤트 수정</b>
+                    </button>
                   </div>
                 </div>
               </div>
-              <div className="newEventFormBottom">
-                <form className="newEventForm">
-                  <div className="form-group">
-                    <b className="editEventGroupname">그룹명 : {this.state.currentgroupname}</b>
-                  </div>
-                <br />
-              <div className="form-group">
-                <input
-                  name="eventDate" className="form-control dateSelect" type="date"
-                  onChange={this.inputHandleChange} />
-              </div>
-              <div className="form-group">
-                <input
-                  type="text" className="form-control spaceSelect" placeholder={this.state.oldEventName}
-                  onChange={this.inputHandleChange} />
-              </div>
-              <div className="form-group">
-                <select
-                  name="recipientList" className="form-control recipientSelect"
-                  onChange={this.selectHandleRecipient} >
-                  <option>{this.state.newrecipient.username}</option>
-                  {recipientTable}
-                </select>
-              </div>
-              <div className="form-group">
-                <input
-                  name="eventCost" className="form-control costSelect" type="number"
-                  placeholder={this.state.totalCost} onChange={this.inputHandleChange} />
-              </div>
-              <div className="form-group">
-                * 멤버의 이름을 클릭하면 금액을 추가할 수 있습니다.
-                <br />
-                <table className="table table-hover memberSelect">
-                  <thead>
-                    <tr>
-                      <th>이름</th>
-                      <th>금액</th>
-                    </tr>
-                  </thead>
-                  {userTable}
-                </table>
-              </div>
-            </form>
-              <div className="form-footer">
-                <button type="button" className="btn editEventButton" value="이벤트 등록" onClick={this.handleSubmit}><b>이벤트 수정</b></button>
-              </div>
             </div>
-            </div>
-          </div>
-          <div className="col-md-3"></div>
+            <div className="col-md-3" />
           </div>
         </div>
       </div>
